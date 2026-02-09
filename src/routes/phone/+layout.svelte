@@ -29,7 +29,7 @@
 
    // Subscribe to realtime updates
    channel = supabase
-    .channel(`phone-session-${id}`)
+    .channel(`session-${id}`)
     .on(
      "postgres_changes",
      {
@@ -39,7 +39,6 @@
       filter: `id=eq.${id}`,
      },
      (payload) => {
-      console.log("Phone session updated:", payload);
       phoneSession.set(payload.new);
      },
     )
