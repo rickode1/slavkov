@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@font-face {
+    font-family: Slabo;
+    src: url('/fonts/Slabo13px-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@theme {
+ --color-black: #000000;
+ --color-primary: #B4332B;
+ --color-secondary: #0D3870;
+}
+
+@layer utilities {
+  body {
+   font-family: Slabo, sans-serif;
+   font-optical-sizing: auto;
+   font-style: normal;
+   font-weight: 400;
+   font-variant-numeric: lining-nums;
+   font-feature-settings: "lnum" 1;
+   text-rendering: optimizelegibility;
+   color: var(--color-black);
+  }
+}
