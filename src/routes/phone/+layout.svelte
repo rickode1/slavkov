@@ -44,7 +44,7 @@
   if (session && gameScreens[session.status]) {
    const targetPath = `/phone/${gameScreens[session.status]}`;
    if (!page.url.pathname.startsWith(targetPath)) {
-    goto(targetPath);
+    setTimeout(goto(targetPath), 2000);
    }
   }
  });
