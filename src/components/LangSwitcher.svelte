@@ -1,6 +1,11 @@
 <script>
  import { page } from "$app/state";
- import { locales, localizeHref, getLocale, setLocale } from "$lib/paraglide/runtime";
+ import {
+  locales,
+  localizeHref,
+  getLocale,
+  setLocale,
+ } from "$lib/paraglide/runtime";
  import { fly } from "svelte/transition";
 
  let { showAll = false, classes = "" } = $props();
@@ -13,20 +18,20 @@
  });
 
  function handleClick(e, locale) {
-  if (!expanded && locale === getLocale()) {
+  const current = getLocale();
+  if (!expanded && locale === current) {
    e.preventDefault();
    manuallyExpanded = true;
+  } else if (manuallyExpanded && locale === current) {
+   e.preventDefault();
+   manuallyExpanded = false;
   } else {
    setLocale(locale);
   }
  }
 </script>
 
-<div
- role="button"
- class="flex items-center {classes}"
- tabindex="0"
->
+<div role="button" class="flex items-center {classes}" tabindex="0">
  {#each orderedLocales() as locale, i}
   {#if expanded || locale === getLocale()}
    <button

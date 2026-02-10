@@ -1,8 +1,8 @@
 <script>
  import { m } from "$lib/paraglide/messages.js";
  import {
-  phoneSessionId,
-  phoneSession,
+  sessionId,
+  gameSession,
   playerCode,
  } from "$lib/stores/gameSession.js";
  import LangSwitcher from "$components/LangSwitcher.svelte";
@@ -34,7 +34,7 @@
   }
 
   playerCode.set(data.playerCode);
-  phoneSessionId.set(data.session.id);
+  sessionId.set(data.session.id);
  }
 </script>
 
@@ -43,7 +43,7 @@
 >
  <Logo classes="max-w-60 mb-8" />
 
- {#if !$phoneSession}
+ {#if !$gameSession}
   <div class="flex flex-col items-center gap-4 mt-8">
    <input
     type="text"
@@ -66,9 +66,9 @@
    <p class="text-2xl mb-4">
     Connected as Player {$playerCode === "code_1" ? "1" : "2"}
    </p>
-   <p>Code 1: {$phoneSession.code_1}</p>
-   <p>Code 2: {$phoneSession.code_2}</p>
-   <p>Status: {$phoneSession.status}</p>
+   <p>Code 1: {$gameSession.code_1}</p>
+   <p>Code 2: {$gameSession.code_2}</p>
+   <p>Status: {$gameSession.status}</p>
   </div>
  {/if}
 

@@ -16,7 +16,7 @@ export async function POST() {
 	const { data, error } = await supabaseAdmin
 		.from('sessions')
 		.insert({
-			status: 'created',
+			status: '1-lobby',
 			code_1,
 			code_2
 		})

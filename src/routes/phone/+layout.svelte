@@ -1,56 +1,18 @@
 <script>
  import { onDestroy } from "svelte";
- import { supabase } from "$lib/supabaseClient.js";
- import { phoneSessionId, phoneSession } from "$lib/stores/gameSession.js";
+ import { sessionId } from "$lib/stores/gameSession.js";
+ import { subscribeToSession, cleanupSession } from "$lib/sessionRealtime.js";
 
  let { children } = $props();
- let channel = null;
 
- // Subscribe to realtime updates when phoneSessionId changes
  $effect(() => {
-  const id = $phoneSessionId;
-
-  // Clean up previous channel
-  if (channel) {
-   supabase.removeChannel(channel);
-   channel = null;
-  }
-
+  const id = $sessionId;
   if (id) {
-   // Fetch initial session data
-   supabase
-    .from("sessions")
-    .select("*")
-    .eq("id", id)
-    .single()
-    .then(({ data }) => {
-     phoneSession.set(data);
-    });
-
-   // Subscribe to realtime updates
-   channel = supabase
-    .channel(`session-${id}`)
-    .on(
-     "postgres_changes",
-     {
-      event: "*",
-      schema: "public",
-      table: "sessions",
-      filter: `id=eq.${id}`,
-     },
-     (payload) => {
-      phoneSession.set(payload.new);
-     },
-    )
-    .subscribe();
+   subscribeToSession(id);
   }
  });
 
- onDestroy(() => {
-  if (channel) {
-   supabase.removeChannel(channel);
-  }
- });
+ onDestroy(cleanupSession);
 </script>
 
 {@render children()}

@@ -30,10 +30,10 @@ export async function POST({ request }) {
 	// Check if other player already connected (other code is null)
 	const otherPlayerConnected = session[otherCode] === null;
 
-	// Clear the used code, and set status to 'started' if both players connected
+	// Clear the used code, and set status if both players connected
 	const updateData = { [usedCode]: null };
 	if (otherPlayerConnected) {
-		updateData.status = 'started';
+		updateData.status = '2-onboarding';
 	}
 
 	const { error: updateError } = await supabaseAdmin
