@@ -9,9 +9,27 @@ function generateCode() {
 	return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
+async function generateUniqueCode(supabase) {
+	let code;
+	let exists = true;
+
+	while (exists) {
+		code = generateCode();
+		const { data } = await supabase
+			.from('sessions')
+			.select('id')
+			.or(`code_1.eq.${code},code_2.eq.${code}`)
+			.limit(1);
+
+		exists = data && data.length > 0;
+	}
+
+	return code;
+}
+
 export async function POST() {
-	const code_1 = generateCode();
-	const code_2 = generateCode();
+	const code_1 = await generateUniqueCode(supabaseAdmin);
+	const code_2 = await generateUniqueCode(supabaseAdmin);
 
 	const { data, error } = await supabaseAdmin
 		.from('sessions')

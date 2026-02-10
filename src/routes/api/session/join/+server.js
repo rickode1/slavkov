@@ -9,7 +9,7 @@ export async function POST({ request }) {
 	const { code } = await request.json();
 
 	if (!code || code.length !== 4) {
-		return json({ error: 'Invalid code' }, { status: 400 });
+		return json({ error: 'invalid_code' }, { status: 400 });
 	}
 
 	// Search for session with this code (either code_1 or code_2)
@@ -20,21 +20,15 @@ export async function POST({ request }) {
 		.single();
 
 	if (fetchError || !session) {
-		return json({ error: 'Session not found' }, { status: 404 });
+		return json({ error: 'session_not_found' }, { status: 404 });
 	}
 
 	// Compare as strings to handle potential type mismatch
 	const usedCode = String(session.code_1) === String(code) ? 'code_1' : 'code_2';
 	const otherCode = usedCode === 'code_1' ? 'code_2' : 'code_1';
 
-	// Check if other player already connected (other code is null)
-	const otherPlayerConnected = session[otherCode] === null;
-
-	// Clear the used code, and set status if both players connected
+	// Clear the used code
 	const updateData = { [usedCode]: null };
-	if (otherPlayerConnected) {
-		updateData.status = '2-onboarding';
-	}
 
 	const { error: updateError } = await supabaseAdmin
 		.from('sessions')

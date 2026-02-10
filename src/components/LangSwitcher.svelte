@@ -35,7 +35,7 @@
  {#each orderedLocales() as locale, i}
   {#if expanded || locale === getLocale()}
    <button
-    class="text-white bg-primary rounded-full uppercase text-4xl w-20 h-20 inline-flex items-center justify-center cursor-pointer text-center {i ===
+    class="text-white bg-primary rounded-full uppercase text-2xl lg:text-4xl w-14 lg:w-20 h-14 lg:h-20 inline-flex items-center justify-center cursor-pointer text-center {i ===
     0
      ? 'relative z-10'
      : 'ml-3'}"

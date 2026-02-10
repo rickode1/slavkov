@@ -3,5 +3,15 @@
  "logo_title_line1": "Bataille",
  "logo_title_line2": "d'Austerlitz",
  "start": "Commencer la bataille",
- "join": "Rejoindre"
+ "join": "Rejoindre",
+ "lobby_cta": "Entrez le code sur votre téléphone",
+ "lobby_phone_cta": "Entrez le code de la TV",
+ "error_invalid_code": "Code invalide",
+ "error_session_not_found": "Session non trouvée",
+ "error_unknown": "Une erreur est survenue",
+ "connected": "Connecté",
+ "player": "Joueur",
+ "name_label": "Nom",
+ "confirm": "Confirmer",
+ "bust_unavailable": "Ce personnage n'est pas disponible"
 }

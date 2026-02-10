@@ -3,5 +3,15 @@
  "logo_title_line1": "Schlacht",
  "logo_title_line2": "bei Austerlitz",
  "start": "Schlacht beginnen",
- "join": "Beitreten"
+ "join": "Beitreten",
+ "lobby_cta": "Geben Sie den Code auf Ihrem Telefon ein",
+ "lobby_phone_cta": "Code vom TV eingeben",
+ "error_invalid_code": "Ungültiger Code",
+ "error_session_not_found": "Sitzung nicht gefunden",
+ "error_unknown": "Etwas ist schief gelaufen",
+ "connected": "Verbunden",
+ "player": "Spieler",
+ "name_label": "Name",
+ "confirm": "Bestätigen",
+ "bust_unavailable": "Dieser Charakter ist nicht verfügbar"
 }

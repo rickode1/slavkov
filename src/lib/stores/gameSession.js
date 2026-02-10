@@ -22,3 +22,9 @@ function createPersistedStore(key, initialValue) {
 export const sessionId = createPersistedStore('sessionId', null);
 export const gameSession = writable(null);
 export const playerCode = createPersistedStore('playerCode', null); // 'code_1' or 'code_2' (phone only)
+
+export function resetSession() {
+	sessionId.set(null);
+	gameSession.set(null);
+	playerCode.set(null);
+}

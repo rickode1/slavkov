@@ -4,5 +4,14 @@
  "logo_title_line2": "u Slavkova",
  "start": "Zahájit bitvu",
  "join": "Připojit se",
- "lobby_cta": "Zadejte kód do svého telefonu"
+ "lobby_cta": "Zadejte kód do svého telefonu",
+ "lobby_phone_cta": "Zadejte kód z TV",
+ "error_invalid_code": "Neplatný kód",
+ "error_session_not_found": "Relace nenalezena",
+ "error_unknown": "Něco se pokazilo",
+ "connected": "Připojen",
+ "player": "Hráč",
+ "name_label": "Jméno",
+ "confirm": "Potvrdit",
+ "bust_unavailable": "Tato postava není dostupná"
 }
