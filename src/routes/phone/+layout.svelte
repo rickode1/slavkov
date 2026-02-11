@@ -59,5 +59,5 @@
  class="container relative px-4 py-4 h-screen mx-auto flex flex-col items-center"
 >
  {@render children()}
- <LangSwitcher classes="pt-8 mt-auto mr-auto" />
+ <LangSwitcher classes="mt-auto mr-auto" />
 </main>

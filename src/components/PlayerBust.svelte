@@ -5,6 +5,6 @@
 </script>
 
 <div class="flex flex-col items-center">
- <img class="lg:w-32 lg:h-auto" srcset={optimize("/img/bust_"+player?.bust+".png")} alt="" /> 
- <p class="text-2xl text-center">{player?.nick}</p>
+ <img class="w-16 lg:w-32 h-auto" srcset={optimize("/img/bust_"+player?.bust+".png")} alt="" /> 
+ <p class="text-lg lg:text-2xl text-center">{player?.nick}</p>
 </div>

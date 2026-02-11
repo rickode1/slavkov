@@ -27,4 +27,11 @@
    text-rendering: optimizelegibility;
    color: var(--color-black);
   }
+
+  .stroke {
+    filter: drop-shadow(5px 0 0 var(--color-secondary)) 
+    drop-shadow(0 5px 0 var(--color-secondary))
+    drop-shadow(-5px 0 0 var(--color-secondary)) 
+    drop-shadow(0 -5px 0 var(--color-secondary));
+  }
 }

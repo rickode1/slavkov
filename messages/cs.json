@@ -16,5 +16,8 @@
  "bust_unavailable": "Tato postava není dostupná",
  "location_santon": "Boj o Staré vinohrady",
  "location_pratzen": "Boj o Pratecký kopec",
- "location_telnitz": "Boj o Sokolnici a Telnici"
+ "location_telnitz": "Boj o Sokolnici a Telnici",
+ "unit_soldier": "Pěchota",
+ "unit_cavalry": "Jízda",
+ "unit_cannon": "Dělostřelectvo"
 }

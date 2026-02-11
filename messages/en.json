@@ -16,5 +16,8 @@
  "bust_unavailable": "This character is unavailable",
  "location_santon": "Santon",
  "location_pratzen": "Pratzen Heights",
- "location_telnitz": "Telnitz"
+ "location_telnitz": "Telnitz",
+ "unit_soldier": "Infantry",
+ "unit_cavalry": "Cavalry",
+ "unit_cannon": "Artillery"
 }

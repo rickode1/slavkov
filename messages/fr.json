@@ -16,5 +16,8 @@
  "bust_unavailable": "Ce personnage n'est pas disponible",
  "location_santon": "Santon",
  "location_pratzen": "Plateau de Pratzen",
- "location_telnitz": "Telnitz"
+ "location_telnitz": "Telnitz",
+ "unit_soldier": "Infanterie",
+ "unit_cavalry": "Cavalerie",
+ "unit_cannon": "Artillerie"
 }

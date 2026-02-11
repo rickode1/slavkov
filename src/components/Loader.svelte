@@ -3,7 +3,7 @@
 </script>
 
 <div
- class="bg-secondary rounded-full w-20 h-20 flex items-center justify-center {classes}"
+ class="bg-secondary rounded-full w-12 lg:w-20 h-12 lg:h-20 flex items-center justify-center {classes}"
 >
  <svg
   class="animate-spin w-8 h-8 text-white"
