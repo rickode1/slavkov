@@ -22,21 +22,14 @@
    window.history.replaceState({}, "", url);
    setLocale(lang);
   }
-
-  // Redirect to correct screen if URL doesn't match session status
-  const session = $gameSession;
-  if (session && gameScreens[session.status]) {
-   const targetPath = `/phone/${gameScreens[session.status]}`;
-   if (page.url.pathname !== targetPath && page.url.pathname !== "/phone") {
-    goto(targetPath);
-   }
-  }
  });
 
  $effect(() => {
   const id = $sessionId;
   if (id) {
    subscribeToSession(id);
+  } else if (page.url.pathname !== "/phone/1-lobby") {
+   goto("/phone/1-lobby");
   }
  });
 

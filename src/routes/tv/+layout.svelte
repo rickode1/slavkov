@@ -43,21 +43,14 @@
    window.history.replaceState({}, "", url);
    setLocale(lang);
   }
-
-  // Redirect to correct screen if URL doesn't match session status
-  const session = $gameSession;
-  if (session && gameScreens[session.status]) {
-   const targetPath = `/tv/${gameScreens[session.status]}`;
-   if (page.url.pathname !== targetPath && page.url.pathname !== "/tv") {
-    goto(targetPath);
-   }
-  }
  });
 
  $effect(() => {
   const id = $sessionId;
   if (id) {
    subscribeToSession(id);
+  } else if (page.url.pathname !== "/tv") {
+   goto("/tv");
   }
  });
 
@@ -66,7 +59,7 @@
   if (session && terminalStates.includes(session.status)) {
    cleanupSession();
    resetSession();
-   goto("/");
+   goto("/tv");
   }
  });
 
@@ -89,7 +82,7 @@
  {@render children()}
  <LangSwitcher
   classes={page.url.pathname === "/tv"
-   ? "mt-auto mx-auto"
+   ? "mt-auto mx-auto mb-10"
    : "absolute left-8 bottom-6"}
   showAll={page.url.pathname === "/tv"}
  />
