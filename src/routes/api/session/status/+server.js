@@ -6,15 +6,19 @@ import { SUPABASE_SECRET_KEY } from '$env/static/private';
 const supabaseAdmin = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SECRET_KEY);
 
 export async function POST({ request }) {
-	const { sessionId } = await request.json();
+	const { sessionId, status } = await request.json();
 
 	if (!sessionId) {
 		return json({ error: 'Session ID is required' }, { status: 400 });
 	}
 
+	if (!status) {
+		return json({ error: 'Status is required' }, { status: 400 });
+	}
+
 	const { data, error } = await supabaseAdmin
 		.from('sessions')
-		.update({ status: '0-canceled' })
+		.update({ status })
 		.eq('id', sessionId)
 		.select()
 		.single();

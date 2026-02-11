@@ -13,5 +13,8 @@
  "player": "Spieler",
  "name_label": "Name",
  "confirm": "Bestätigen",
- "bust_unavailable": "Dieser Charakter ist nicht verfügbar"
+ "bust_unavailable": "Dieser Charakter ist nicht verfügbar",
+ "location_santon": "Santon",
+ "location_pratzen": "Pratzer Höhen",
+ "location_telnitz": "Telnitz"
 }

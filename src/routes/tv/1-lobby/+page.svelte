@@ -8,7 +8,7 @@
  <Logo classes="max-w-60 absolute top-10 left-8" />
 
  {#if $gameSession}
-  <div class="flex w-full max-w-4xl justify-between gap-x-20 mt-16">
+  <div class="flex w-full max-w-4xl justify-between gap-x-20 mt-[14vh]">
    <PlayerLobby
     code={$gameSession.code_1}
     player={$gameSession.player_1}

@@ -21,10 +21,10 @@
   }
 
   try {
-   const response = await fetch("/api/session/cancel", {
+   const response = await fetch("/api/session/status", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId: $sessionId }),
+    body: JSON.stringify({ sessionId: $sessionId, status: "0-canceled" }),
    });
 
    if (!response.ok) {
@@ -84,25 +84,23 @@
 </script>
 
 <main
- class="container relative px-8 pt-[15vh] pb-10 h-screen mx-auto flex flex-col items-center"
+ class="max-w-480 relative px-10 h-screen mx-auto flex flex-col items-center"
 >
  {@render children()}
  <LangSwitcher
   classes={page.url.pathname === "/tv"
    ? "mt-auto mx-auto"
-   : "absolute left-8 bottom-10"}
+   : "absolute left-8 bottom-6"}
   showAll={page.url.pathname === "/tv"}
  />
 
  {#if $sessionId && page.url.pathname !== "/tv"}
   <button
-   class="absolute right-8 bottom-10"
+   class="absolute right-8 bottom-6"
    onclick={handleCancel}
    aria-label="Cancel game session"
   >
-   <ErrorIcon
-    classes="w-14 lg:w-20 h-14 lg:h-20"
-   />
+   <ErrorIcon classes="w-14 lg:w-20 h-14 lg:h-20" />
   </button>
  {/if}
 </main>

@@ -13,5 +13,8 @@
  "player": "Joueur",
  "name_label": "Nom",
  "confirm": "Confirmer",
- "bust_unavailable": "Ce personnage n'est pas disponible"
+ "bust_unavailable": "Ce personnage n'est pas disponible",
+ "location_santon": "Santon",
+ "location_pratzen": "Plateau de Pratzen",
+ "location_telnitz": "Telnitz"
 }

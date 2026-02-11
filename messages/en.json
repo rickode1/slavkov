@@ -13,5 +13,8 @@
  "player": "Player",
  "name_label": "Name",
  "confirm": "Confirm",
- "bust_unavailable": "This character is unavailable"
+ "bust_unavailable": "This character is unavailable",
+ "location_santon": "Santon",
+ "location_pratzen": "Pratzen Heights",
+ "location_telnitz": "Telnitz"
 }

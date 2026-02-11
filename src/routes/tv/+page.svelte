@@ -27,7 +27,7 @@
    cancel();
 
    try {
-    const response = await fetch("/api/session", { method: "POST" });
+    const response = await fetch("/api/session/create", { method: "POST" });
     const { session, error } = await response.json();
 
     if (error) {
@@ -45,7 +45,7 @@
  });
 </script>
 
- <Logo classes="max-w-xl -mr-8" />
+ <Logo classes="max-w-xl -mr-8 mt-[14vh]" />
 
  <EmblemFr classes="h-28 w-auto absolute top-10 left-8" />
 
@@ -57,6 +57,6 @@
  <Button
   text={m.start()}
   href={localizeHref("/tv/1-lobby")}
-  classes="mt-20"
+  classes="my-auto"
  />
 
