@@ -11,7 +11,6 @@ const config = {
 				formats: ['image/avif', 'image/webp'],
 				minimumCacheTTL: 300,
 				localPatterns: [
-					{ pathname: '^/assets/.*$', search: '' },
 					{ pathname: '^/img/.*$', search: '' }
 				]
 			}   

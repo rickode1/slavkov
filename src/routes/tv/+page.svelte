@@ -12,9 +12,18 @@
  import Button from "$components/Button.svelte";
 
  let sessionCreated = false;
+ let currentSessionId = $state();
+
+ sessionId.subscribe((value) => {
+  currentSessionId = value;
+ });
 
  beforeNavigate(async ({ to, from, cancel }) => {
-  if (to?.url.pathname.includes("/tv/1-lobby") && !sessionCreated) {
+  if (
+   to?.url.pathname.includes("/tv/1-lobby") &&
+   !sessionCreated &&
+   !currentSessionId
+  ) {
    cancel();
 
    try {
@@ -36,9 +45,6 @@
  });
 </script>
 
-<main
- class="container relative px-8 pt-[15vh] pb-10 h-screen mx-auto flex flex-col items-center"
->
  <Logo classes="max-w-xl -mr-8" />
 
  <EmblemFr classes="h-28 w-auto absolute top-10 left-8" />
@@ -51,8 +57,6 @@
  <Button
   text={m.start()}
   href={localizeHref("/tv/1-lobby")}
-  classes="mt-auto"
+  classes="mt-20"
  />
 
- <LangSwitcher showAll={true} classes="mt-auto mx-auto" />
-</main>

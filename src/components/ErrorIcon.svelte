@@ -6,7 +6,7 @@
  class="bg-primary rounded-full w-16 h-16 flex items-center justify-center {classes}"
 >
  <svg
-  class="w-8 h-8 text-white"
+  class="w-10 h-10 text-white"
   xmlns="http://www.w3.org/2000/svg"
   fill="none"
   viewBox="0 0 24 24"

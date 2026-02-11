@@ -4,17 +4,34 @@
  import { optimize } from "$lib/image";
 
  let { children } = $props();
+
+ // Dynamically load all images from /img folder
+ const imageModules = import.meta.glob(
+  "/static/img/*.{png,jpg,jpeg,webp,avif,gif,svg}",
+  {
+   eager: true,
+   query: "?url",
+   import: 'default'
+  },
+ );
+
+ const images = Object.keys(imageModules).map((path) =>
+  path.replace("/static", ""),
+ );
 </script>
 
 <svelte:head>
  <link rel="icon" href={favicon} />
+ {#each images as image}
+  <link rel="preload" as="image" href={image} />
+ {/each}
 </svelte:head>
 
 {@render children()}
 
 <img
  role="presentation"
- class="inset-0 w-screen h-screen fixed -z-1"
+ class="inset-0 w-screen h-screen object-cover fixed -z-1"
  srcset={optimize("/img/base_bg.png")}
  alt=""
 />

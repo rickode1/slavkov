@@ -10,6 +10,7 @@
  } from "$lib/stores/gameSession.js";
  import { subscribeToSession, cleanupSession } from "$lib/sessionRealtime.js";
  import { terminalStates, gameScreens } from "$lib/constants.js";
+ import LangSwitcher from "$components/LangSwitcher.svelte";
 
  let { children } = $props();
 
@@ -20,6 +21,15 @@
    url.searchParams.delete("lang");
    window.history.replaceState({}, "", url);
    setLocale(lang);
+  }
+
+  // Redirect to correct screen if URL doesn't match session status
+  const session = $gameSession;
+  if (session && gameScreens[session.status]) {
+   const targetPath = `/phone/${gameScreens[session.status]}`;
+   if (page.url.pathname !== targetPath && page.url.pathname !== "/phone") {
+    goto(targetPath);
+   }
   }
  });
 
@@ -35,7 +45,7 @@
   if (session && terminalStates.includes(session.status)) {
    cleanupSession();
    resetSession();
-   goto("/");
+   goto("/phone/1-lobby");
   }
  });
 
@@ -43,8 +53,8 @@
   const session = $gameSession;
   if (session && gameScreens[session.status]) {
    const targetPath = `/phone/${gameScreens[session.status]}`;
-   if (!page.url.pathname.startsWith(targetPath)) {
-    setTimeout(goto(targetPath), 2000);
+   if (page.url.pathname !== targetPath) {
+    goto(targetPath);
    }
   }
  });
@@ -52,4 +62,9 @@
  onDestroy(cleanupSession);
 </script>
 
-{@render children()}
+<main
+ class="container relative px-4 py-4 h-screen mx-auto flex flex-col items-center"
+>
+ {@render children()}
+ <LangSwitcher classes="pt-8 mt-auto mr-auto" />
+</main>
