@@ -1,9 +1,10 @@
 <script>
  import { browser } from "$app/environment";
- import { onMount } from "svelte";
+ import { onMount, tick } from "svelte";
  import { optimize } from "$lib/image";
  import { supabase } from "$lib/supabaseClient.js";
  import { gameSession } from "$lib/stores/gameSession.js";
+ import { bustColors } from "$lib/constants.js";
  import * as m from "$lib/paraglide/messages.js";
 
  let {
@@ -22,6 +23,13 @@
   santon: () => m.location_santon(),
  };
 
+ function getSlotColor(playerNum, opacity = 0.5) {
+  const bust = $gameSession?.[`player_${playerNum}`]?.bust;
+  const rgb = bustColors[bust];
+  if (!rgb) return `rgba(128,128,128,${opacity})`;
+  return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${opacity})`;
+ }
+
  let locations = $state([]);
  let scale = $state(1);
  let zoomOrigin = $state("50% 50%");
@@ -30,6 +38,7 @@
  let activeLocationId = $state(null);
  let transitioning = $state(false);
  let isMobile = $state(false);
+ let animateZoom = $state(false);
 
  if (browser) {
   isMobile = window.innerWidth < 1024;
@@ -63,16 +72,18 @@
   }
 
   if (initialLocation) {
-   zoomTo(initialLocation);
+   zoomTo(initialLocation, false);
   }
  });
 
- export function zoomTo(locationId) {
+ export function zoomTo(locationId, animate) {
   const loc = locations.find((l) => l.id === locationId);
 
   if (!loc || transitioning) return;
 
+  animateZoom = animate;
   transitioning = true;
+
   let zx, zy;
   if (isMobile && playerFilter === 1) {
    zx = loc.mobileZoomP1X;
@@ -108,7 +119,7 @@
  }
 </script>
 
-<div class="flex flex-col items-center {classes}">
+<div class="flex flex-col lg:items-center {classes}">
  <div
   class="hidden lg:block text-center text-xl lg:text-4xl h-12 transition-opacity duration-500 ease-in-out
    {activeLabel ? 'opacity-100' : 'opacity-0'}"
@@ -126,7 +137,9 @@
   />
 
   <div
-   class="relative w-full lg:h-full transition-all duration-700 ease-in-out"
+   class="relative w-full lg:h-full {animateZoom
+    ? 'transition-all duration-700 ease-in-out'
+    : ''}"
    style="transform: scale({scale}); transform-origin: {zoomOrigin}"
   >
    <img class="w-full" srcset={optimize("/img/map.png")} alt="" />
@@ -148,26 +161,28 @@
     {#each loc.slots as slot (slot.id)}
      {#if !playerFilter || slot.p === playerFilter}
       <button
-       class="absolute rounded-full h-8 w-8 lg:h-16 lg:w-16 bg-secondary/50
+       class="absolute rounded-full h-8 w-8 lg:h-16 lg:w-16
        -translate-x-1/2 -translate-y-1/2
        transition-opacity duration-500 ease-in-out overflow-hidden
-       {onSlotSelect ? 'cursor-pointer hover:bg-secondary/80' : ''}
+       {onSlotSelect ? 'cursor-pointer' : ''}
        {activeLocationId === loc.id
         ? 'opacity-100'
         : 'opacity-0 pointer-events-none'}"
-       style="left: {slot.x}%; top: {slot.y}%"
+       style="left: {slot.x}%; top: {slot.y}%; background-color: {getSlotColor(
+        slot.p,
+       )}"
        onclick={() => onSlotSelect?.(slot)}
        aria-label="Select slot"
       >
        {#if selectedSlotId === slot.id && unitImage}
         <img
-         class="w-full h-[80%] object-contain"
+         class="w-full h-[70%] object-contain unit-drop"
          srcset={optimize(unitImage)}
          alt=""
         />
        {:else if placedUnits[slot.id]}
         <img
-         class="w-full h-[80%] object-contain"
+         class="w-full h-[70%] object-contain"
          srcset={optimize(placedUnits[slot.id])}
          alt=""
         />
@@ -175,13 +190,15 @@
       </button>
      {:else if playerFilter && slot.p !== playerFilter}
       <div
-       class="absolute rounded-full h-8 w-8 lg:hidden bg-primary/50
+       class="absolute rounded-full h-8 w-8 lg:hidden
        -translate-x-1/2 -translate-y-1/2
        transition-opacity duration-500 ease-in-out
        {activeLocationId === loc.id
         ? 'opacity-100'
         : 'opacity-0 pointer-events-none'}"
-       style="left: {slot.x}%; top: {slot.y}%"
+       style="left: {slot.x}%; top: {slot.y}%; background-color: {getSlotColor(
+        slot.p,
+       )}"
       ></div>
      {/if}
     {/each}

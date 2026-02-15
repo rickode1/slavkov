@@ -38,10 +38,3 @@
   classes="w-[calc(100%-22rem)] mt-10"
  />
 {/if}
-
-<div class="fixed bottom-0 left-auto right-auto mx-auto space-x-2">
- <button onclick={() => mapRef.zoomTo(1)}>1</button>
- <button onclick={() => mapRef.zoomTo(2)}>2</button>
- <button onclick={() => mapRef.zoomTo(3)}>3</button>
- <button onclick={() => mapRef.resetZoom()}>x</button>
-</div>

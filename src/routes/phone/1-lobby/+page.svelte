@@ -2,6 +2,7 @@
  import { onMount } from "svelte";
  import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
+ import { bustColors } from "$lib/constants.js";
  import { page } from "$app/state";
  import {
   sessionId,
@@ -73,6 +74,13 @@
 
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
  let profileSaved = $derived(myPlayer()?.bust && myPlayer()?.nick);
+
+ let bustStrokeStyle = $derived(() => {
+  const rgb = bustColors[selectedBust];
+  if (!rgb) return "";
+  const c = `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+  return `filter: drop-shadow(5px 0 0 ${c}) drop-shadow(0 5px 0 ${c}) drop-shadow(-5px 0 0 ${c}) drop-shadow(0 -5px 0 ${c})`;
+ });
 
  function prevBust() {
   slideDirection = -1;
@@ -182,8 +190,9 @@
      {#key selectedBustIndex}
       <img
        class="w-auto h-50 absolute left-1/2 -translate-x-1/2 p-1.5 transition-all {isBustAvailable
-        ? 'scale-105 stroke'
+        ? 'scale-105'
         : 'opacity-30 grayscale'}"
+       style={isBustAvailable ? bustStrokeStyle() : ""}
        srcset={optimize(`/img/bust_${selectedBust}.png`)}
        alt={selectedBust}
        in:fly={{ x: 100 * slideDirection, duration: 300 }}

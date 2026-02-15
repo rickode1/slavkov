@@ -19,5 +19,7 @@
  "location_telnitz": "Telnitz",
  "unit_soldier": "Infanterie",
  "unit_cavalry": "Cavalerie",
- "unit_cannon": "Artillerie"
+ "unit_cannon": "Artillerie",
+ "deploy_select_unit": "Choisissez une unité pour cette bataille",
+ "deploy_place_unit": "Placez l'unité sur le champ de bataille"
 }

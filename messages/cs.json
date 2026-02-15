@@ -19,5 +19,7 @@
  "location_telnitz": "Boj o Sokolnici a Telnici",
  "unit_soldier": "Pěchota",
  "unit_cavalry": "Jízda",
- "unit_cannon": "Dělostřelectvo"
+ "unit_cannon": "Dělostřelectvo",
+ "deploy_select_unit": "Vyber jednotku pro tento střet",
+ "deploy_place_unit": "Umísti jednotku na bitevní pole"
 }

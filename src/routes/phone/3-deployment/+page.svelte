@@ -95,7 +95,6 @@
   ];
  });
 
- let mapRef = $state(null);
  let selectedSlot = $state(null);
  let deployingLocation = $state(false);
  let locationSelected = $state(false);
@@ -145,20 +144,28 @@
 </script>
 
 {#if $gameSession}
- <div class="absolute right-2 top-2 w-full flex justify-end">
+ <div
+  class="w-full flex justify-between items-center gap-x-8"
+ >
+  <p class="text-2xl text-left">
+   {#if selected()}
+    {m.deploy_place_unit()}
+   {:else}
+    {m.deploy_select_unit()}
+   {/if}
+  </p>
   <PlayerBust player={myPlayer()} />
  </div>
 
- <div class="flex flex-col items-center gap-y-4 mt-28">
+ <div class="flex flex-col items-center gap-y-4 mt-4">
   {#if selected()}
    <Map
-    bind:this={mapRef}
     playerFilter={myPlayerNumber}
     initialLocation={parseInt($gameSession?.current_round || 1)}
     onSlotSelect={handleSlotSelect}
     selectedSlotId={selectedSlot?.id}
     unitImage={unitImage()}
-    classes="w-full mt-2"
+    classes="w-full"
    />
 
    {#if deployingLocation}
@@ -171,12 +178,6 @@
      classes="!text-2xl !h-12 min-w-auto mt-4"
     />
    {/if}
-
-   <div class="fixed bottom-0 left-auto right-auto mx-auto space-x-2">
-    <button onclick={() => mapRef.zoomTo(1)}>1</button>
-    <button onclick={() => mapRef.zoomTo(2)}>2</button>
-    <button onclick={() => mapRef.zoomTo(3)}>3</button>
-   </div>
   {:else}
    {#each units() as unit}
     {@const disabled = usedUnits().includes(unit.id)}
