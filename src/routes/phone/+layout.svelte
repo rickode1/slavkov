@@ -63,5 +63,5 @@
  {#key $currentLocale}
   {@render children()}
  {/key}
- <LangSwitcher classes="absolute left-4 bottom-4" />
+ <LangSwitcher classes="fixed left-4 bottom-4" />
 </main>
