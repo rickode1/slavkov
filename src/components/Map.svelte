@@ -1,89 +1,91 @@
 <script>
+ import { browser } from "$app/environment";
+ import { onMount } from "svelte";
  import { optimize } from "$lib/image";
+ import { supabase } from "$lib/supabaseClient.js";
  import { gameSession } from "$lib/stores/gameSession.js";
  import * as m from "$lib/paraglide/messages.js";
 
- const locations = [
-  {
-   id: "1",
-   label: () => m.location_telnitz(),
-   x: 23,
-   y: 35,
-   zoomX: 30,
-   zoomY: 48,
-   slots: [
-    { id: "1a", p: 1, x: 20, y: 35 },
-    { id: "1b", p: 1, x: 28, y: 50 },
-    { id: "1c", p: 1, x: 20, y: 65 },
-    { id: "1d", p: 2, x: 40, y: 35 },
-    { id: "1e", p: 2, x: 48, y: 50 },
-    { id: "1f", p: 2, x: 40, y: 65 },
-   ],
-  },
-  {
-   id: "2",
-   label: () => m.location_pratzen(),
-   x: 56,
-   y: 43,
-   zoomX: 60,
-   zoomY: 50,
-   slots: [
-    { id: "2a", p: 1, x: 40, y: 35 },
-    { id: "2b", p: 1, x: 48, y: 50 },
-    { id: "2c", p: 1, x: 40, y: 65 },
-    { id: "2d", p: 2, x: 60, y: 35 },
-    { id: "2e", p: 2, x: 68, y: 50 },
-    { id: "2f", p: 2, x: 60, y: 65 },
-   ],
-  },
-  {
-   id: "3",
-   label: () => m.location_santon(),
-   x: 87,
-   y: 35,
-   zoomX: 70,
-   zoomY: 40,
-   slots: [
-    { id: "3a", p: 1, x: 70, y: 25 },
-    { id: "3b", p: 1, x: 75, y: 40 },
-    { id: "3c", p: 1, x: 78, y: 55 },
-    { id: "3d", p: 2, x: 85, y: 25 },
-    { id: "3e", p: 2, x: 90, y: 40 },
-    { id: "3f", p: 2, x: 92, y: 55 },
-   ],
-  },
- ];
+ let {
+  playerFilter = null,
+  classes = "",
+  initialLocation = null,
+  onSlotSelect = null,
+  selectedSlotId = null,
+  unitImage = null,
+  placedUnits = {},
+ } = $props();
 
- let containerEl = $state(null);
- let innerEl = $state(null);
+ const labelMap = {
+  telnitz: () => m.location_telnitz(),
+  pratzen: () => m.location_pratzen(),
+  santon: () => m.location_santon(),
+ };
+
+ let locations = $state([]);
  let scale = $state(1);
- let tx = $state(0);
- let ty = $state(0);
+ let zoomOrigin = $state("50% 50%");
  let zoomed = $state(false);
  let activeLabel = $state(null);
  let activeLocationId = $state(null);
  let transitioning = $state(false);
+ let isMobile = $state(false);
+
+ if (browser) {
+  isMobile = window.innerWidth < 1024;
+ }
+
+ onMount(async () => {
+  const { data, error } = await supabase
+   .from("positions")
+   .select("*")
+   .order("id");
+
+  if (error) {
+   console.error("Failed to load positions:", error);
+  } else {
+   locations = data.map((row) => ({
+    id: row.id,
+    label: labelMap[row.label] || (() => row.label),
+    x: row.x,
+    y: row.y,
+    zoomX: row.zoomX,
+    zoomY: row.zoomY,
+    mobileZoomP1X: row.mobileZoomP1X,
+    mobileZoomP1Y: row.mobileZoomP1Y,
+    mobileZoomP2X: row.mobileZoomP2X,
+    mobileZoomP2Y: row.mobileZoomP2Y,
+    slots: Object.entries(row.slots).map(([key, val]) => ({
+     id: key,
+     ...val,
+    })),
+   }));
+  }
+
+  if (initialLocation) {
+   zoomTo(initialLocation);
+  }
+ });
 
  export function zoomTo(locationId) {
   const loc = locations.find((l) => l.id === locationId);
-  if (!loc || transitioning || !containerEl || !innerEl) return;
+
+  if (!loc || transitioning) return;
 
   transitioning = true;
-
-  const zoomLevel = 1.8;
-
-  const containerRect = containerEl.getBoundingClientRect();
-  const innerRect = innerEl.getBoundingClientRect();
-
-  const locXPx = (loc.zoomX / 100) * innerEl.scrollWidth;
-  const locYPx = (loc.zoomY / 100) * innerEl.scrollHeight;
-
-  const centerX = containerRect.width / 2;
-  const centerY = containerRect.height / 2;
-
-  tx = centerX - locXPx * zoomLevel;
-  ty = centerY - locYPx * zoomLevel;
-  scale = zoomLevel;
+  let zx, zy;
+  if (isMobile && playerFilter === 1) {
+   zx = loc.mobileZoomP1X;
+   zy = loc.mobileZoomP1Y;
+  } else if (isMobile && playerFilter === 2) {
+   zx = loc.mobileZoomP2X;
+   zy = loc.mobileZoomP2Y;
+  } else {
+   zx = loc.zoomX;
+   zy = loc.zoomY;
+  }
+  zoomOrigin = `${zx}% ${zy}%`;
+  scale = isMobile ? 3.4 : 1.8;
   zoomed = true;
   activeLabel = loc.label();
   activeLocationId = locationId;
@@ -97,8 +99,6 @@
   if (transitioning) return;
   transitioning = true;
   scale = 1;
-  tx = 0;
-  ty = 0;
   zoomed = false;
   activeLabel = null;
   activeLocationId = null;
@@ -108,17 +108,16 @@
  }
 </script>
 
-<div class="flex flex-col items-center w-[calc(100%-22rem)] mt-10">
+<div class="flex flex-col items-center {classes}">
  <div
-  class="text-center text-4xl h-12 transition-opacity duration-500 ease-in-out
+  class="hidden lg:block text-center text-xl lg:text-4xl h-12 transition-opacity duration-500 ease-in-out
    {activeLabel ? 'opacity-100' : 'opacity-0'}"
  >
   {activeLabel ?? ""}
  </div>
 
  <div
-  class="relative w-full overflow-hidden mix-blend-multiply"
-  bind:this={containerEl}
+  class="relative w-full overflow-hidden mix-blend-multiply aspect-3/4 lg:aspect-auto"
  >
   <img
    class="absolute inset-0 w-full h-full z-10 pointer-events-none"
@@ -127,9 +126,8 @@
   />
 
   <div
-   class="relative w-full h-full transition-all duration-700 ease-in-out origin-top-left"
-   style="transform: translate({tx}px, {ty}px) scale({scale})"
-   bind:this={innerEl}
+   class="relative w-full lg:h-full transition-all duration-700 ease-in-out"
+   style="transform: scale({scale}); transform-origin: {zoomOrigin}"
   >
    <img class="w-full" srcset={optimize("/img/map.png")} alt="" />
 
@@ -148,15 +146,44 @@
 
    {#each locations as loc (loc.id)}
     {#each loc.slots as slot (slot.id)}
-     <div
-      class="absolute rounded-full h-20 w-20 bg-secondary/50
+     {#if !playerFilter || slot.p === playerFilter}
+      <button
+       class="absolute rounded-full h-8 w-8 lg:h-16 lg:w-16 bg-secondary/50
+       -translate-x-1/2 -translate-y-1/2
+       transition-opacity duration-500 ease-in-out overflow-hidden
+       {onSlotSelect ? 'cursor-pointer hover:bg-secondary/80' : ''}
+       {activeLocationId === loc.id
+        ? 'opacity-100'
+        : 'opacity-0 pointer-events-none'}"
+       style="left: {slot.x}%; top: {slot.y}%"
+       onclick={() => onSlotSelect?.(slot)}
+       aria-label="Select slot"
+      >
+       {#if selectedSlotId === slot.id && unitImage}
+        <img
+         class="w-full h-[80%] object-contain"
+         srcset={optimize(unitImage)}
+         alt=""
+        />
+       {:else if placedUnits[slot.id]}
+        <img
+         class="w-full h-[80%] object-contain"
+         srcset={optimize(placedUnits[slot.id])}
+         alt=""
+        />
+       {/if}
+      </button>
+     {:else if playerFilter && slot.p !== playerFilter}
+      <div
+       class="absolute rounded-full h-8 w-8 lg:hidden bg-primary/50
        -translate-x-1/2 -translate-y-1/2
        transition-opacity duration-500 ease-in-out
        {activeLocationId === loc.id
-       ? 'opacity-100'
-       : 'opacity-0 pointer-events-none'}"
-      style="left: {slot.x}%; top: {slot.y}%"
-     ></div>
+        ? 'opacity-100'
+        : 'opacity-0 pointer-events-none'}"
+       style="left: {slot.x}%; top: {slot.y}%"
+      ></div>
+     {/if}
     {/each}
    {/each}
   </div>

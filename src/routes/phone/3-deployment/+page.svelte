@@ -10,6 +10,7 @@
  import PlayerBust from "$components/PlayerBust.svelte";
  import Button from "$components/Button.svelte";
  import Loader from "$components/Loader.svelte";
+ import Map from "$components/Map.svelte";
 
  // Get current player's data
  let myPlayer = $derived(() => {
@@ -93,17 +94,89 @@
    },
   ];
  });
+
+ let mapRef = $state(null);
+ let selectedSlot = $state(null);
+ let deployingLocation = $state(false);
+ let locationSelected = $state(false);
+
+ function handleSlotSelect(slot) {
+  selectedSlot = slot;
+ }
+
+ async function handleDeployLocation() {
+  if (!selectedSlot || deployingLocation) return;
+  deployingLocation = true;
+  try {
+   const response = await fetch("/api/session/location", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+     sessionId: $sessionId,
+     playerCode: $playerCode,
+     slotId: selectedSlot.id,
+    }),
+   });
+   if (!response.ok) {
+    console.error("Failed to deploy location");
+   }
+  } catch (error) {
+   console.error("Error deploying location:", error);
+  } finally {
+   deployingLocation = false;
+   locationSelected = true;
+  }
+ }
+
+ let deployedUnit = $derived(() => {
+  if (!$gameSession) return null;
+  const unitKey = $playerCode === "code_1" ? "unit_1" : "unit_2";
+  const round = $gameSession.current_round || 1;
+  const roundData = $gameSession[`round_${round}`];
+  return roundData?.[unitKey] || null;
+ });
+
+ let unitImage = $derived(() => {
+  const unit = deployedUnit();
+  const bust = myPlayer()?.bust;
+  if (!unit || !bust) return null;
+  return `/img/unit_${bust}_${unit}.png`;
+ });
 </script>
 
 {#if $gameSession}
- <!--<div class="absolute right-2 top-2 w-full flex justify-end">
+ <div class="absolute right-2 top-2 w-full flex justify-end">
   <PlayerBust player={myPlayer()} />
  </div>
--->
 
- <div class="flex flex-col items-center gap-y-4 mt-4">
+ <div class="flex flex-col items-center gap-y-4 mt-28">
   {#if selected()}
-   ...
+   <Map
+    bind:this={mapRef}
+    playerFilter={myPlayerNumber}
+    initialLocation={parseInt($gameSession?.current_round || 1)}
+    onSlotSelect={handleSlotSelect}
+    selectedSlotId={selectedSlot?.id}
+    unitImage={unitImage()}
+    classes="w-full mt-2"
+   />
+
+   {#if deployingLocation}
+    <Loader classes="mt-4" />
+   {:else if !locationSelected}
+    <Button
+     text={m.confirm()}
+     disabled={!selectedSlot}
+     onclick={handleDeployLocation}
+     classes="!text-2xl !h-12 min-w-auto mt-4"
+    />
+   {/if}
+
+   <div class="fixed bottom-0 left-auto right-auto mx-auto space-x-2">
+    <button onclick={() => mapRef.zoomTo(1)}>1</button>
+    <button onclick={() => mapRef.zoomTo(2)}>2</button>
+    <button onclick={() => mapRef.zoomTo(3)}>3</button>
+   </div>
   {:else}
    {#each units() as unit}
     {@const disabled = usedUnits().includes(unit.id)}
