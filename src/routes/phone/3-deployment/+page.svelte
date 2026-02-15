@@ -115,7 +115,7 @@
      {disabled}
     >
      <img
-      class="{unit.size} mb-2 transition-all {selectedUnit === unit.id
+      class="{unit.size} mb-2 p-1.5 transition-all {selectedUnit === unit.id
        ? 'scale-105 stroke'
        : ''}"
       srcset={optimize(`/img/${unit.img}.png`)}

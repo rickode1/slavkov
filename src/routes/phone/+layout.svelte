@@ -10,6 +10,7 @@
  } from "$lib/stores/gameSession.js";
  import { subscribeToSession, cleanupSession } from "$lib/sessionRealtime.js";
  import { terminalStates, gameScreens } from "$lib/constants.js";
+ import { currentLocale } from "$lib/stores/locale.js";
  import LangSwitcher from "$components/LangSwitcher.svelte";
 
  let { children } = $props();
@@ -20,7 +21,8 @@
    const url = new URL(window.location.href);
    url.searchParams.delete("lang");
    window.history.replaceState({}, "", url);
-   setLocale(lang);
+   setLocale(lang, { reload: false });
+   currentLocale.set(lang);
   }
  });
 
@@ -58,6 +60,8 @@
 <main
  class="container relative px-4 py-4 h-screen mx-auto flex flex-col items-center"
 >
- {@render children()}
+ {#key $currentLocale}
+  {@render children()}
+ {/key}
  <LangSwitcher classes="mt-auto mr-auto" />
 </main>

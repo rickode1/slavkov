@@ -45,18 +45,13 @@
  });
 </script>
 
- <Logo classes="max-w-xl -mr-8 mt-[14vh]" />
+<Logo classes="max-w-xl -mr-8 mt-[14vh]" />
 
- <EmblemFr classes="h-28 w-auto absolute top-10 left-8" />
+<EmblemFr classes="h-28 w-auto absolute top-10 left-8" />
 
- <div class="absolute top-10 right-8 flex flex-col space-y-4">
-  <EmblemAt classes="h-32 w-auto" />
-  <EmblemRu classes="h-32 w-auto" />
- </div>
+<div class="absolute top-10 right-8 flex flex-col space-y-4">
+ <EmblemAt classes="h-32 w-auto" />
+ <EmblemRu classes="h-32 w-auto" />
+</div>
 
- <Button
-  text={m.start()}
-  href={localizeHref("/tv/1-lobby")}
-  classes="my-auto"
- />
-
+<Button text={m.start()} href={localizeHref("/tv/1-lobby")} classes="my-auto" />

@@ -12,11 +12,18 @@
 </script>
 
 <div class="flex flex-col items-center">
-
  {#if !isPlayerReady(player)}
- <img class="h-50 w-auto lg:w-76 lg:h-auto" srcset={optimize("/img/bust.png")} alt="" />
+  <img
+   class="h-50 w-auto lg:w-76 lg:h-auto"
+   srcset={optimize("/img/bust.png")}
+   alt=""
+  />
  {:else}
-  <img class="h-50 w-auto lg:w-76 lg:h-auto" srcset={optimize("/img/bust_"+player?.bust+".png")} alt="" /> 
+  <img
+   class="h-50 w-auto lg:w-76 lg:h-auto"
+   srcset={optimize("/img/bust_" + player?.bust + ".png")}
+   alt=""
+  />
  {/if}
 
  {#if code}
@@ -36,7 +43,7 @@
   <p class="text-4xl text-center mt-4">{player?.nick}</p>
   <div class="flex flex-col items-center gap-3 mt-8">
    <SuccessIcon />
-   <p class="text-2xl text-center">{m.connected()}</p>  
-   </div>
+   <p class="text-2xl text-center">{m.connected()}</p>
+  </div>
  {/if}
- </div>
+</div>

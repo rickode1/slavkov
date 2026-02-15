@@ -10,6 +10,7 @@
  } from "$lib/stores/gameSession.js";
  import { subscribeToSession, cleanupSession } from "$lib/sessionRealtime.js";
  import { terminalStates, gameScreens } from "$lib/constants.js";
+ import { currentLocale } from "$lib/stores/locale.js";
  import LangSwitcher from "$components/LangSwitcher.svelte";
  import ErrorIcon from "$components/ErrorIcon.svelte";
 
@@ -41,7 +42,8 @@
    const url = new URL(window.location.href);
    url.searchParams.delete("lang");
    window.history.replaceState({}, "", url);
-   setLocale(lang);
+   setLocale(lang, { reload: false });
+   currentLocale.set(lang);
   }
  });
 
@@ -79,7 +81,9 @@
 <main
  class="max-w-480 relative px-10 h-screen mx-auto flex flex-col items-center"
 >
- {@render children()}
+ {#key $currentLocale}
+  {@render children()}
+ {/key}
  <LangSwitcher
   classes={page.url.pathname === "/tv"
    ? "mt-auto mx-auto mb-10"

@@ -1,19 +1,14 @@
 <script>
- import { page } from "$app/state";
- import {
-  locales,
-  localizeHref,
-  getLocale,
-  setLocale,
- } from "$lib/paraglide/runtime";
+ import { locales, getLocale, setLocale } from "$lib/paraglide/runtime";
  import { fly } from "svelte/transition";
+ import { currentLocale } from "$lib/stores/locale.js";
 
  let { showAll = false, classes = "" } = $props();
  let manuallyExpanded = $state(false);
  let expanded = $derived(showAll || manuallyExpanded);
 
  let orderedLocales = $derived(() => {
-  const current = getLocale();
+  const current = $currentLocale;
   return [current, ...locales.filter((l) => l !== current)];
  });
 
@@ -26,14 +21,16 @@
    e.preventDefault();
    manuallyExpanded = false;
   } else {
-   setLocale(locale);
+   setLocale(locale, { reload: false });
+   currentLocale.set(locale);
+   manuallyExpanded = false;
   }
  }
 </script>
 
 <div role="button" class="flex items-center {classes}" tabindex="0">
  {#each orderedLocales() as locale, i}
-  {#if expanded || locale === getLocale()}
+  {#if expanded || locale === $currentLocale}
    <button
     class="text-white bg-primary rounded-full uppercase text-2xl lg:text-4xl w-14 lg:w-20 h-14 lg:h-20 inline-flex items-center justify-center cursor-pointer text-center {i ===
     0

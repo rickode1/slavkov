@@ -168,89 +168,86 @@
  }
 </script>
 
+<Logo classes="max-w-32 mb-8" />
 
- <Logo classes="max-w-32 mb-8" />
-
- {#if $gameSession}
-  {#if profileSaved}
-   <PlayerLobby player={myPlayer()} playerNumber={myPlayerNumber} />
-  {:else}
-   <div class="flex flex-col items-center gap-6">
-    <!-- Bust Slider -->
-    <div class="flex items-center gap-10">
-     <ArrowButton direction="left" onclick={prevBust} />
-     <div class="overflow-hidden w-32 h-50 relative">
-      {#key selectedBustIndex}
-       <img
-        class="w-auto h-50 absolute left-1/2 -translate-x-1/2 transition-opacity {isBustAvailable
-         ? ''
-         : 'opacity-30 grayscale'}"
-        srcset={optimize(`/img/bust_${selectedBust}.png`)}
-        alt={selectedBust}
-        in:fly={{ x: 100 * slideDirection, duration: 300 }}
-        out:fly={{ x: -100 * slideDirection, duration: 300 }}
-       />
-      {/key}
-     </div>
-     <ArrowButton direction="right" onclick={nextBust} />
-    </div>
-
-    <!-- Nick Input -->
-    <div class="flex flex-col items-center gap-2">
-     <label for="nick-input" class="text-xl">{m.name_label()}</label>
-     <input
-      id="nick-input"
-      type="text"
-      bind:value={nick}
-      maxlength="20"
-      class="text-center text-2xl w-64 h-16 bg-white border-b-4 border-secondary rounded-lg focus:outline-none"
-     />
-    </div>
-
-    <!-- Confirm Button -->
-    {#if savingProfile}
-     <Loader />
-    {:else}
-     <Button
-      text={m.confirm()}
-      onclick={saveProfile}
-      disabled={!canConfirm}
-      classes="!text-2xl !h-12 min-w-auto mt-4"
-     />
-    {/if}
-   </div>
-  {/if}
+{#if $gameSession}
+ {#if profileSaved}
+  <PlayerLobby player={myPlayer()} playerNumber={myPlayerNumber} />
  {:else}
-  <div class="flex flex-col items-center gap-4 mt-8">
-   <img class="w-30 h-auto" srcset={optimize("/img/bust.png")} alt="" />
-   <p class="text-2xl text-center">{m.lobby_phone_cta()}</p>
-   {#if loading}
-    <div class="flex justify-center mt-4">
-     <Loader />
-    </div>
-   {:else if error}
-    <div class="flex items-center gap-4 mt-4 mb-4">
-     <ErrorIcon />
-     <p class="text-primary text-2xl text-center">{error}</p>
-    </div>
-   {:else}
-    <div class="flex gap-2 mt-4">
-     {#each digits as _, i}
-      <input
-       type="text"
-       inputmode="numeric"
-       pattern="[0-9]*"
-       maxlength="1"
-       bind:this={inputs[i]}
-       bind:value={digits[i]}
-       oninput={(e) => handleInput(i, e)}
-       onkeydown={(e) => handleKeydown(i, e)}
-       class="text-center text-4xl w-16 h-20 bg-white border-b-4 border-secondary rounded-lg focus:outline-none"
+  <div class="flex flex-col items-center gap-6">
+   <!-- Bust Slider -->
+   <div class="flex items-center gap-10">
+    <ArrowButton direction="left" onclick={prevBust} />
+    <div class="overflow-hidden w-32 h-50 relative">
+     {#key selectedBustIndex}
+      <img
+       class="w-auto h-50 absolute left-1/2 -translate-x-1/2 p-1.5 transition-all {isBustAvailable
+        ? 'scale-105 stroke'
+        : 'opacity-30 grayscale'}"
+       srcset={optimize(`/img/bust_${selectedBust}.png`)}
+       alt={selectedBust}
+       in:fly={{ x: 100 * slideDirection, duration: 300 }}
+       out:fly={{ x: -100 * slideDirection, duration: 300 }}
       />
-     {/each}
+     {/key}
     </div>
+    <ArrowButton direction="right" onclick={nextBust} />
+   </div>
+
+   <!-- Nick Input -->
+   <div class="flex flex-col items-center gap-2">
+    <label for="nick-input" class="text-xl">{m.name_label()}</label>
+    <input
+     id="nick-input"
+     type="text"
+     bind:value={nick}
+     maxlength="20"
+     class="text-center text-2xl w-64 h-16 bg-white border-b-4 border-secondary rounded-lg focus:outline-none"
+    />
+   </div>
+
+   <!-- Confirm Button -->
+   {#if savingProfile}
+    <Loader />
+   {:else}
+    <Button
+     text={m.confirm()}
+     onclick={saveProfile}
+     disabled={!canConfirm}
+     classes="!text-2xl !h-12 min-w-auto mt-4"
+    />
    {/if}
   </div>
  {/if}
-
-
+{:else}
+ <div class="flex flex-col items-center gap-4 mt-8">
+  <img class="w-30 h-auto" srcset={optimize("/img/bust.png")} alt="" />
+  <p class="text-2xl text-center">{m.lobby_phone_cta()}</p>
+  {#if loading}
+   <div class="flex justify-center mt-4">
+    <Loader />
+   </div>
+  {:else if error}
+   <div class="flex items-center gap-4 mt-4 mb-4">
+    <ErrorIcon />
+    <p class="text-primary text-2xl text-center">{error}</p>
+   </div>
+  {:else}
+   <div class="flex gap-2 mt-4">
+    {#each digits as _, i}
+     <input
+      type="text"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      maxlength="1"
+      bind:this={inputs[i]}
+      bind:value={digits[i]}
+      oninput={(e) => handleInput(i, e)}
+      onkeydown={(e) => handleKeydown(i, e)}
+      class="text-center text-4xl w-16 h-20 bg-white border-b-4 border-secondary rounded-lg focus:outline-none"
+     />
+    {/each}
+   </div>
+  {/if}
+ </div>
+{/if}
