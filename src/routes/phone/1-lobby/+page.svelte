@@ -2,7 +2,6 @@
  import { onMount } from "svelte";
  import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
- import { bustColors } from "$lib/constants.js";
  import { page } from "$app/state";
  import {
   sessionId,
@@ -16,6 +15,9 @@
  import ArrowButton from "$components/ArrowButton.svelte";
  import Logo from "$components/svg/Logo.svelte";
  import PlayerLobby from "$components/PlayerLobby.svelte";
+ import EmblemFr from "$components/svg/EmblemFr.svelte";
+ import EmblemAt from "$components/svg/EmblemAt.svelte";
+ import EmblemRu from "$components/svg/EmblemRu.svelte";
 
  let digits = $state(["", "", "", ""]);
  let error = $state("");
@@ -75,10 +77,12 @@
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
  let profileSaved = $derived(myPlayer()?.bust && myPlayer()?.nick);
 
+ let emblemColor = $derived(() => {
+  return `color: var(--color-bust-${selectedBust}-dark)`;
+ });
+
  let bustStrokeStyle = $derived(() => {
-  const rgb = bustColors[selectedBust];
-  if (!rgb) return "";
-  const c = `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+  const c = `var(--color-bust-${selectedBust}-dark)`;
   return `filter: drop-shadow(5px 0 0 ${c}) drop-shadow(0 5px 0 ${c}) drop-shadow(-5px 0 0 ${c}) drop-shadow(0 -5px 0 ${c})`;
  });
 
@@ -188,16 +192,34 @@
     <ArrowButton direction="left" onclick={prevBust} />
     <div class="overflow-hidden w-32 h-50 relative">
      {#key selectedBustIndex}
-      <img
-       class="w-auto h-50 absolute left-1/2 -translate-x-1/2 p-1.5 transition-all {isBustAvailable
-        ? 'scale-105'
-        : 'opacity-30 grayscale'}"
-       style={isBustAvailable ? bustStrokeStyle() : ""}
-       srcset={optimize(`/img/bust_${selectedBust}.png`)}
-       alt={selectedBust}
-       in:fly={{ x: 100 * slideDirection, duration: 300 }}
-       out:fly={{ x: -100 * slideDirection, duration: 300 }}
-      />
+      <div class="relative w-full h-full">
+       <img
+        class="w-auto h-50 absolute left-1/2 -translate-x-1/2 p-1.5 transition-all {isBustAvailable
+         ? 'scale-105'
+         : 'opacity-30 grayscale'}"
+        style={isBustAvailable ? bustStrokeStyle() : ""}
+        srcset={optimize(`/img/bust_${selectedBust}.png`)}
+        alt={selectedBust}
+        in:fly={{ x: 100 * slideDirection, duration: 300 }}
+        out:fly={{ x: -100 * slideDirection, duration: 300 }}
+       />
+       <div
+        class="absolute top-0 right-0 w-8 h-8 {isBustAvailable
+         ? ''
+         : 'opacity-30 grayscale'}"
+        style={emblemColor()}
+        in:fly={{ x: 100 * slideDirection, duration: 300 }}
+        out:fly={{ x: -100 * slideDirection, duration: 300 }}
+       >
+        {#if selectedBust === "fr"}
+         <EmblemFr classes="w-full h-full" />
+        {:else if selectedBust === "at"}
+         <EmblemAt classes="w-full h-full" />
+        {:else if selectedBust === "ru"}
+         <EmblemRu classes="w-full h-full" />
+        {/if}
+       </div>
+      </div>
      {/key}
     </div>
     <ArrowButton direction="right" onclick={nextBust} />
@@ -210,7 +232,7 @@
      id="nick-input"
      type="text"
      bind:value={nick}
-     maxlength="20"
+     maxlength="10"
      class="text-center text-2xl w-64 h-16 bg-white border-b-4 border-secondary rounded-lg focus:outline-none"
     />
    </div>

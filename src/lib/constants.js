@@ -6,9 +6,3 @@ export const gameScreens = {
 	'3-deployment': '3-deployment',
  '4-bonuses': '4-bonuses',
 };
-
-export const bustColors = {
- fr: [87, 123, 183],
- ru: [106, 150, 86],
- at: [250, 210, 101],
-};

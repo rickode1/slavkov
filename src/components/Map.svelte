@@ -4,7 +4,6 @@
  import { optimize } from "$lib/image";
  import { supabase } from "$lib/supabaseClient.js";
  import { gameSession } from "$lib/stores/gameSession.js";
- import { bustColors } from "$lib/constants.js";
  import * as m from "$lib/paraglide/messages.js";
 
  let {
@@ -25,9 +24,9 @@
 
  function getSlotColor(playerNum, opacity = 0.5) {
   const bust = $gameSession?.[`player_${playerNum}`]?.bust;
-  const rgb = bustColors[bust];
-  if (!rgb) return `rgba(128,128,128,${opacity})`;
-  return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${opacity})`;
+  if (!bust) return `rgba(128,128,128,${opacity})`;
+  const pct = Math.round(opacity * 100);
+  return `color-mix(in srgb, var(--color-bust-${bust}) ${pct}%, transparent)`;
  }
 
  let locations = $state([]);
@@ -176,13 +175,13 @@
       >
        {#if selectedSlotId === slot.id && unitImage}
         <img
-         class="w-full h-[70%] object-contain unit-drop"
+         class="w-full h-[75%] object-contain unit-drop"
          srcset={optimize(unitImage)}
          alt=""
         />
        {:else if placedUnits[slot.id]}
         <img
-         class="w-full h-[70%] object-contain"
+         class="w-full h-[75%] object-contain"
          srcset={optimize(placedUnits[slot.id])}
          alt=""
         />

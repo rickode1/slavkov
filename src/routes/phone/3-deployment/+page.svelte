@@ -165,7 +165,7 @@
     onSlotSelect={handleSlotSelect}
     selectedSlotId={selectedSlot?.id}
     unitImage={unitImage()}
-    classes="w-full"
+    classes=""
    />
 
    {#if deployingLocation}

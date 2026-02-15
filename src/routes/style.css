@@ -16,6 +16,15 @@
  --color-secondary: #0D3870;
 }
 
+:root {
+ --color-bust-fr: #577BB7;
+ --color-bust-ru: #6A9656;
+ --color-bust-at: #FAD265;
+ --color-bust-fr-dark: #37507A;
+ --color-bust-ru-dark: #436038;
+ --color-bust-at-dark: #A08640;
+}
+
 @layer utilities {
   body {
    font-family: Slabo, sans-serif;
