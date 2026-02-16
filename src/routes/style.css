@@ -44,6 +44,13 @@
     drop-shadow(0 -5px 0 var(--color-secondary));
   }
 
+  .stroke-sm {
+    filter: drop-shadow(3px 0 0 var(--color-secondary)) 
+    drop-shadow(0 3px 0 var(--color-secondary))
+    drop-shadow(-3px 0 0 var(--color-secondary)) 
+    drop-shadow(0 -3px 0 var(--color-secondary));
+  }
+
   @keyframes unit-drop {
    0% {
     transform: translateY(-20%) scale(1.2);
@@ -61,5 +68,24 @@
 
   .unit-drop {
    animation: unit-drop 0.25s ease-out both;
+  }
+
+  @keyframes card-drop {
+   0% {
+    transform: translateY(-30%) scale(1.15);
+    opacity: 0;
+   }
+   60% {
+    transform: translateY(4%) scale(0.97);
+    opacity: 1;
+   }
+   100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+   }
+  }
+
+  .card-drop {
+   animation: card-drop 0.35s ease-out both;
   }
 }

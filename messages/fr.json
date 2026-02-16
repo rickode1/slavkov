@@ -21,5 +21,10 @@
  "unit_cavalry": "Cavalerie",
  "unit_cannon": "Artillerie",
  "deploy_select_unit": "Choisissez une unité pour cette bataille",
- "deploy_place_unit": "Placez l'unité sur le champ de bataille"
+ "deploy_place_unit": "Placez l'unité sur le champ de bataille",
+ "card_def": "Armure",
+ "card_dmg": "Poudre à canon",
+ "card_life": "Pansement de campagne",
+ "card_loc": "Terrain",
+ "card_unit": "Cercle de force"
 }

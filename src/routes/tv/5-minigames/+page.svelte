@@ -37,6 +37,12 @@
    cards.push({ type: "loc", value: rd.bonus_loc_1 });
   if (rd.bonus_unit_1 !== undefined)
    cards.push({ type: "unit", value: rd.bonus_unit_1 });
+  for (let i = 0; i < (rd.bonuses_def_1 || 0); i++)
+   cards.push({ type: "def", value: 1 });
+  for (let i = 0; i < (rd.bonuses_dmg_1 || 0); i++)
+   cards.push({ type: "dmg", value: 1 });
+  for (let i = 0; i < (rd.bonuses_life_1 || 0); i++)
+   cards.push({ type: "life", value: 1 });
   return cards;
  });
 
@@ -48,6 +54,12 @@
    cards.push({ type: "loc", value: rd.bonus_loc_2 });
   if (rd.bonus_unit_2 !== undefined)
    cards.push({ type: "unit", value: rd.bonus_unit_2 });
+  for (let i = 0; i < (rd.bonuses_def_2 || 0); i++)
+   cards.push({ type: "def", value: 1 });
+  for (let i = 0; i < (rd.bonuses_dmg_2 || 0); i++)
+   cards.push({ type: "dmg", value: 1 });
+  for (let i = 0; i < (rd.bonuses_life_2 || 0); i++)
+   cards.push({ type: "life", value: 1 });
   return cards;
  });
 </script>

@@ -187,18 +187,6 @@
         />
        {/if}
       </button>
-     {:else if playerFilter && slot.p !== playerFilter}
-      <div
-       class="absolute rounded-full h-8 w-8 lg:hidden
-       -translate-x-1/2 -translate-y-1/2
-       transition-opacity duration-500 ease-in-out
-       {activeLocationId === loc.id
-        ? 'opacity-100'
-        : 'opacity-0 pointer-events-none'}"
-       style="left: {slot.x}%; top: {slot.y}%; background-color: {getSlotColor(
-        slot.p,
-       )}"
-      ></div>
      {/if}
     {/each}
    {/each}

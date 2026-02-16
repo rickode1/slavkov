@@ -67,8 +67,8 @@
 
  $effect(() => {
   const session = $gameSession;
-  if (session && gameScreens[session.status]) {
-   const targetPath = `/tv/${gameScreens[session.status]}`;
+  if (session && gameScreens.includes(session.status)) {
+   const targetPath = `/tv/${session.status}`;
    if (page.url.pathname !== targetPath) {
     goto(targetPath);
    }

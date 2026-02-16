@@ -31,11 +31,17 @@ export async function POST({ request }) {
 	const roundColumn = `round_${round}`;
 	const locKey = playerCode === 'code_1' ? 'loc_1' : 'loc_2';
 
+	// Calculate bonus: 33% chance each of -1, 0, or 1
+	const bonusLocKey = playerCode === 'code_1' ? 'bonus_loc_1' : 'bonus_loc_2';
+	const rand = Math.random();
+	const bonusValue = rand < 0.333333 ? -1 : rand < 0.666666 ? 0 : 1;
+
 	// Merge with existing round data
 	const existingRoundData = session[roundColumn] || {};
 	const updatedRoundData = {
 		...existingRoundData,
-		[locKey]: slotId
+		[locKey]: slotId,
+		[bonusLocKey]: bonusValue
 	};
 
 	// Check if both players have selected unit and location

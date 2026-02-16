@@ -157,7 +157,7 @@
   <PlayerBust player={myPlayer()} />
  </div>
 
- <div class="flex flex-col items-center gap-y-4 mt-4">
+ <div class="flex flex-col items-center gap-y-4">
   {#if selected()}
    <Map
     playerFilter={myPlayerNumber}

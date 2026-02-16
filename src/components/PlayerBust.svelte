@@ -34,5 +34,5 @@
    </div>
   {/if}
  </div>
- <p class="text-xl lg:text-2xl text-center">{player?.nick}</p>
+ <p class="text-lg lg:text-2xl text-center">{player?.nick}</p>
 </div>

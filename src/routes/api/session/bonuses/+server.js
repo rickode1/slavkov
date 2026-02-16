@@ -6,15 +6,10 @@ import { SUPABASE_SECRET_KEY } from '$env/static/private';
 const supabaseAdmin = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SECRET_KEY);
 
 export async function POST({ request }) {
-	const { sessionId, playerCode, unit } = await request.json();
+	const { sessionId, playerCode, bonuses } = await request.json();
 
-	if (!sessionId || !playerCode || !unit) {
+	if (!sessionId || !playerCode || !bonuses) {
 		return json({ error: 'missing_fields' }, { status: 400 });
-	}
-
-	const validUnits = ['soldier', 'cavalry', 'cannon'];
-	if (!validUnits.includes(unit)) {
-		return json({ error: 'invalid_unit' }, { status: 400 });
 	}
 
 	// Get current session to determine the round
@@ -34,43 +29,31 @@ export async function POST({ request }) {
 	}
 
 	const roundColumn = `round_${round}`;
-	const unitKey = playerCode === 'code_1' ? 'unit_1' : 'unit_2';
+	const suffix = playerCode === 'code_1' ? '_1' : '_2';
 
 	// Merge with existing round data
 	const existingRoundData = session[roundColumn] || {};
 	const updatedRoundData = {
 		...existingRoundData,
-		[unitKey]: unit
+		[`bonuses_def${suffix}`]: bonuses.def || 0,
+		[`bonuses_dmg${suffix}`]: bonuses.dmg || 0,
+		[`bonuses_life${suffix}`]: bonuses.life || 0
 	};
 
-	// If both players have selected units, calculate bonuses
-	const otherUnitKey = playerCode === 'code_1' ? 'unit_2' : 'unit_1';
-	if (updatedRoundData[otherUnitKey]) {
-		const unit1 = playerCode === 'code_1' ? unit : updatedRoundData.unit_1;
-		const unit2 = playerCode === 'code_1' ? updatedRoundData.unit_2 : unit;
+	// Check if both players have selected bonuses
+	const otherSuffix = playerCode === 'code_1' ? '_2' : '_1';
+	const otherHasBonuses = updatedRoundData[`bonuses_def${otherSuffix}`] !== undefined
+		|| updatedRoundData[`bonuses_dmg${otherSuffix}`] !== undefined
+		|| updatedRoundData[`bonuses_life${otherSuffix}`] !== undefined;
 
-		// soldier > cavalry, cavalry > cannon, cannon > soldier
-		const advantages = {
-			soldier: 'cavalry',
-			cavalry: 'cannon',
-			cannon: 'soldier'
-		};
-
-		if (unit1 === unit2) {
-			updatedRoundData.bonus_unit_1 = 0;
-			updatedRoundData.bonus_unit_2 = 0;
-		} else if (advantages[unit1] === unit2) {
-			updatedRoundData.bonus_unit_1 = 1;
-			updatedRoundData.bonus_unit_2 = 0;
-		} else {
-			updatedRoundData.bonus_unit_1 = 0;
-			updatedRoundData.bonus_unit_2 = 1;
-		}
+	const updateData = { [roundColumn]: updatedRoundData };
+	if (otherHasBonuses) {
+		updateData.status = '5-minigames';
 	}
 
 	const { data, error } = await supabaseAdmin
 		.from('sessions')
-		.update({ [roundColumn]: updatedRoundData })
+		.update(updateData)
 		.eq('id', sessionId)
 		.select()
 		.single();

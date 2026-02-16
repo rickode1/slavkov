@@ -46,8 +46,8 @@
 
  $effect(() => {
   const session = $gameSession;
-  if (session && gameScreens[session.status]) {
-   const targetPath = `/phone/${gameScreens[session.status]}`;
+  if (session && gameScreens.includes(session.status)) {
+   const targetPath = `/phone/${session.status}`;
    if (page.url.pathname !== targetPath) {
     goto(targetPath);
    }

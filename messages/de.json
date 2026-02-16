@@ -21,5 +21,10 @@
  "unit_cavalry": "Kavallerie",
  "unit_cannon": "Artillerie",
  "deploy_select_unit": "Wähle eine Einheit für dieses Gefecht",
- "deploy_place_unit": "Platziere die Einheit auf dem Schlachtfeld"
+ "deploy_place_unit": "Platziere die Einheit auf dem Schlachtfeld",
+ "card_def": "Rüstung",
+ "card_dmg": "Schießpulver",
+ "card_life": "Feldverband",
+ "card_loc": "Gelände",
+ "card_unit": "Kraftkreis"
 }

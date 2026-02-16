@@ -21,5 +21,10 @@
  "unit_cavalry": "Cavalry",
  "unit_cannon": "Artillery",
  "deploy_select_unit": "Select a unit for this battle",
- "deploy_place_unit": "Place the unit on the battlefield"
+ "deploy_place_unit": "Place the unit on the battlefield",
+ "card_def": "Armor",
+ "card_dmg": "Gunpowder",
+ "card_life": "Field Dressing",
+ "card_loc": "Terrain",
+ "card_unit": "Circle of Power"
 }
