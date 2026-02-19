@@ -38,6 +38,7 @@
  let selectedBust = $derived(busts[selectedBustIndex]);
  let slideDirection = $state(1); // 1 = right, -1 = left
  let nick = $state("");
+ let nickConfirmed = $state(false);
  let savingProfile = $state(false);
 
  // Get opponent's player data
@@ -64,7 +65,8 @@
  });
 
  let isBustAvailable = $derived(availableBusts().includes(selectedBust));
- let canConfirm = $derived(isBustAvailable && nick.trim().length > 0);
+ let canConfirmNick = $derived(nick.trim().length > 0);
+ let canConfirmBust = $derived(isBustAvailable);
 
  // Get current player's data
  let myPlayer = $derived(() => {
@@ -107,8 +109,13 @@
   nick = urlParams.nick;
  });
 
+ function confirmNick() {
+  if (!canConfirmNick) return;
+  nickConfirmed = true;
+ }
+
  async function saveProfile() {
-  if (!canConfirm) return;
+  if (!canConfirmBust) return;
   savingProfile = true;
 
   const response = await fetch("/api/session/profile", {
@@ -185,9 +192,31 @@
 {#if $gameSession}
  {#if profileSaved}
   <PlayerLobby player={myPlayer()} playerNumber={myPlayerNumber} />
- {:else}
+ {:else if !nickConfirmed}
+  <!-- Step 1: Nick Input -->
   <div class="flex flex-col items-center gap-6">
-   <!-- Bust Slider -->
+   <div class="flex flex-col items-center gap-2">
+    <label for="nick-input" class="text-xl">{m.name_label()}</label>
+    <input
+     id="nick-input"
+     type="text"
+     bind:value={nick}
+     maxlength="10"
+     onkeydown={(e) => { if (e.key === "Enter") confirmNick(); }}
+     class="text-center text-2xl w-64 h-16 bg-white border-b-4 border-secondary rounded-lg focus:outline-none"
+    />
+   </div>
+
+   <Button
+    text={m.confirm()}
+    onclick={confirmNick}
+    disabled={!canConfirmNick}
+    classes="!text-2xl !h-12 min-w-auto mt-4"
+   />
+  </div>
+ {:else}
+  <!-- Step 2: Bust Selection -->
+  <div class="flex flex-col items-center gap-6">
    <div class="flex items-center gap-10">
     <ArrowButton direction="left" onclick={prevBust} />
     <div class="overflow-hidden w-32 h-50 relative">
@@ -225,26 +254,15 @@
     <ArrowButton direction="right" onclick={nextBust} />
    </div>
 
-   <!-- Nick Input -->
-   <div class="flex flex-col items-center gap-2">
-    <label for="nick-input" class="text-xl">{m.name_label()}</label>
-    <input
-     id="nick-input"
-     type="text"
-     bind:value={nick}
-     maxlength="10"
-     class="text-center text-2xl w-64 h-16 bg-white border-b-4 border-secondary rounded-lg focus:outline-none"
-    />
-   </div>
+   <p class="text-4xl text-center mt-4">{nick.trim()}</p>
 
-   <!-- Confirm Button -->
    {#if savingProfile}
     <Loader />
    {:else}
     <Button
      text={m.confirm()}
      onclick={saveProfile}
-     disabled={!canConfirm}
+     disabled={!canConfirmBust}
      classes="!text-2xl !h-12 min-w-auto mt-4"
     />
    {/if}

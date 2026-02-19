@@ -3,7 +3,17 @@
  import favicon from "$lib/assets/favicon.svg";
  import { optimize } from "$lib/image";
 
+ import { onMount } from "svelte";
+
  let { children } = $props();
+
+ onMount(() => {
+  const handler = (e) => {
+   e.preventDefault();
+  };
+  window.addEventListener("beforeunload", handler);
+  return () => window.removeEventListener("beforeunload", handler);
+ });
 
  // Dynamically load all images from /img folder
  const imageModules = import.meta.glob(

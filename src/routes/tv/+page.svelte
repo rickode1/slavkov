@@ -1,8 +1,7 @@
 <script>
- import { localizeHref } from "$lib/paraglide/runtime";
  import { m } from "$lib/paraglide/messages.js";
  import { beforeNavigate, goto } from "$app/navigation";
- import { sessionId } from "$lib/stores/gameSession.js";
+ import { sessionId, deviceParam } from "$lib/stores/gameSession.js";
 
  import LangSwitcher from "$components/LangSwitcher.svelte";
  import Logo from "$components/svg/Logo.svelte";
@@ -13,9 +12,14 @@
 
  let sessionCreated = false;
  let currentSessionId = $state();
+ let currentDevice = $state();
 
  sessionId.subscribe((value) => {
   currentSessionId = value;
+ });
+
+ deviceParam.subscribe((value) => {
+  currentDevice = value;
  });
 
  beforeNavigate(async ({ to, from, cancel }) => {
@@ -27,7 +31,12 @@
    cancel();
 
    try {
-    const response = await fetch("/api/session/create", { method: "POST" });
+    const body = currentDevice ? { device: currentDevice } : undefined;
+    const response = await fetch("/api/session/create", {
+     method: "POST",
+     headers: body ? { "Content-Type": "application/json" } : {},
+     body: body ? JSON.stringify(body) : undefined,
+    });
     const { session, error } = await response.json();
 
     if (error) {
@@ -54,4 +63,4 @@
  <EmblemRu classes="h-32 w-auto" />
 </div>
 
-<Button text={m.start()} href={localizeHref("/tv/1-lobby")} classes="my-auto" />
+<Button text={m.start()} href={"/tv/1-lobby"} classes="my-auto" />

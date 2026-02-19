@@ -49,8 +49,12 @@
   if (session && gameScreens.includes(session.status)) {
    const targetPath = `/phone/${session.status}`;
    if (page.url.pathname !== targetPath) {
-    goto(targetPath);
-   }
+    if (session.status === "2-onboarding") {
+     setTimeout(() => goto(targetPath), 3000);
+    } else {
+     goto(targetPath);
+    }
+   }   
   }
  });
 
@@ -58,7 +62,7 @@
 </script>
 
 <main
- class="container relative px-4 py-4 h-screen mx-auto flex flex-col items-center"
+ class="container relative px-4 pt-4 pb-16 min-h-screen mx-auto flex flex-col items-center"
 >
  {#key $currentLocale}
   {@render children()}

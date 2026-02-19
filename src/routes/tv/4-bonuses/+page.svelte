@@ -28,40 +28,18 @@
   }
   return units;
  });
-
- let p1Bonuses = $derived(() => {
-  const rd = roundData();
-  if (!rd) return [];
-  const cards = [];
-  if (rd.bonus_loc_1 !== undefined)
-   cards.push({ type: "loc", value: rd.bonus_loc_1 });
-  if (rd.bonus_unit_1 !== undefined)
-   cards.push({ type: "unit", value: rd.bonus_unit_1 });
-  return cards;
- });
-
- let p2Bonuses = $derived(() => {
-  const rd = roundData();
-  if (!rd) return [];
-  const cards = [];
-  if (rd.bonus_loc_2 !== undefined)
-   cards.push({ type: "loc", value: rd.bonus_loc_2 });
-  if (rd.bonus_unit_2 !== undefined)
-   cards.push({ type: "unit", value: rd.bonus_unit_2 });
-  return cards;
- });
 </script>
 
 {#if $gameSession}
  <div class="absolute left-10 top-6 flex w-[calc(100%-5rem)] justify-between">
   <div class="flex flex-col items-center">
    <PlayerBust player={$gameSession.player_1} />
-   <CardBonuses bonuses={p1Bonuses()} />
+   <CardBonuses playerCode="code_1" />
   </div>
 
   <div class="flex flex-col items-center">
    <PlayerBust player={$gameSession.player_2} />
-   <CardBonuses bonuses={p2Bonuses()} />
+   <CardBonuses playerCode="code_2" />
   </div>
  </div>
 
@@ -69,6 +47,6 @@
   bind:this={mapRef}
   initialLocation={parseInt($gameSession?.current_round || 1)}
   placedUnits={placedUnits()}
-  classes="w-[calc(100%-22rem)] mt-10"
+  classes="w-[calc(100%-27rem)] mt-10"
  />
 {/if}

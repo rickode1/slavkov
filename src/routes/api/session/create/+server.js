@@ -27,17 +27,31 @@ async function generateUniqueCode(supabase) {
 	return code;
 }
 
-export async function POST() {
+export async function POST({ request }) {
+	let device = null;
+	try {
+		const body = await request.json();
+		device = body.device || null;
+	} catch {
+		// No body or invalid JSON — that's fine
+	}
+
 	const code_1 = await generateUniqueCode(supabaseAdmin);
 	const code_2 = await generateUniqueCode(supabaseAdmin);
 
+	const insertData = {
+		status: '1-lobby',
+		code_1,
+		code_2,
+	};
+
+	if (device) {
+		insertData.device = device;
+	}
+
 	const { data, error } = await supabaseAdmin
 		.from('sessions')
-		.insert({
-			status: '1-lobby',
-			code_1,
-			code_2
-		})
+		.insert(insertData)
 		.select()
 		.single();
 

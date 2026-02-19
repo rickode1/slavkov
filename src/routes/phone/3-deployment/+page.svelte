@@ -22,6 +22,13 @@
 
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
 
+ let strokeStyle = $derived(() => {
+  const bust = myPlayer()?.bust;
+  if (!bust) return "";
+  const c = `var(--color-bust-${bust}-dark)`;
+  return `filter: drop-shadow(5px 0 0 ${c}) drop-shadow(0 5px 0 ${c}) drop-shadow(-5px 0 0 ${c}) drop-shadow(0 -5px 0 ${c})`;
+ });
+
  let selectedUnit = $state(null);
  let deploying = $state(false);
 
@@ -190,8 +197,9 @@
     >
      <img
       class="{unit.size} mb-2 p-1.5 transition-all {selectedUnit === unit.id
-       ? 'scale-105 stroke'
+       ? 'scale-105'
        : ''}"
+      style={selectedUnit === unit.id ? strokeStyle() : ""}
       srcset={optimize(`/img/${unit.img}.png`)}
       alt={unit.title}
      />

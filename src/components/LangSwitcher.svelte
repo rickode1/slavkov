@@ -5,15 +5,20 @@
 
  let { showAll = false, classes = "" } = $props();
  let manuallyExpanded = $state(false);
+ let shouldAnimate = $state(false);
  let expanded = $derived(showAll || manuallyExpanded);
 
  let orderedLocales = $derived(() => {
   const current = $currentLocale;
+  if (showAll) {
+   return locales;
+  }
   return [current, ...locales.filter((l) => l !== current)];
  });
 
  function handleClick(e, locale) {
   const current = getLocale();
+  shouldAnimate = true;
   if (!expanded && locale === current) {
    e.preventDefault();
    manuallyExpanded = true;
@@ -25,6 +30,7 @@
    currentLocale.set(locale);
    manuallyExpanded = false;
   }
+  setTimeout(() => (shouldAnimate = false), 500);
  }
 </script>
 
@@ -35,12 +41,12 @@
     class="text-white bg-primary rounded-full uppercase text-2xl lg:text-4xl w-14 lg:w-20 h-14 lg:h-20 inline-flex items-center justify-center cursor-pointer text-center {i ===
     0
      ? 'relative z-10'
-     : 'ml-3'}"
+     : 'ml-3'} {locale === $currentLocale && showAll ? 'shadow-md scale-105' : ''}"
     onclick={(e) => handleClick(e, locale)}
     transition:fly={{
-     x: -80,
-     duration: 200,
-     delay: i * 50,
+     x: shouldAnimate ? -80 : 0,
+     duration: shouldAnimate ? 200 : 0,
+     delay: shouldAnimate ? i * 50 : 0,
     }}
    >
     {locale}

@@ -22,6 +22,13 @@
 
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
 
+ let strokeSmStyle = $derived(() => {
+  const bust = myPlayer()?.bust;
+  if (!bust) return "";
+  const c = `var(--color-bust-${bust}-dark)`;
+  return `filter: drop-shadow(3px 0 0 ${c}) drop-shadow(0 3px 0 ${c}) drop-shadow(-3px 0 0 ${c}) drop-shadow(0 -3px 0 ${c})`;
+ });
+
  let usedBonuses = $derived(() => {
   if (!$gameSession) return { def: 0, dmg: 0, life: 0 };
   const suffix = $playerCode === "code_1" ? "_1" : "_2";
@@ -123,6 +130,7 @@
      small
      selected={selectedCards.has(card.id)}
      disabled={card.disabled}
+     strokeStyle={strokeSmStyle()}
      onclick={() => !card.disabled && toggleCard(card.id)}
     />
    {/each}

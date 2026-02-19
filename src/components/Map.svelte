@@ -127,7 +127,7 @@
  </div>
 
  <div
-  class="relative w-full overflow-hidden mix-blend-multiply aspect-3/4 lg:aspect-auto"
+  class="relative w-full overflow-hidden aspect-3/4 lg:aspect-auto"
  >
   <img
    class="absolute inset-0 w-full h-full z-10 pointer-events-none"

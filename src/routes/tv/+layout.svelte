@@ -7,6 +7,7 @@
   sessionId,
   gameSession,
   resetSession,
+  deviceParam,
  } from "$lib/stores/gameSession.js";
  import { subscribeToSession, cleanupSession } from "$lib/sessionRealtime.js";
  import { terminalStates, gameScreens } from "$lib/constants.js";
@@ -38,12 +39,25 @@
 
  onMount(() => {
   const lang = page.url.searchParams.get("lang");
+  const device = page.url.searchParams.get("device");
+  const url = new URL(window.location.href);
+  let paramsChanged = false;
+
   if (lang && locales.includes(lang)) {
-   const url = new URL(window.location.href);
    url.searchParams.delete("lang");
-   window.history.replaceState({}, "", url);
+   paramsChanged = true;
    setLocale(lang, { reload: false });
    currentLocale.set(lang);
+  }
+
+  if (device) {
+   url.searchParams.delete("device");
+   paramsChanged = true;
+   deviceParam.set(device);
+  }
+
+  if (paramsChanged) {
+   window.history.replaceState({}, "", url);
   }
  });
 
@@ -70,7 +84,11 @@
   if (session && gameScreens.includes(session.status)) {
    const targetPath = `/tv/${session.status}`;
    if (page.url.pathname !== targetPath) {
-    goto(targetPath);
+    if (session.status === "2-onboarding") {
+     setTimeout(() => goto(targetPath), 3000);
+    } else {
+     goto(targetPath);
+    }
    }
   }
  });

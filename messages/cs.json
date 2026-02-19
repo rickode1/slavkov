@@ -22,9 +22,9 @@
  "unit_cannon": "Dělostřelectvo",
  "deploy_select_unit": "Vyber jednotku pro tento střet",
  "deploy_place_unit": "Umísti jednotku na bitevní pole",
- "card_def": "Zbroj",
- "card_dmg": "Střelný prach",
- "card_life": "Polní obvaziště",
+ "card_def": "Kyrys",
+ "card_dmg": "Zbraně",
+ "card_life": "Obvazy",
  "card_loc": "Terén",
  "card_unit": "Kruh síly",
  "pick_bonuses": "Vyber bonusy pro tento střet"

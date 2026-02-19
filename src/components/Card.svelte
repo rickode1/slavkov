@@ -9,6 +9,7 @@
   selected = false,
   disabled = false,
   onclick = null,
+  strokeStyle = "",
  } = $props();
 
  let title = $derived(m[`card_${type}`]?.() ?? type);
@@ -22,9 +23,8 @@
   type="button"
   class="relative inline-flex flex-col items-center {small
    ? 'w-20'
-   : 'w-24'} {onclick && !disabled ? 'cursor-pointer' : ''} {selected
-   ? 'stroke-sm'
-   : ''} {disabled ? 'opacity-40 grayscale pointer-events-none' : ''}"
+   : 'w-24'} {onclick && !disabled ? 'cursor-pointer' : ''} {disabled ? 'opacity-40 grayscale pointer-events-none' : ''}"
+  style={selected ? strokeStyle : ""}
   onclick={disabled ? null : onclick}
   {disabled}
  >
@@ -35,22 +35,22 @@
   />
 
   <div
-   class="absolute inset-0 flex flex-col items-center justify-center gap-2 p-1.5"
+   class="absolute inset-0 flex flex-col items-center justify-between gap-2 px-1 py-4"
   >
    <img
     srcset={optimize(illustration)}
     alt=""
-    class="{small ? 'h-13' : 'h-15'} w-auto object-contain mix-blend-multiply"
+    class="{small ? 'h-11' : 'h-14'} w-auto object-contain"
    />
 
    <div class="flex flex-col items-center">
     {#if type !== "unit"}
-     <strong class="text-center font-bold {small ? 'text-xs' : ''}"
+     <strong class="text-center font-bold {small ? 'text-xs' : 'text-sm'}"
       >{valueLabel}</strong
      >
     {/if}
     <span
-     class="text-center px-1 leading-[1.1] text-xs">{title}</span
+     class="text-center leading-[1.1] {small ? 'text-xs' : 'text-sm'}">{title}</span
     >
    </div>
   </div>
