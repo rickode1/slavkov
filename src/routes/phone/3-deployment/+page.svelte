@@ -11,6 +11,7 @@
  import Button from "$components/Button.svelte";
  import Loader from "$components/Loader.svelte";
  import Map from "$components/Map.svelte";
+ import Help from "$components/Help.svelte";
 
  // Get current player's data
  let myPlayer = $derived(() => {
@@ -151,20 +152,20 @@
 </script>
 
 {#if $gameSession}
- <div
-  class="w-full flex justify-between items-center gap-x-8"
- >
-  <p class="text-2xl text-left">
+ <Help player={myPlayer()} openTrigger={selected()}>
    {#if selected()}
-    {m.deploy_place_unit()}
+     <p class="text-xl">{m.deploy_place_unit()}.</p>
    {:else}
-    {m.deploy_select_unit()}
+     <p class="text-xl">{m.deploy_select_unit()}.</p>  
+     <img
+      class="w-30 h-auto"
+      srcset={optimize("/img/bonus_unit.png")}
+      alt=""
+     />
    {/if}
-  </p>
-  <PlayerBust player={myPlayer()} />
- </div>
+ </Help>
 
- <div class="flex flex-col items-center gap-y-4">
+ <div class="flex flex-col items-center gap-y-4 pt-24">
   {#if selected()}
    <Map
     playerFilter={myPlayerNumber}

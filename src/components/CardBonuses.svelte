@@ -12,7 +12,7 @@
   return $gameSession[`round_${round}`] || null;
  });
 
- let battleRow = $derived(() => {
+ let allCards = $derived(() => {
   const rd = roundData();
   if (!rd) return [];
   const cards = [];
@@ -20,13 +20,6 @@
    cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`] });
   if (rd[`bonus_loc${suffix}`] !== undefined)
    cards.push({ type: "loc", value: rd[`bonus_loc${suffix}`] });
-  return cards;
- });
-
- let bonusRow = $derived(() => {
-  const rd = roundData();
-  if (!rd) return [];
-  const cards = [];
   for (let i = 0; i < (rd[`bonuses_def${suffix}`] || 0); i++)
    cards.push({ type: "def", value: 1 });
   for (let i = 0; i < (rd[`bonuses_dmg${suffix}`] || 0); i++)
@@ -49,39 +42,41 @@
   }
   return groups;
  }
+
+ let grouped = $derived(() => {
+  const groups = groupCards(allCards());
+  // Show total on top card for stacked bonus cards
+  return groups.map((g) => ({
+   ...g,
+   displayValue: g.items.length > 1 ? g.items.length : g.items[0]?.value,
+  }));
+ });
+
+ let rows = $derived(() => {
+  const g = grouped();
+  const result = [];
+  for (let i = 0; i < g.length; i += 2) {
+   result.push(g.slice(i, i + 2));
+  }
+  return result;
+ });
 </script>
 
 <div class="flex flex-col mt-2 gap-1">
- {#if battleRow().length > 0}
+ {#each rows() as row}
   <div class="flex gap-1">
-   {#each groupCards(battleRow()) as group, gi}
+   {#each row as group, gi}
     <div class="relative card-drop" style="animation-delay: {gi * 0.15}s">
      {#each group.items as bonus, i}
       <div
        class={i > 0 ? "absolute" : "relative"}
-       style="{i > 0 ? `left: ${i * 6}px; top: ${i * 4}px;` : ''} z-index: {i}"
+       style="{i > 0 ? `left: ${i * 4}px; top: ${i * 3}px;` : ''} z-index: {i}"
       >
-       <Card type={bonus.type} value={bonus.value} />
+       <Card type={bonus.type} value={i === group.items.length - 1 ? group.displayValue : bonus.value} />
       </div>
      {/each}
     </div>
    {/each}
   </div>
- {/if}
- {#if bonusRow().length > 0}
-  <div class="flex gap-1">
-   {#each groupCards(bonusRow()) as group, gi}
-    <div class="relative card-drop" style="animation-delay: {gi * 0.15}s">
-     {#each group.items as bonus, i}
-      <div
-       class={i > 0 ? "absolute" : "relative"}
-       style="{i > 0 ? `left: ${i * 2}px; top: ${i * 1}px;` : ''} z-index: {i}"
-      >
-       <Card type={bonus.type} value={i === group.items.length - 1 ? group.items.length : bonus.value} />
-      </div>
-     {/each}
-    </div>
-   {/each}
-  </div>
- {/if}
+ {/each}
 </div>

@@ -11,6 +11,7 @@
  import Card from "$components/Card.svelte";
  import Button from "$components/Button.svelte";
  import Loader from "$components/Loader.svelte";
+ import Help from "$components/Help.svelte";
 
  // Get current player's data
  let myPlayer = $derived(() => {
@@ -114,13 +115,11 @@
 </script>
 
 {#if $gameSession}
- <div class="w-full flex justify-between items-center gap-x-8">
-  <p class="text-2xl text-left">
-   {m.pick_bonuses()}
-  </p>
-  <PlayerBust player={myPlayer()} />
- </div>
+ <Help player={myPlayer()}>
+  <p class="text-xl">{m.pick_bonuses()}.</p>
+ </Help>
 
+ <div class="pt-20 pb-6">
  {#each cardGroups() as group, gi}
   <div class="flex flex-wrap items-start w-full gap-1 mt-4">
    {#each group as card}
@@ -136,6 +135,7 @@
    {/each}
   </div>
  {/each}
+ </div>
 
  {#if !submitted}
   {#if submitting}
