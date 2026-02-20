@@ -129,5 +129,59 @@
    transform: scale(0.75);
    opacity: 0.3;
   }
- }  
+ }
+
+ /* Dice rolling animation */
+ .dice-rolling {
+  animation:
+   dice-spin 2s cubic-bezier(0.2, 0, 0.2, 1) forwards,
+   dice-blur 2s ease-out forwards;
+  transform-origin: center center;
+ }
+
+ @keyframes dice-spin {
+  0%   { rotate: 0deg; translate: 0 0; }
+  8%   { translate: 25px -30px; }
+  16%  { translate: -20px -40px; }
+  24%  { translate: 30px -15px; }
+  32%  { translate: -25px -35px; }
+  40%  { translate: 22px -28px; }
+  48%  { translate: -18px -32px; }
+  56%  { translate: 14px -18px; }
+  64%  { translate: -10px -12px; }
+  77%  { translate: 6px -8px; }
+  90%  { translate: -3px -4px; }
+  100% { rotate: 1080deg; translate: 0 0; }
+ }
+
+ @keyframes dice-blur {
+  0%   { filter: blur(0px) drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+  15%  { filter: blur(2.5px) drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+  60%  { filter: blur(1.5px) drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+  85%  { filter: blur(0.3px) drop-shadow(0 6px 8px rgba(0,0,0,0.35)); }
+  100% { filter: blur(0px) drop-shadow(0 8px 12px rgba(0,0,0,0.4)); }
+ }
+
+ .shadow-rolling {
+  animation: shadow-roll 2s ease-out forwards !important;
+ }
+
+ @keyframes shadow-roll {
+  0% { transform: scale(1) translateX(0); opacity: 0.3; }
+  20% { transform: scale(0.5) translateX(15px); opacity: 0.15; }
+  40% { transform: scale(0.55) translateX(-12px); opacity: 0.18; }
+  60% { transform: scale(0.7) translateX(8px); opacity: 0.22; }
+  80% { transform: scale(0.9) translateX(-3px); opacity: 0.28; }
+  100% { transform: scale(1) translateX(0); opacity: 0.3; }
+ }
+
+ .roll-result {
+  transform: scale(0);
+  animation: result-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+ }
+
+ @keyframes result-pop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+ }
 }

@@ -3,7 +3,7 @@
  import { optimize } from "$lib/image";
  import PlayerBust from "$components/PlayerBust.svelte";
 
- let { player = null, children, openTrigger = null } = $props();
+ let { player = null, children, openTrigger = null, autoOpen = true } = $props();
 
  let open = $state(false);
  let scrollEl = $state(null);
@@ -18,7 +18,7 @@
  }
 
  onMount(() => {
-  showAndAutoClose();
+  if (autoOpen) showAndAutoClose();
  });
 
  $effect(() => {
