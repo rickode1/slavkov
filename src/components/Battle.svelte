@@ -102,9 +102,9 @@
 </script>
 
 {#if visible}
- <div class="fixed inset-0 z-50 flex items-start justify-center pt-16 max-w-360 mx-auto">
+ <div class="fixed inset-0 z-50 flex items-start justify-center pt-20 max-w-360 mx-auto">
   <div
-   class="relative w-[calc(100%-25rem)] aspect-31/18 flex flex-col items-center justify-start gap-4 pt-20"
+   class="relative w-[calc(100%-28rem)] aspect-31/18 flex flex-col items-center justify-start gap-4 pt-20"
    transition:fly={{ y: -500, duration: 600 }}
   >
    <img
@@ -156,7 +156,10 @@
     </div>
 
     {#if showDice}
-     <div class="dice-float mt-6" transition:fade={{ duration: 400 }}>
+     <div class="dice-float mt-6 relative" transition:fade={{ duration: 400 }}>
+      <span class="bg-secondary text-white text-center px-6 py-2 shadow-lg mb-2 whitespace-nowrap absolute bottom-6 left-1/2 -translate-x-1/2 z-10 rounded-sm">
+       {m.battle_roll_dice()}
+      </span>
       <img
        class="h-32 object-contain drop-shadow-lg"
        srcset={optimize("/img/dice.png")}
