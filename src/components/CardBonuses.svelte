@@ -2,7 +2,7 @@
  import { gameSession } from "$lib/stores/gameSession.js";
  import Card from "$components/Card.svelte";
 
- let { playerCode = "code_1" } = $props();
+ let { playerCode = "code_1", animated = true, hideBonuses = false } = $props();
 
  let suffix = $derived(playerCode === "code_1" ? "_1" : "_2");
 
@@ -20,12 +20,18 @@
    cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`] });
   if (rd[`bonus_loc${suffix}`] !== undefined)
    cards.push({ type: "loc", value: rd[`bonus_loc${suffix}`] });
-  for (let i = 0; i < (rd[`bonuses_def${suffix}`] || 0); i++)
-   cards.push({ type: "def", value: 1 });
-  for (let i = 0; i < (rd[`bonuses_dmg${suffix}`] || 0); i++)
-   cards.push({ type: "dmg", value: 1 });
-  for (let i = 0; i < (rd[`bonuses_life${suffix}`] || 0); i++)
-   cards.push({ type: "life", value: 1 });
+  if (!hideBonuses) {
+   for (let i = 0; i < (rd[`bonuses_def${suffix}`] || 0); i++)
+    cards.push({ type: "def", value: 1 });
+   for (let i = 0; i < (rd[`bonuses_dmg${suffix}`] || 0); i++)
+    cards.push({ type: "dmg", value: 1 });
+   for (let i = 0; i < (rd[`bonuses_life${suffix}`] || 0); i++)
+    cards.push({ type: "life", value: 1 });
+   if (rd[`bonus_minigame_dmg${suffix}`] !== undefined)
+    cards.push({ type: "minigame_dmg", value: rd[`bonus_minigame_dmg${suffix}`] });
+   if (rd[`bonus_minigame_def${suffix}`] !== undefined)
+    cards.push({ type: "minigame_def", value: rd[`bonus_minigame_def${suffix}`] });
+  }
   return cards;
  });
 
@@ -66,11 +72,11 @@
  {#each rows() as row}
   <div class="flex gap-1">
    {#each row as group, gi}
-    <div class="relative card-drop" style="animation-delay: {gi * 0.15}s">
+    <div class="relative {animated ? 'card-drop' : ''}" style="{animated ? `animation-delay: ${gi * 0.15}s` : ''}">
      {#each group.items as bonus, i}
       <div
        class={i > 0 ? "absolute" : "relative"}
-       style="{i > 0 ? `left: ${i * 4}px; top: ${i * 3}px;` : ''} z-index: {i}"
+       style="{i > 0 ? `right: ${i * 2}px; bottom: ${i * 2}px;` : ''} z-index: {i}"
       >
        <Card type={bonus.type} value={i === group.items.length - 1 ? group.displayValue : bonus.value} />
       </div>

@@ -26,5 +26,8 @@
  "card_dmg": "Schießpulver",
  "card_life": "Feldverband",
  "card_loc": "Gelände",
- "card_unit": "Kraftkreis"
+ "card_unit": "Kraftkreis",
+ "play_minigame_on_tv": "Spiele das Minispiel auf dem TV",
+ "card_minigame_dmg": "Minispiel",
+ "card_minigame_def": "Minispiel"
 }

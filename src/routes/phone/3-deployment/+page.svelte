@@ -6,6 +6,7 @@
  } from "$lib/stores/gameSession.js";
  import { optimize } from "$lib/image";
  import * as m from "$lib/paraglide/messages";
+ import { strokeStyle } from "$lib/constants.js";
 
  import PlayerBust from "$components/PlayerBust.svelte";
  import Button from "$components/Button.svelte";
@@ -23,12 +24,7 @@
 
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
 
- let strokeStyle = $derived(() => {
-  const bust = myPlayer()?.bust;
-  if (!bust) return "";
-  const c = `var(--color-bust-${bust}-dark)`;
-  return `filter: drop-shadow(5px 0 0 ${c}) drop-shadow(0 5px 0 ${c}) drop-shadow(-5px 0 0 ${c}) drop-shadow(0 -5px 0 ${c})`;
- });
+ let myStrokeStyle = $derived(() => strokeStyle(myPlayer()?.bust));
 
  let selectedUnit = $state(null);
  let deploying = $state(false);
@@ -169,7 +165,6 @@
   {#if selected()}
    <Map
     playerFilter={myPlayerNumber}
-    initialLocation={parseInt($gameSession?.current_round || 1)}
     onSlotSelect={handleSlotSelect}
     selectedSlotId={selectedSlot?.id}
     unitImage={unitImage()}
@@ -200,7 +195,7 @@
       class="{unit.size} mb-2 p-1.5 transition-all {selectedUnit === unit.id
        ? 'scale-105'
        : ''}"
-      style={selectedUnit === unit.id ? strokeStyle() : ""}
+      style={selectedUnit === unit.id ? myStrokeStyle() : ""}
       srcset={optimize(`/img/${unit.img}.png`)}
       alt={unit.title}
      />

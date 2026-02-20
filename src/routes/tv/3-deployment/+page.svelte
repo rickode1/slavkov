@@ -22,6 +22,7 @@
 
  <Map
  bind:this={mapRef}
- classes="w-[calc(100%-22rem)] mt-10"
+ hideUnits={true}
+ classes="w-[calc(100%-27rem)] mt-10"
  />
 {/if}

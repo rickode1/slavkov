@@ -26,5 +26,8 @@
  "card_dmg": "Gunpowder",
  "card_life": "Field Dressing",
  "card_loc": "Terrain",
- "card_unit": "Circle of Power"
+ "card_unit": "Circle of Power",
+ "play_minigame_on_tv": "Play the minigame on TV",
+ "card_minigame_dmg": "Minigame",
+ "card_minigame_def": "Minigame"
 }

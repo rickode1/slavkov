@@ -6,6 +6,7 @@
  } from "$lib/stores/gameSession.js";
  import { optimize } from "$lib/image";
  import * as m from "$lib/paraglide/messages";
+ import { strokeStyle } from "$lib/constants.js";
 
  import PlayerBust from "$components/PlayerBust.svelte";
  import Card from "$components/Card.svelte";
@@ -23,12 +24,7 @@
 
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
 
- let strokeSmStyle = $derived(() => {
-  const bust = myPlayer()?.bust;
-  if (!bust) return "";
-  const c = `var(--color-bust-${bust}-dark)`;
-  return `filter: drop-shadow(3px 0 0 ${c}) drop-shadow(0 3px 0 ${c}) drop-shadow(-3px 0 0 ${c}) drop-shadow(0 -3px 0 ${c})`;
- });
+ let strokeSmStyle = $derived(() => strokeStyle(myPlayer()?.bust, 3));
 
  let usedBonuses = $derived(() => {
   if (!$gameSession) return { def: 0, dmg: 0, life: 0 };

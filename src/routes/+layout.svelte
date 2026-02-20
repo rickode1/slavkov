@@ -2,12 +2,15 @@
  import "./style.css";
  import favicon from "$lib/assets/favicon.svg";
  import { optimize } from "$lib/image";
+ import { loadPositions } from "$lib/stores/positions.js";
 
  import { onMount } from "svelte";
 
  let { children } = $props();
 
  onMount(() => {
+  loadPositions();
+
   const handler = (e) => {
    e.preventDefault();
   };

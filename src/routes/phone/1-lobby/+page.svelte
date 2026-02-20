@@ -2,6 +2,7 @@
  import { onMount } from "svelte";
  import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
+ import { strokeStyle } from "$lib/constants.js";
  import { page } from "$app/state";
  import {
   sessionId,
@@ -83,10 +84,7 @@
   return `color: var(--color-bust-${selectedBust}-dark)`;
  });
 
- let bustStrokeStyle = $derived(() => {
-  const c = `var(--color-bust-${selectedBust}-dark)`;
-  return `filter: drop-shadow(5px 0 0 ${c}) drop-shadow(0 5px 0 ${c}) drop-shadow(-5px 0 0 ${c}) drop-shadow(0 -5px 0 ${c})`;
- });
+ let bustStrokeStyle = $derived(() => strokeStyle(selectedBust));
 
  function prevBust() {
   slideDirection = -1;
@@ -133,7 +131,13 @@
    }),
   });
 
+  const data = await response.json();
   savingProfile = false;
+
+  if (data.error === 'bust_taken') {
+   nickConfirmed = true;
+   return;
+  }
  }
 
  async function joinSession(code) {

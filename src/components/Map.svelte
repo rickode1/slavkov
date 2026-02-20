@@ -2,25 +2,58 @@
  import { browser } from "$app/environment";
  import { onMount, tick } from "svelte";
  import { optimize } from "$lib/image";
- import { supabase } from "$lib/supabaseClient.js";
  import { gameSession } from "$lib/stores/gameSession.js";
+ import { positions } from "$lib/stores/positions.js";
+ import { strokeStyle } from "$lib/constants.js";
  import * as m from "$lib/paraglide/messages.js";
 
  let {
   playerFilter = null,
   classes = "",
-  initialLocation = null,
   onSlotSelect = null,
   selectedSlotId = null,
   unitImage = null,
-  placedUnits = {},
+  unitsAnimated = true,
+  hideUnits = false,
  } = $props();
+
+ let initialLocation = $derived(
+  $gameSession ? parseInt($gameSession.current_round || 1) : null
+ );
+
+ let placedUnits = $derived(() => {
+  if (!$gameSession) return {};
+  const round = $gameSession.current_round || 1;
+  const rd = $gameSession[`round_${round}`];
+  if (!rd) return {};
+
+  if (hideUnits) return {};
+
+  const units = {};
+  const p1Bust = $gameSession.player_1?.bust;
+  const p2Bust = $gameSession.player_2?.bust;
+
+  if (rd.loc_1 && rd.unit_1 && p1Bust) {
+   units[rd.loc_1] = `/img/unit_${p1Bust}_${rd.unit_1}.png`;
+  }
+  if (rd.loc_2 && rd.unit_2 && p2Bust) {
+   units[rd.loc_2] = `/img/unit_${p2Bust}_${rd.unit_2}.png`;
+  }
+  return units;
+ });
 
  const labelMap = {
   telnitz: () => m.location_telnitz(),
   pratzen: () => m.location_pratzen(),
   santon: () => m.location_santon(),
  };
+
+ let locations = $derived(
+  $positions.map((loc) => ({
+   ...loc,
+   label: labelMap[loc.label] || (() => loc.label),
+  }))
+ );
 
  function getSlotColor(playerNum, opacity = 0.5) {
   const bust = $gameSession?.[`player_${playerNum}`]?.bust;
@@ -29,7 +62,11 @@
   return `color-mix(in srgb, var(--color-bust-${bust}) ${pct}%, transparent)`;
  }
 
- let locations = $state([]);
+ function getUnitStroke(playerNum) {
+  const bust = $gameSession?.[`player_${playerNum}`]?.bust;
+  return strokeStyle(bust, 3);
+ }
+
  let scale = $state(1);
  let zoomOrigin = $state("50% 50%");
  let zoomed = $state(false);
@@ -38,39 +75,16 @@
  let transitioning = $state(false);
  let isMobile = $state(false);
  let animateZoom = $state(false);
+ let battlePhase = $state(null);
+ let battleTargets = $state({});
 
  if (browser) {
   isMobile = window.innerWidth < 1024;
  }
 
- onMount(async () => {
-  const { data, error } = await supabase
-   .from("positions")
-   .select("*")
-   .order("id");
-
-  if (error) {
-   console.error("Failed to load positions:", error);
-  } else {
-   locations = data.map((row) => ({
-    id: row.id,
-    label: labelMap[row.label] || (() => row.label),
-    x: row.x,
-    y: row.y,
-    zoomX: row.zoomX,
-    zoomY: row.zoomY,
-    mobileZoomP1X: row.mobileZoomP1X,
-    mobileZoomP1Y: row.mobileZoomP1Y,
-    mobileZoomP2X: row.mobileZoomP2X,
-    mobileZoomP2Y: row.mobileZoomP2Y,
-    slots: Object.entries(row.slots).map(([key, val]) => ({
-     id: key,
-     ...val,
-    })),
-   }));
-  }
-
-  if (initialLocation) {
+ // Watch for positions loading and zoom when ready
+ $effect(() => {
+  if (locations.length > 0 && initialLocation && !zoomed) {
    zoomTo(initialLocation, false);
   }
  });
@@ -115,6 +129,38 @@
   setTimeout(() => {
    transitioning = false;
   }, 800);
+ }
+
+ export function startBattle() {
+  battlePhase = '';
+
+  // Find the two slots that have placed units
+  const pu = placedUnits();
+  const unitSlots = [];
+  for (const loc of locations) {
+   for (const slot of loc.slots) {
+    if (pu[slot.id]) {
+     unitSlots.push(slot);
+    }
+   }
+  }
+
+  // Phase 1: fade out slot circles
+  battlePhase = 'fade-slots';
+
+  if (unitSlots.length === 2) {
+   // Phase 2: after fade, move units toward each other
+   const midX = (unitSlots[0].x + unitSlots[1].x) / 2;
+   const midY = (unitSlots[0].y + unitSlots[1].y) / 2;
+
+   setTimeout(() => {
+    battleTargets = {
+     [unitSlots[0].id]: { x: midX, y: midY },
+     [unitSlots[1].id]: { x: midX, y: midY },
+    };
+    battlePhase = 'move-units';
+   }, 800);
+  }
  }
 </script>
 
@@ -162,27 +208,26 @@
       <button
        class="absolute rounded-full h-8 w-8 lg:h-16 lg:w-16
        -translate-x-1/2 -translate-y-1/2
-       transition-opacity duration-500 ease-in-out overflow-hidden
+       transition-all duration-2000 ease-in-out overflow-hidden
        {onSlotSelect ? 'cursor-pointer' : ''}
        {activeLocationId === loc.id
         ? 'opacity-100'
         : 'opacity-0 pointer-events-none'}"
-       style="left: {slot.x}%; top: {slot.y}%; background-color: {getSlotColor(
-        slot.p,
-       )}"
+       style="left: {battleTargets[slot.id] ? battleTargets[slot.id].x : slot.x}%; top: {battleTargets[slot.id] ? battleTargets[slot.id].y : slot.y}%; background-color: {battlePhase ? 'transparent' : getSlotColor(slot.p)}"
        onclick={() => onSlotSelect?.(slot)}
        aria-label="Select slot"
       >
        {#if selectedSlotId === slot.id && unitImage}
         <img
-         class="w-full h-[75%] object-contain unit-drop"
+         class="w-full h-[75%] object-contain {unitsAnimated ? 'unit-drop' : ''}"
          srcset={optimize(unitImage)}
          alt=""
         />
-       {:else if placedUnits[slot.id]}
+       {:else if placedUnits()[slot.id]}
         <img
-         class="w-full h-[75%] object-contain"
-         srcset={optimize(placedUnits[slot.id])}
+         class="w-full h-[75%] object-contain transition-[filter] duration-700 ease-in-out"
+         style={battlePhase ? getUnitStroke(slot.p) : ''}
+         srcset={optimize(placedUnits()[slot.id])}
          alt=""
         />
        {/if}

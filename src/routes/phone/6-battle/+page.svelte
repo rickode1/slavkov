@@ -22,6 +22,6 @@
 
 {#if $gameSession}
  <Help player={myPlayer()}>
-  <p class="text-xl">{m.play_minigame_on_tv()}</p>
+  <p class="text-xl"></p>
  </Help>
 {/if}
