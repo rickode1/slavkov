@@ -48,6 +48,11 @@
   $gameSession?.[`player_${startingPlayer}`]?.nick || ""
  );
 
+ let attackerBustColor = $derived(() => {
+  const bust = $gameSession?.[`player_${startingPlayer}`]?.bust;
+  return bust ? `var(--color-bust-${bust}-dark)` : '';
+ });
+
  $effect(() => {
   if (visible) {
    startAttackSequence();
@@ -102,7 +107,7 @@
 </script>
 
 {#if visible}
- <div class="fixed inset-0 z-50 flex items-start justify-center pt-20 max-w-360 mx-auto">
+ <div class="fixed inset-0 z-50 flex items-start justify-center my-30 max-w-360 mx-auto">
   <div
    class="relative w-[calc(100%-28rem)] aspect-31/18 flex flex-col items-center justify-start gap-4 pt-20"
    transition:fly={{ y: -500, duration: 600 }}
@@ -157,7 +162,10 @@
 
     {#if showDice}
      <div class="dice-float mt-6 relative" transition:fade={{ duration: 400 }}>
-      <span class="bg-secondary text-white text-center px-6 py-2 shadow-lg mb-2 whitespace-nowrap absolute bottom-6 left-1/2 -translate-x-1/2 z-10 rounded-sm">
+      <span
+       class="text-white text-center px-6 py-2 shadow-lg mb-2 whitespace-nowrap absolute bottom-6 left-1/2 -translate-x-1/2 z-10 rounded-sm"
+       style="background-color: {attackerBustColor()}"
+      >
        {m.battle_roll_dice()}
       </span>
       <img

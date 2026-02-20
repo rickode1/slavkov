@@ -10,7 +10,7 @@
   setTimeout(() => {
    const round = $gameSession?.current_round;
    mapRef?.zoomTo(parseInt(round), true);
-  }, 3000);
+  }, 5000);
  });
 </script>
 
@@ -23,6 +23,7 @@
  <Map
  bind:this={mapRef}
  hideUnits={true}
+ autoZoom={false}
  classes="w-[calc(100%-27rem)] mt-10"
  />
 {/if}

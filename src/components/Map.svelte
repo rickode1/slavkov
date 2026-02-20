@@ -16,6 +16,7 @@
   unitImage = null,
   unitsAnimated = true,
   hideUnits = false,
+  autoZoom = true,
  } = $props();
 
  let initialLocation = $derived(
@@ -85,7 +86,7 @@
 
  // Watch for positions loading and zoom when ready
  $effect(() => {
-  if (locations.length > 0 && initialLocation && !zoomed) {
+  if (autoZoom && locations.length > 0 && initialLocation && !zoomed) {
    zoomTo(initialLocation, false);
   }
  });
@@ -198,7 +199,7 @@
    {#each locations as loc (loc.id)}
     <div
      class="absolute flex items-center justify-center text-center rounded-full h-60 w-60
-     bg-secondary/85 text-white text-3xl px-6 py-3
+     bg-primary/85 text-white text-3xl px-6 py-3
      -translate-x-1/2 -translate-y-1/2
      transition-opacity duration-500 ease-in-out
      {zoomed ? 'opacity-0 pointer-events-none' : 'opacity-100'}"
