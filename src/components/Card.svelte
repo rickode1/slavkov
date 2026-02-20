@@ -7,6 +7,7 @@
   value = 0,
   small = false,
   selected = false,
+  highlighted = false,
   disabled = false,
   onclick = null,
   strokeStyle = "",
@@ -24,7 +25,7 @@
   class="relative inline-flex flex-col items-center {small
    ? 'w-20'
    : 'w-24'} {onclick && !disabled ? 'cursor-pointer' : ''} {disabled ? 'opacity-40 grayscale pointer-events-none' : ''}"
-  style={selected ? strokeStyle : ""}
+  style={selected || highlighted ? strokeStyle : ""}
   onclick={disabled ? null : onclick}
   {disabled}
  >
@@ -56,3 +57,5 @@
   </div>
  </button>
 {/if}
+
+

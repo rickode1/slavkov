@@ -88,4 +88,46 @@
   .card-drop {
    animation: card-drop 0.35s ease-out both;
   }
+
+ .dice-float {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: dice-hover 2s ease-in-out infinite;
+  perspective: 800px;
+ }
+
+ .dice-float img {
+  transform: rotateX(15deg) rotateY(-10deg);
+ }
+
+ .dice-shadow {
+  width: 3rem;
+  height: 0.5rem;
+  margin-top: 0.25rem;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+  filter: blur(3px);
+  animation: shadow-pulse 2s ease-in-out infinite;
+ }
+
+ @keyframes dice-hover {
+  0%, 100% {
+   transform: translateY(0);
+  }
+  50% {
+   transform: translateY(-8px);
+  }
+ }
+
+ @keyframes shadow-pulse {
+  0%, 100% {
+   transform: scale(1);
+   opacity: 0.5;
+  }
+  50% {
+   transform: scale(0.75);
+   opacity: 0.3;
+  }
+ }  
 }

@@ -11,6 +11,7 @@
   playerFilter = null,
   classes = "",
   onSlotSelect = null,
+  onBattleReady = null,
   selectedSlotId = null,
   unitImage = null,
   unitsAnimated = true,
@@ -159,6 +160,11 @@
      [unitSlots[1].id]: { x: midX, y: midY },
     };
     battlePhase = 'move-units';
+
+    // Fire callback before units finish converging
+    setTimeout(() => {
+     onBattleReady?.();
+    }, 1200);
    }, 800);
   }
  }

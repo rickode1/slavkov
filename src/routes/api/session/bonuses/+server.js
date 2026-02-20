@@ -48,16 +48,7 @@ export async function POST({ request }) {
 
 	const updateData = { [roundColumn]: updatedRoundData };
 	if (otherHasBonuses) {
-		updateData.status = '5-minigames';
-
-		// Calculate minigame results based on starting_player
-		const startingPlayer = updatedRoundData.starting_player || 1;
-		const startingSuffix = `_${startingPlayer}`;
-		const opponentSuffix = startingPlayer === 1 ? '_2' : '_1';
-
-		// Starting player gets dmg minigame, opponent gets def minigame (50/50 chance each)
-		updatedRoundData[`bonus_minigame_dmg${startingSuffix}`] = Math.random() < 0.5 ? 1 : 0;
-		updatedRoundData[`bonus_minigame_def${opponentSuffix}`] = Math.random() < 0.5 ? 1 : 0;
+		updateData.status = '6-battle';
 	}
 
 	const { data, error } = await supabaseAdmin

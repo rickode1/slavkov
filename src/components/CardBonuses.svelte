@@ -1,8 +1,14 @@
 <script>
  import { gameSession } from "$lib/stores/gameSession.js";
+ import { strokeStyle as makeStroke } from "$lib/constants.js";
  import Card from "$components/Card.svelte";
 
- let { playerCode = "code_1", animated = true, hideBonuses = false } = $props();
+ let { playerCode = "code_1", animated = true, hideBonuses = false, highlightTypes = null } = $props();
+
+ let playerBust = $derived(
+  $gameSession?.[playerCode === "code_1" ? "player_1" : "player_2"]?.bust
+ );
+ let highlightStroke = $derived(makeStroke(playerBust, 3));
 
  let suffix = $derived(playerCode === "code_1" ? "_1" : "_2");
 
@@ -27,10 +33,6 @@
     cards.push({ type: "dmg", value: 1 });
    for (let i = 0; i < (rd[`bonuses_life${suffix}`] || 0); i++)
     cards.push({ type: "life", value: 1 });
-   if (rd[`bonus_minigame_dmg${suffix}`] !== undefined)
-    cards.push({ type: "minigame_dmg", value: rd[`bonus_minigame_dmg${suffix}`] });
-   if (rd[`bonus_minigame_def${suffix}`] !== undefined)
-    cards.push({ type: "minigame_def", value: rd[`bonus_minigame_def${suffix}`] });
   }
   return cards;
  });
@@ -78,7 +80,7 @@
        class={i > 0 ? "absolute" : "relative"}
        style="{i > 0 ? `right: ${i * 2}px; bottom: ${i * 2}px;` : ''} z-index: {i}"
       >
-       <Card type={bonus.type} value={i === group.items.length - 1 ? group.displayValue : bonus.value} />
+       <Card type={bonus.type} value={i === group.items.length - 1 ? group.displayValue : bonus.value} highlighted={highlightTypes?.has(bonus.type)} strokeStyle={highlightStroke} />
       </div>
      {/each}
     </div>
