@@ -148,7 +148,7 @@
 </script>
 
 {#if $gameSession}
- <Help player={myPlayer()} openTrigger={selected()}>
+ <Help player={myPlayer()}>
    {#if selected()}
      <p class="text-xl">{m.deploy_place_unit()}.</p>
    {:else}

@@ -61,7 +61,7 @@ export async function POST({ request }) {
 		}
 
 		const existingRound1 = currentSession.round_1 || {};
-		updateData.round_1 = { ...existingRound1, starting_player: startingPlayer };
+		updateData.round_1 = { ...existingRound1, current_turn: { player: startingPlayer, role: 'dmg', number: 0 } };
 	}
 
 	const { data, error } = await supabaseAdmin

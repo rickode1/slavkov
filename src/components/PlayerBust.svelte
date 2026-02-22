@@ -4,7 +4,7 @@
  import EmblemAt from "$components/svg/EmblemAt.svelte";
  import EmblemRu from "$components/svg/EmblemRu.svelte";
 
- let { player = null } = $props();
+ let { player = null, small = false } = $props();
 
  let emblemColor = $derived(() => {
   if (!player?.bust) return "";
@@ -15,11 +15,11 @@
 <div class="flex flex-col items-center">
  <div class="relative">
   <img
-   class="w-20 lg:w-32 h-auto"
+   class="{small ? 'w-18 h-auto' : 'w-20 lg:w-32 h-auto'}"
    srcset={optimize("/img/bust_" + player?.bust + ".png")}
    alt=""
   />
-  {#if player?.bust}
+  {#if player?.bust && !small}
    <div
     class="absolute -top-1 -right-2 lg:top-0 lg:-right-1 w-6 h-6 lg:w-10 lg:h-10"
     style={emblemColor()}
@@ -34,5 +34,7 @@
    </div>
   {/if}
  </div>
+ {#if !small}
  <p class="text-lg lg:text-2xl text-center">{player?.nick}</p>
+ {/if}
 </div>

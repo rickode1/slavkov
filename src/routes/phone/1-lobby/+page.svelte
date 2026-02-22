@@ -26,6 +26,17 @@
  let loading = $state(false);
  let errorTimeout = null;
 
+ let debugMode = $state(false);
+ let debugSessionInput = $state('');
+ let debugPlayerCode = $state('code_1');
+
+ function connectDebug() {
+  const id = debugSessionInput.trim();
+  if (!id) return;
+  playerCode.set(debugPlayerCode);
+  sessionId.set(id);
+ }
+
  let urlParams = $state({
   time: 0,
   nick: "",
@@ -303,4 +314,5 @@
    </div>
   {/if}
  </div>
+
 {/if}

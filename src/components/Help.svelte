@@ -3,28 +3,11 @@
  import { optimize } from "$lib/image";
  import PlayerBust from "$components/PlayerBust.svelte";
 
- let { player = null, children, openTrigger = null, autoOpen = true } = $props();
+ let { player = null, children } = $props();
 
  let open = $state(false);
  let scrollEl = $state(null);
  let closeTimer = null;
-
- function showAndAutoClose() {
-  if (closeTimer) clearTimeout(closeTimer);
-  open = true;
-  closeTimer = setTimeout(() => {
-   open = false;
-  }, 3000);
- }
-
- onMount(() => {
-  if (autoOpen) showAndAutoClose();
- });
-
- $effect(() => {
-  openTrigger;
-  showAndAutoClose();
- });
 
  function toggle() {
   open = !open;

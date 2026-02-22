@@ -1,7 +1,7 @@
 <script>
  import { fly, fade } from "svelte/transition";
  import { optimize } from "$lib/image";
- import { gameSession } from "$lib/stores/gameSession.js";
+ import { gameSession, sessionId } from "$lib/stores/gameSession.js";
  import { strokeStyle } from "$lib/constants.js";
  import Card from "$components/Card.svelte";
  import * as m from "$lib/paraglide/messages.js";
@@ -11,6 +11,10 @@
  let displayedDifficulty = $state(10);
  let activeCard = $state(null);
  let showDice = $state(false);
+ let diceRolling = $state(false);
+ let revealedRoll = $state(null);
+ let rollOutcome = $state(null); // 'success' | 'fail' | null
+ let processingTurn = null;
 
  let roundData = $derived(() => {
   if (!$gameSession) return null;
@@ -18,8 +22,17 @@
   return $gameSession[`round_${round}`] || null;
  });
 
- let startingPlayer = $derived(roundData()?.starting_player || 1);
+ let startingPlayer = $derived(roundData()?.current_turn?.player || 1);
  let defenderNum = $derived(startingPlayer === 1 ? 2 : 1);
+ let role = $derived(roundData()?.current_turn?.role || 'dmg');
+ let baseDifficulty = $derived(role === 'def' ? 14 : 10);
+ let turnNumber = $derived(roundData()?.current_turn?.number ?? 0);
+
+ let currentRoll = $derived(() => {
+  const rd = roundData();
+  const roll = rd?.turns?.[turnNumber]?.roll;
+  return roll ?? null;
+ });
 
  let player1UnitImg = $derived(() => {
   const rd = roundData();
@@ -44,30 +57,76 @@
   strokeStyle($gameSession?.player_2?.bust, 4)
  );
 
- let attackerName = $derived(
+ let activePlayerName = $derived(
   $gameSession?.[`player_${startingPlayer}`]?.nick || ""
  );
 
- let attackerBustColor = $derived(() => {
-  const bust = $gameSession?.[`player_${startingPlayer}`]?.bust;
-  return bust ? `var(--color-bust-${bust}-dark)` : '';
+ $effect(() => {
+  if (visible && turnNumber != null) {
+   startTurnSequence();
+  }
  });
 
  $effect(() => {
-  if (visible) {
-   startAttackSequence();
+  const roll = currentRoll();
+  if (roll != null && processingTurn !== turnNumber) {
+   processingTurn = turnNumber;
+   revealRoll(roll);
   }
  });
+
+ async function revealRoll(roll) {
+  showDice = true;
+  diceRolling = true;
+  await sleep(2000);
+  diceRolling = false;
+  revealedRoll = roll;
+  await sleep(1000);
+  rollOutcome = roll > displayedDifficulty ? 'success' : 'fail';
+  await sleep(2000);
+  const res = await fetch('/api/session/battle/advance', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({
+    sessionId: $sessionId,
+    success: rollOutcome === 'success',
+   }),
+  });
+
+  if (res.ok) {
+   const data = await res.json();
+   if (data.next !== 'round') {
+    showDice = false;
+    diceRolling = false;
+    revealedRoll = null;
+    rollOutcome = null;
+    activeCard = null;
+    processingTurn = null;
+   } else {
+    visible = false;
+    await Promise.all([
+     fetch('/api/session/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: $sessionId, status: '7-roundend' }),
+     }),
+     sleep(600),
+    ]);
+   }
+  }
+ }
 
  function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
  }
 
- async function startAttackSequence() {
+ async function startTurnSequence() {
   const rd = roundData();
-  if (!rd) return;
 
-  displayedDifficulty = 10;
+  if (!rd) return;
+  if (currentRoll()) return;
+
+  displayedDifficulty = baseDifficulty;
 
   const suffix = `_${startingPlayer}`;
   const steps = [];
@@ -77,22 +136,22 @@
    steps.push({ type: "loc", value: locVal });
   }
 
-  const dmgCount = rd[`bonuses_dmg${suffix}`] || 0;
+  const dmgCount = rd[`bonuses_${role}${suffix}`] || 0;
   if (dmgCount > 0) {
-   steps.push({ type: "dmg", value: dmgCount });
+   steps.push({ type: role, value: dmgCount });
   }
 
-  let current = 10;
+  let current = baseDifficulty;
 
   await sleep(1500);
 
   for (const step of steps) {
    onHighlightCard?.(step.type);
-   activeCard = { type: step.type, value: step.value > 0 ? step.value : Math.abs(step.value) };
+   activeCard = { type: step.type, value: step.value };
    await sleep(800);
    const target = current - step.value;
-   while (current > target) {
-    current--;
+   while (current !== target) {
+    current += current < target ? 1 : -1;
     displayedDifficulty = current;
     await sleep(400);
    }
@@ -122,7 +181,7 @@
    <div class="relative z-10 flex items-end justify-center gap-4">
     {#if player1UnitImg()}
      <img
-      class="h-26 object-contain {startingPlayer === 1 ? 'rotate-10 -translate-y-2' : ''}"
+      class="h-22 object-contain {(startingPlayer === 1 && role === 'dmg') || (defenderNum === 1 && role === 'def') ? 'rotate-10 -translate-y-2' : ''}"
       style={startingPlayer === 1 ? player1Stroke : ''}
       srcset={optimize(player1UnitImg())}
       alt="Player 1"
@@ -130,7 +189,7 @@
     {/if}
     {#if player2UnitImg()}
      <img
-      class="h-26 object-contain {startingPlayer === 2 ? '-rotate-10 -translate-y-2' : ''}"
+      class="h-22 object-contain {(startingPlayer === 2 && role === 'dmg') || (defenderNum === 2 && role === 'def') ? '-rotate-10 -translate-y-2' : ''}"
       style={startingPlayer === 2 ? player2Stroke : ''}
       srcset={optimize(player2UnitImg())}
       alt="Player 2"
@@ -138,13 +197,16 @@
     {/if}
    </div>
 
-   <!-- Attack difficulty -->
-   <div class="relative z-10 flex flex-col items-center mt-4">
-    <div class="flex items-center justify-center overflow-hidden h-32 w-32 rounded-full bg-primary text-white">
-     <span class="absolute top-4 text-center">{m.battle_difficulty()}</span>
+   <!-- Difficulty -->
+   <div class="relative z-10 flex flex-col items-center">
+     <div
+      class="flex items-center justify-center overflow-hidden h-26 w-26 rounded-full bg-primary text-white transition-all duration-700
+       {rollOutcome === 'success' ? 'grayscale-100' : ''}"
+     >
+      <span class="absolute top-4 text-center text-sm">{m.battle_difficulty()}</span>
      {#key displayedDifficulty}
       <span
-       class="absolute w-full text-6xl text-center mt-3 lining-nums font-mono"
+       class="absolute w-full text-4xl text-center mt-3 lining-nums font-mono"
        in:fly={{ y: -80, duration: 400 }}
        out:fly={{ y: 80, duration: 400 }}
       >
@@ -161,19 +223,37 @@
     </div>
 
     {#if showDice}
-     <div class="dice-float mt-6 relative" transition:fade={{ duration: 400 }}>
-      <span
-       class="text-white text-center px-6 py-2 shadow-lg mb-2 whitespace-nowrap absolute bottom-6 left-1/2 -translate-x-1/2 z-10 rounded-sm"
-       style="background-color: {attackerBustColor()}"
-      >
-       {m.battle_roll_dice()}
-      </span>
-      <img
-       class="h-32 object-contain drop-shadow-lg"
-       srcset={optimize("/img/dice.png")}
-       alt="Dice"
-      />
-      <div class="dice-shadow"></div>
+     <div class="{!revealedRoll ? 'dice-float mt-4' : 'mt-3'} relative transition-all duration-700
+      {rollOutcome === 'fail' ? 'grayscale-100' : ''}" transition:fade={{ duration: 400 }}>
+      {#if (!diceRolling && !revealedRoll) || rollOutcome}
+       <span
+        class="text-white text-center px-6 py-2 shadow-lg mb-2 whitespace-nowrap absolute bottom-6 left-1/2 -translate-x-1/2 z-10 rounded-sm bg-secondary"
+       >
+        {#if rollOutcome === 'success'}
+         Úspěch!
+        {:else if rollOutcome === 'fail'}
+         Neúspěch!
+        {:else}
+         {activePlayerName}, {m.battle_roll_dice()}
+        {/if}
+       </span>
+      {/if}
+
+      <div class="relative flex items-center justify-center">
+       <img
+        class="h-40 object-contain drop-shadow-lg {diceRolling ? 'dice-rolling' : ''}"
+        srcset={optimize("/img/dice.png")}
+        alt="Dice"
+       />
+       {#if revealedRoll}
+        <div class="roll-result absolute inset-0 flex items-center justify-center text-black/90">
+         <span class="text-4xl mb-5.5 lining-nums">{revealedRoll}</span>
+        </div>
+       {/if}
+      </div>
+      {#if !revealedRoll}
+      <div class="dice-shadow {diceRolling ? 'shadow-rolling' : ''}"></div>
+      {/if}
      </div>
     {/if}
    </div>

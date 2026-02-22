@@ -13,6 +13,8 @@
  let sessionCreated = false;
  let currentSessionId = $state();
  let currentDevice = $state();
+ let debugSession = $state(null);
+ let seedingDebug = $state(false);
 
  sessionId.subscribe((value) => {
   currentSessionId = value;
@@ -21,6 +23,19 @@
  deviceParam.subscribe((value) => {
   currentDevice = value;
  });
+
+ async function seedDebugSession() {
+  seedingDebug = true;
+  const res = await fetch('/api/session/debug', { method: 'POST' });
+  const { session } = await res.json();
+  seedingDebug = false;
+  debugSession = session;
+ }
+
+ function proceedWithDebug() {
+  sessionId.set(debugSession.id);
+  debugSession = null;
+ }
 
  beforeNavigate(async ({ to, from, cancel }) => {
   if (

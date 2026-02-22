@@ -115,7 +115,7 @@
   <p class="text-xl">{m.pick_bonuses()}.</p>
  </Help>
 
- <div class="pt-20 pb-6">
+ <div class="pt-20 pb-6 w-full">
  {#each cardGroups() as group, gi}
   <div class="flex flex-wrap items-start w-full gap-1 mt-4">
    {#each group as card}
@@ -139,7 +139,6 @@
   {:else}
    <Button
     text={m.confirm()}
-    disabled={!hasSelection}
     onclick={submitBonuses}
     classes="!text-2xl !h-12 min-w-auto mt-4"
    />

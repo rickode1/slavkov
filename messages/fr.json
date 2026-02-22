@@ -28,9 +28,10 @@
  "card_loc": "Terrain",
  "card_unit": "Cercle de force",
  "battle_difficulty": "Difficulté",
- "battle_roll_dice": "Lancez le dé sur votre téléphone !",
+ "battle_roll_dice": "lancez le dé sur votre téléphone !",
  "battle_roll_button": "Lancer le dé",
  "play_minigame_on_tv": "Jouez au mini-jeu sur la TV",
  "card_minigame_dmg": "Mini-jeu",
- "card_minigame_def": "Mini-jeu"
+ "card_minigame_def": "Mini-jeu",
+ "gameend_winner": "Vainqueur"
 }

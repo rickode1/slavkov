@@ -10,7 +10,7 @@
   setTimeout(() => {
    const round = $gameSession?.current_round;
    mapRef?.zoomTo(parseInt(round), true);
-  }, 5000);
+  }, 3000);
  });
 </script>
 

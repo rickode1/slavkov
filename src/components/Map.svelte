@@ -6,12 +6,14 @@
  import { positions } from "$lib/stores/positions.js";
  import { strokeStyle } from "$lib/constants.js";
  import * as m from "$lib/paraglide/messages.js";
+ import PlayerBust from "$components/PlayerBust.svelte";
 
  let {
   playerFilter = null,
   classes = "",
   onSlotSelect = null,
   onBattleReady = null,
+  onBattleEndComplete = null,
   selectedSlotId = null,
   unitImage = null,
   unitsAnimated = true,
@@ -50,6 +52,19 @@
   santon: () => m.location_santon(),
  };
 
+ // Map location id -> winner player object (location id corresponds to round number)
+ let locationWinners = $derived(() => {
+  if (!$gameSession) return {};
+  const result = {};
+  for (let r = 1; r <= 3; r++) {
+   const rd = $gameSession[`round_${r}`];
+   if (rd?.winner) {
+    result[r] = $gameSession[`player_${rd.winner}`] || null;
+   }
+  }
+  return result;
+ });
+
  let locations = $derived(
   $positions.map((loc) => ({
    ...loc,
@@ -79,6 +94,7 @@
  let animateZoom = $state(false);
  let battlePhase = $state(null);
  let battleTargets = $state({});
+ let losingSlotId = $state(null);
 
  if (browser) {
   isMobile = window.innerWidth < 1024;
@@ -86,7 +102,7 @@
 
  // Watch for positions loading and zoom when ready
  $effect(() => {
-  if (autoZoom && locations.length > 0 && initialLocation && !zoomed) {
+  if (autoZoom && locations.length > 0 && initialLocation && !zoomed && !battlePhase) {
    zoomTo(initialLocation, false);
   }
  });
@@ -123,6 +139,7 @@
 
  export function resetZoom() {
   if (transitioning) return;
+  animateZoom = true;
   transitioning = true;
   scale = 1;
   zoomed = false;
@@ -154,11 +171,13 @@
    // Phase 2: after fade, move units toward each other
    const midX = (unitSlots[0].x + unitSlots[1].x) / 2;
    const midY = (unitSlots[0].y + unitSlots[1].y) / 2;
+   const dx = (unitSlots[1].x - unitSlots[0].x) * 0.15;
+   const dy = (unitSlots[1].y - unitSlots[0].y) * 0.15;
 
    setTimeout(() => {
     battleTargets = {
-     [unitSlots[0].id]: { x: midX, y: midY },
-     [unitSlots[1].id]: { x: midX, y: midY },
+     [unitSlots[0].id]: { x: midX - dx, y: midY - dy },
+     [unitSlots[1].id]: { x: midX + dx, y: midY + dy },
     };
     battlePhase = 'move-units';
 
@@ -167,6 +186,54 @@
      onBattleReady?.();
     }, 1200);
    }, 800);
+  }
+ }
+
+ export function showBattleEnd() {
+  // Immediately show the final battle state: slots hidden, units near each other
+  losingSlotId = null;
+  const pu = placedUnits();
+  const unitSlots = [];
+  for (const loc of locations) {
+   for (const slot of loc.slots) {
+    if (pu[slot.id]) {
+     unitSlots.push(slot);
+    }
+   }
+  }
+
+  battlePhase = 'move-units';
+
+  if (unitSlots.length === 2) {
+   const midX = (unitSlots[0].x + unitSlots[1].x) / 2;
+   const midY = (unitSlots[0].y + unitSlots[1].y) / 2;
+   const dx = (unitSlots[1].x - unitSlots[0].x) * 0.1;
+   const dy = (unitSlots[1].y - unitSlots[0].y) * 0.1;
+   battleTargets = {
+    [unitSlots[0].id]: { x: midX - dx, y: midY - dy },
+    [unitSlots[1].id]: { x: midX + dx, y: midY + dy },
+   };
+
+   // Determine losing slot from round winner
+   const round = $gameSession?.current_round || 1;
+   const rd = $gameSession?.[`round_${round}`];
+   const winner = rd?.winner;
+   if (winner) {
+    const loserPlayerNum = winner === 1 ? 2 : 1;
+    const losingSlot = unitSlots.find((s) => s.p === loserPlayerNum);
+    if (losingSlot) {
+     // After units settle, grey out the loser
+     setTimeout(() => {
+      losingSlotId = losingSlot.id;
+      setTimeout(() => {
+       resetZoom();
+       setTimeout(() => {
+        onBattleEndComplete?.();
+       }, 800);
+      }, 2000);
+     }, 600);
+    }
+   }
   }
  }
 </script>
@@ -197,15 +264,22 @@
    <img class="w-full" srcset={optimize("/img/map.png")} alt="" />
 
    {#each locations as loc (loc.id)}
+    {@const winner = locationWinners()[loc.id]}
     <div
-     class="absolute flex items-center justify-center text-center rounded-full h-60 w-60
-     bg-primary/85 text-white text-3xl px-6 py-3
+     class="absolute flex flex-col items-center justify-center text-center rounded-full h-60 w-60
+     text-white text-3xl px-6 py-3
      -translate-x-1/2 -translate-y-1/2
      transition-opacity duration-500 ease-in-out
+     bg-primary/85
      {zoomed ? 'opacity-0 pointer-events-none' : 'opacity-100'}"
-     style="left: {loc.x}%; top: {loc.y}%"
+     style="left: {loc.x}%; top: {loc.y}%; {winner ? `background-color: color-mix(in srgb, var(--color-bust-${winner.bust}) 85%, transparent)` : ''}"
     >
-     {loc.label()}
+     {#if winner}
+      <div class="absolute -top-10 left-1/2">
+      <PlayerBust player={winner} small={true} />
+      </div>
+     {/if}
+     {loc.label()}     
     </div>
    {/each}
 
@@ -217,10 +291,10 @@
        -translate-x-1/2 -translate-y-1/2
        transition-all duration-2000 ease-in-out overflow-hidden
        {onSlotSelect ? 'cursor-pointer' : ''}
-       {activeLocationId === loc.id
+       {(activeLocationId === loc.id || battleTargets[slot.id]) && zoomed
         ? 'opacity-100'
         : 'opacity-0 pointer-events-none'}"
-       style="left: {battleTargets[slot.id] ? battleTargets[slot.id].x : slot.x}%; top: {battleTargets[slot.id] ? battleTargets[slot.id].y : slot.y}%; background-color: {battlePhase ? 'transparent' : getSlotColor(slot.p)}"
+       style="left: {battleTargets[slot.id] ? battleTargets[slot.id].x : slot.x}%; top: {battleTargets[slot.id] ? battleTargets[slot.id].y : slot.y}%; background-color: {battlePhase ? 'transparent' : getSlotColor(slot.p)}; {losingSlotId === slot.id ? 'transition: filter 0.8s ease; filter: grayscale(1) brightness(0.6);' : ''}"
        onclick={() => onSlotSelect?.(slot)}
        aria-label="Select slot"
       >

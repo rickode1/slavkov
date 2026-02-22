@@ -9,6 +9,7 @@
 
  import Help from "$components/Help.svelte";
  import Button from "$components/Button.svelte";
+ import Loader from "$components/Loader.svelte";
 
  // Get current player's data
  let myPlayer = $derived(() => {
@@ -20,29 +21,79 @@
 
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
 
+ let activePlayerNumber = $derived(() => {
+  const round = $gameSession?.current_round || 1;
+  return $gameSession?.[`round_${round}`]?.current_turn?.player || 1;
+ });
+
+ let isActivePlayer = $derived(myPlayerNumber === activePlayerNumber());
+
+ let turnNumber = $derived(() => {
+  const round = $gameSession?.current_round || 1;
+  return $gameSession?.[`round_${round}`]?.current_turn?.number ?? 0;
+ });
+
+ let sessionRoll = $derived(() => {
+  const round = $gameSession?.current_round || 1;
+  const rd = $gameSession?.[`round_${round}`];
+  return rd?.turns?.[turnNumber()]?.roll ?? null;
+ });
+
  let rolling = $state(false);
- let rolled = $state(false);
- let rollResult = $state(null);
+ let animationDone = $state(false);
+ let showUI = $state(false);
 
- function rollDice() {
-  if (rolling || rolled) return;
+ let rolled = $derived(animationDone && !!sessionRoll());
+ let rollResult = $derived(rolled ? sessionRoll() : null);
+
+ let uiTimer = null;
+ $effect(() => {
+  const active = isActivePlayer;
+  const turn = turnNumber();
+  if (active && !sessionRoll()) {
+   if (uiTimer) clearTimeout(uiTimer);
+   showUI = false;
+   animationDone = false;
+   uiTimer = setTimeout(() => {
+    showUI = true;
+   }, 4500);
+  } else if (showUI) {
+   if (uiTimer) clearTimeout(uiTimer);
+   uiTimer = setTimeout(() => {
+    showUI = false;
+   }, 5000);
+  }
+ });
+
+ async function rollDice() {
+  if (rolling) return;
   rolling = true;
-  rollResult = null;
 
-  setTimeout(() => {
-   rolling = false;
-   rolled = true;
-   rollResult = Math.floor(Math.random() * 20) + 1;
-  }, 2000);
+  const [response] = await Promise.all([
+   fetch('/api/session/battle/roll', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId: $sessionId, playerCode: $playerCode }),
+   }),
+   new Promise((resolve) => setTimeout(resolve, 2000)),
+  ]);
+
+  rolling = false;
+  animationDone = true;
+
+  if (!response.ok) {
+   console.error('Failed to roll dice');
+  }
  }
 </script>
 
 {#if $gameSession}
- <Help player={myPlayer()} autoOpen={false}>
+ <Help player={myPlayer()}>
   <p class="text-xl"></p>
  </Help>
 
  <div class="flex flex-col items-center gap-6 mt-60">
+  {#if isActivePlayer && showUI}
   <div class="dice-float">
    <div class="relative flex items-center justify-center">
     <img
@@ -60,12 +111,16 @@
   </div>
 
   {#if !rolled}
-   <Button
-    text={m.battle_roll_button()}
-    onclick={rollDice}
-    disabled={rolling}
-    classes="!text-2xl !h-14 min-w-auto mt-4"
-   />
+   {#if rolling}
+    <Loader classes="mt-4" />
+   {:else}
+    <Button
+     text={m.battle_roll_button()}
+     onclick={rollDice}
+     classes="!text-2xl !h-14 min-w-auto mt-4"
+    />
+   {/if}
+  {/if}
   {/if}
  </div>
 {/if}

@@ -28,9 +28,10 @@
  "card_loc": "Gelände",
  "card_unit": "Kraftkreis",
  "battle_difficulty": "Schwierigkeit",
- "battle_roll_dice": "Würfle auf deinem Handy!",
+ "battle_roll_dice": "würfle auf deinem Handy!",
  "battle_roll_button": "Würfeln",
  "play_minigame_on_tv": "Spiele das Minispiel auf dem TV",
  "card_minigame_dmg": "Minispiel",
- "card_minigame_def": "Minispiel"
+ "card_minigame_def": "Minispiel",
+ "gameend_winner": "Sieger"
 }
