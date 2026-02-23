@@ -113,7 +113,7 @@
    nick: page.url.searchParams.get("nick") ?? "",
    dmg: page.url.searchParams.get("dmg") ?? Math.floor(Math.random() * 8) + 1,
    def: page.url.searchParams.get("def") ?? Math.floor(Math.random() * 8) + 1,
-   life: page.url.searchParams.get("life") ?? Math.floor(Math.random() * 2) + 2,
+   life: page.url.searchParams.get("life") ?? Math.floor(Math.random() * 2) + 1,
   };
   nick = urlParams.nick;
  });

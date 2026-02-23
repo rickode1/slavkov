@@ -86,7 +86,7 @@
  });
 </script>
 
-<div class="flex flex-col mt-2 gap-1">
+<div class="flex flex-col mt-2 gap-1 w-49">
  {#each rows() as row}
   <div class="flex gap-1">
    {#each row as group, gi}
