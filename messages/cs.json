@@ -34,5 +34,14 @@
  "play_minigame_on_tv": "Hraj minihru na TV",
  "card_minigame_dmg": "Minihra",
  "card_minigame_def": "Minihra",
- "gameend_winner": "Vítěz"
+ "gameend_winner": "Vítěz",
+ "gameend_win": "Bitvu jsi vyhrál!",
+ "gameend_lose": "Bitvu jsi prohrál!",
+ "no_bonuses": "Nemáš k dispozici žádné bonusy",
+ "battle_attacking": "{name} útočí",
+ "battle_defending": "{name} se brání",
+ "battle_attack": "Útok",
+ "battle_defense": "Obrana",
+ "battle_success": "Úspěch",
+ "battle_failure": "Neúspěch"
 }

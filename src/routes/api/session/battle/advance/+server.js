@@ -33,8 +33,9 @@ export async function POST({ request }) {
 
 	if (!success) {
 		if (role === 'dmg') {
-			// dmg failed → opponent gets to attack next (switch attacker, no round end)
-			const nextPlayer = player === 1 ? 2 : 1;
+			// Check if this turn had unit_retry — give same player another dmg attempt
+			const currentTurnData = roundData.turns?.[turnNumber] || {};
+			const nextPlayer = currentTurnData.unit_retry ? player : (player === 1 ? 2 : 1);
 			const updatedRoundData = {
 				...roundData,
 				current_turn: {
@@ -57,7 +58,37 @@ export async function POST({ request }) {
 
 			return json({ ok: true, next: 'turn', session: data });
 		} else {
-			// def failed → attacker (opponent) wins the round
+			// def failed — check for life bonus before ending round
+			const currentTurnData = roundData.turns?.[turnNumber] || {};
+			if (currentTurnData.life_retry) {
+				// life bonus saves the defender — consume one life, defender becomes attacker
+				const suffix = `_${player}`;
+				const lifeUsed = (roundData[`life_used${suffix}`] || 0) + 1;
+				const updatedRoundData = {
+					...roundData,
+					[`life_used${suffix}`]: lifeUsed,
+					current_turn: {
+						player,
+						role: 'dmg',
+						number: turnNumber + 1,
+					},
+				};
+
+				const { data, error } = await supabaseAdmin
+					.from('sessions')
+					.update({ [roundColumn]: updatedRoundData })
+					.eq('id', sessionId)
+					.select()
+					.single();
+
+				if (error) {
+					return json({ error: error.message }, { status: 500 });
+				}
+
+				return json({ ok: true, next: 'turn', session: data });
+			}
+
+			// attacker (opponent) wins the round
 			const winner = player === 1 ? 2 : 1;
 			const updatedRoundData = { ...roundData, winner };
 

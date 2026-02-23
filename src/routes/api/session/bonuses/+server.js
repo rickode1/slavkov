@@ -47,9 +47,6 @@ export async function POST({ request }) {
 		|| updatedRoundData[`bonuses_life${otherSuffix}`] !== undefined;
 
 	const updateData = { [roundColumn]: updatedRoundData };
-	if (otherHasBonuses) {
-		updateData.status = '6-battle';
-	}
 
 	const { data, error } = await supabaseAdmin
 		.from('sessions')
@@ -60,6 +57,18 @@ export async function POST({ request }) {
 
 	if (error) {
 		return json({ error: error.message }, { status: 500 });
+	}
+
+	if (otherHasBonuses) {
+		await new Promise((resolve) => setTimeout(resolve, 2000));
+		const { error: statusError } = await supabaseAdmin
+			.from('sessions')
+			.update({ status: '6-battle' })
+			.eq('id', sessionId);
+
+		if (statusError) {
+			return json({ error: statusError.message }, { status: 500 });
+		}
 	}
 
 	return json({ session: data });

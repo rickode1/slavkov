@@ -33,5 +33,14 @@
  "play_minigame_on_tv": "Play the minigame on TV",
  "card_minigame_dmg": "Minigame",
  "card_minigame_def": "Minigame",
- "gameend_winner": "Winner"
+ "gameend_winner": "Winner",
+ "gameend_win": "You won the battle!",
+ "gameend_lose": "You lost the battle!",
+ "no_bonuses": "You have no bonuses available",
+ "battle_attacking": "{name} is attacking",
+ "battle_defending": "{name} is defending",
+ "battle_attack": "Attack",
+ "battle_defense": "Defense",
+ "battle_success": "Success",
+ "battle_failure": "Failure"
 }

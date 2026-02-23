@@ -116,21 +116,26 @@
  </Help>
 
  <div class="pt-20 pb-6 w-full">
- {#each cardGroups() as group, gi}
-  <div class="flex flex-wrap items-start w-full gap-1 mt-4">
-   {#each group as card}
-    <Card
-     type={card.type}
-     value={card.value}
-     small
-     selected={selectedCards.has(card.id)}
-     disabled={card.disabled}
-     strokeStyle={strokeSmStyle()}
-     onclick={() => !card.disabled && toggleCard(card.id)}
-    />
-   {/each}
-  </div>
- {/each}
+ {#if cardGroups().length === 0}
+  <p class="text-xl text-center mt-4">{m.no_bonuses()}</p>
+ {:else}
+  {#each cardGroups() as group, gi}
+   <div class="flex flex-wrap items-start w-full gap-1 mt-4">
+    {#each group as card}
+     <Card
+      type={card.type}
+      value={card.value}
+      small
+      hideValue
+      selected={selectedCards.has(card.id)}
+      disabled={card.disabled}
+      strokeStyle={strokeSmStyle()}
+      onclick={() => !card.disabled && toggleCard(card.id)}
+     />
+    {/each}
+   </div>
+  {/each}
+ {/if}
  </div>
 
  {#if !submitted}

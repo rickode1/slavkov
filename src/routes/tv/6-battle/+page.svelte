@@ -25,7 +25,10 @@
 
  let filteredHighlights = $derived(() => {
   if (!highlightCardTypes.size) return null;
-  const allowed = new Set(['loc', activeRole()]);
+  const role = activeRole();
+  const allowed = new Set(['loc', role]);
+  if (role === 'dmg') allowed.add('unit');
+  if (role === 'def') allowed.add('life');
   const filtered = new Set([...highlightCardTypes].filter((t) => allowed.has(t)));
   return filtered.size ? filtered : null;
  });
@@ -47,12 +50,12 @@
  <div class="absolute left-10 top-6 flex w-[calc(100%-5rem)] justify-between">
   <div class="flex flex-col items-center">
    <PlayerBust player={$gameSession.player_1} />
-   <CardBonuses playerCode="code_1" animated={false} highlightTypes={activePlayerCode() === "code_1" ? filteredHighlights() : null} />
+   <CardBonuses playerCode="code_1" highlightTypes={activePlayerCode() === "code_1" ? filteredHighlights() : null} />
   </div>
 
   <div class="flex flex-col items-center">
    <PlayerBust player={$gameSession.player_2} />
-   <CardBonuses playerCode="code_2" animated={false} highlightTypes={activePlayerCode() === "code_2" ? filteredHighlights() : null} />
+   <CardBonuses playerCode="code_2" highlightTypes={activePlayerCode() === "code_2" ? filteredHighlights() : null} />
   </div>
  </div>
 

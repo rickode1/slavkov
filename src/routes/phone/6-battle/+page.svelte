@@ -65,15 +65,18 @@
   }
  });
 
- async function rollDice() {
+ async function rollDice(forcedRoll = null) {
   if (rolling) return;
   rolling = true;
+
+  const body = { sessionId: $sessionId, playerCode: $playerCode };
+  if (forcedRoll) body.debugRoll = forcedRoll;
 
   const [response] = await Promise.all([
    fetch('/api/session/battle/roll', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionId: $sessionId, playerCode: $playerCode }),
+    body: JSON.stringify(body),
    }),
    new Promise((resolve) => setTimeout(resolve, 2000)),
   ]);
@@ -116,9 +119,13 @@
    {:else}
     <Button
      text={m.battle_roll_button()}
-     onclick={rollDice}
+     onclick={() => rollDice()}
      classes="!text-2xl !h-14 min-w-auto mt-4"
     />
+    <div class="flex gap-2 mt-2">
+     <button class="px-3 py-1 text-xs bg-primary text-white" onclick={() => rollDice(1)}>1</button>
+     <button class="px-3 py-1 text-xs bg-primary text-white" onclick={() => rollDice(20)}>20</button>
+    </div>
    {/if}
   {/if}
   {/if}

@@ -16,6 +16,7 @@
   onBattleEndComplete = null,
   selectedSlotId = null,
   unitImage = null,
+  unitRotate = false,
   unitsAnimated = true,
   hideUnits = false,
   autoZoom = true,
@@ -38,10 +39,10 @@
   const p2Bust = $gameSession.player_2?.bust;
 
   if (rd.loc_1 && rd.unit_1 && p1Bust) {
-   units[rd.loc_1] = `/img/unit_${p1Bust}_${rd.unit_1}.png`;
+   units[rd.loc_1] = { src: `/img/unit_${p1Bust}_${rd.unit_1}.png`, rotate: rd.unit_1 === 'cavalry' };
   }
   if (rd.loc_2 && rd.unit_2 && p2Bust) {
-   units[rd.loc_2] = `/img/unit_${p2Bust}_${rd.unit_2}.png`;
+   units[rd.loc_2] = { src: `/img/unit_${p2Bust}_${rd.unit_2}.png`, rotate: rd.unit_2 === 'cannon' };
   }
   return units;
  });
@@ -300,15 +301,15 @@
       >
        {#if selectedSlotId === slot.id && unitImage}
         <img
-         class="w-full h-[75%] object-contain {unitsAnimated ? 'unit-drop' : ''}"
+         class="w-full h-[75%] object-contain {unitsAnimated ? 'unit-drop' : ''} {unitRotate ? 'scale-x-[-1]' : ''}"
          srcset={optimize(unitImage)}
          alt=""
         />
        {:else if placedUnits()[slot.id]}
         <img
-         class="w-full h-[75%] object-contain transition-[filter] duration-700 ease-in-out"
+         class="w-full h-[75%] object-contain transition-[filter] duration-700 ease-in-out {placedUnits()[slot.id].rotate ? 'scale-x-[-1]' : ''}"
          style={battlePhase ? getUnitStroke(slot.p) : ''}
-         srcset={optimize(placedUnits()[slot.id])}
+         srcset={optimize(placedUnits()[slot.id].src)}
          alt=""
         />
        {/if}

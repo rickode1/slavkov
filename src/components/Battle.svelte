@@ -1,9 +1,11 @@
 <script>
+ import { untrack } from "svelte";
  import { fly, fade } from "svelte/transition";
  import { optimize } from "$lib/image";
  import { gameSession, sessionId } from "$lib/stores/gameSession.js";
  import { strokeStyle } from "$lib/constants.js";
  import Card from "$components/Card.svelte";
+ import BattleLog from "$components/BattleLog.svelte";
  import * as m from "$lib/paraglide/messages.js";
 
  let { visible = false, onHighlightCard = null } = $props();
@@ -34,6 +36,11 @@
   return roll ?? null;
  });
 
+ let currentTurnData = $derived(() => {
+  const rd = roundData();
+  return rd?.turns?.[turnNumber] || null;
+ });
+
  let player1UnitImg = $derived(() => {
   const rd = roundData();
   if (!rd || !$gameSession) return null;
@@ -42,12 +49,22 @@
   return bust && unit ? `/img/unit_${bust}_${unit}.png` : null;
  });
 
+ let player1UnitRotate = $derived(() => {
+  const rd = roundData();
+  return rd?.unit_1 === 'cavalry';
+ });
+
  let player2UnitImg = $derived(() => {
   const rd = roundData();
   if (!rd || !$gameSession) return null;
   const bust = $gameSession.player_2?.bust;
   const unit = rd.unit_2;
   return bust && unit ? `/img/unit_${bust}_${unit}.png` : null;
+ });
+
+ let player2UnitRotate = $derived(() => {
+  const rd = roundData();
+  return rd?.unit_2 === 'cannon';
  });
 
  let player1Stroke = $derived(
@@ -83,7 +100,31 @@
   revealedRoll = roll;
   await sleep(1000);
   rollOutcome = roll > displayedDifficulty ? 'success' : 'fail';
-  await sleep(2000);
+
+  // Check for unit retry — show card before advancing
+  const turnData = currentTurnData();
+  if (rollOutcome === 'fail' && turnData?.unit_retry) {
+   await sleep(1500);
+   untrack(() => onHighlightCard?.('unit'));
+   activeCard = { type: 'unit', value: roundData()?.[`bonus_unit_${startingPlayer}`] || 1 };
+   await sleep(2000);
+   activeCard = null;
+   await sleep(500);
+  } else if (rollOutcome === 'fail' && turnData?.life_retry) {
+   await sleep(1500);
+   untrack(() => onHighlightCard?.('life'));
+   activeCard = { type: 'life', value: 1 };
+   await sleep(2000);
+   activeCard = null;
+   await sleep(500);
+  } else {
+   await sleep(2000);
+  }
+
+  await advanceBattle();
+ }
+
+ async function advanceBattle() {
   const res = await fetch('/api/session/battle/advance', {
    method: 'POST',
    headers: { 'Content-Type': 'application/json' },
@@ -131,6 +172,15 @@
   const suffix = `_${startingPlayer}`;
   const steps = [];
 
+  // Check if previous turn was a unit_retry — highlight unit card for this retry turn
+  const prevTurn = rd.turns?.[turnNumber - 1];
+  if (prevTurn?.unit_retry && prevTurn?.player === startingPlayer) {
+   untrack(() => onHighlightCard?.('unit'));
+  }
+  if (prevTurn?.life_retry && prevTurn?.player === startingPlayer) {
+   untrack(() => onHighlightCard?.('life'));
+  }
+
   const locVal = rd[`bonus_loc${suffix}`];
   if (locVal !== undefined && locVal !== 0) {
    steps.push({ type: "loc", value: locVal });
@@ -146,7 +196,7 @@
   await sleep(1500);
 
   for (const step of steps) {
-   onHighlightCard?.(step.type);
+   untrack(() => onHighlightCard?.(step.type));
    activeCard = { type: step.type, value: step.value };
    await sleep(800);
    const target = current - step.value;
@@ -168,20 +218,30 @@
 {#if visible}
  <div class="fixed inset-0 z-50 flex items-start justify-center my-30 max-w-360 mx-auto">
   <div
-   class="relative w-[calc(100%-28rem)] aspect-31/18 flex flex-col items-center justify-start gap-4 pt-20"
+   class="relative w-[calc(100%-10rem)] flex items-start justify-center gap-6"
    transition:fly={{ y: -500, duration: 600 }}
   >
+
+  <div
+    class="relative flex-1 aspect-31/18 pt-24 flex items-start justify-between"
+   >
    <img
     class="absolute inset-0 w-full h-full object-cover rounded-2xl"
     srcset={optimize("/img/battle_bg.png")}
     alt=""
    />
 
+   <!-- Player 1 Log (left) -->
+   <div class="ml-20 mt-14">
+    <BattleLog playerNumber={1} />
+   </div>   
+
+   <div class="flex flex-col items-center justify-start gap-4">
    <!-- Units -->
    <div class="relative z-10 flex items-end justify-center gap-4">
     {#if player1UnitImg()}
      <img
-      class="h-22 object-contain {(startingPlayer === 1 && role === 'dmg') || (defenderNum === 1 && role === 'def') ? 'rotate-10 -translate-y-2' : ''}"
+      class="h-22 object-contain {(startingPlayer === 1 && role === 'dmg') || (defenderNum === 1 && role === 'def') ? 'rotate-10 -translate-y-2' : ''} {player1UnitRotate() ? 'scale-x-[-1]' : ''}"
       style={startingPlayer === 1 ? player1Stroke : ''}
       srcset={optimize(player1UnitImg())}
       alt="Player 1"
@@ -189,13 +249,18 @@
     {/if}
     {#if player2UnitImg()}
      <img
-      class="h-22 object-contain {(startingPlayer === 2 && role === 'dmg') || (defenderNum === 2 && role === 'def') ? '-rotate-10 -translate-y-2' : ''}"
+      class="h-22 object-contain {(startingPlayer === 2 && role === 'dmg') || (defenderNum === 2 && role === 'def') ? '-rotate-10 -translate-y-2' : ''} {player2UnitRotate() ? 'scale-x-[-1]' : ''}"
       style={startingPlayer === 2 ? player2Stroke : ''}
       srcset={optimize(player2UnitImg())}
       alt="Player 2"
      />
     {/if}
    </div>
+
+   <!-- Turn title -->
+   <p class="relative z-10 text-2xl text-center">
+    {role === 'dmg' ? m.battle_attacking({ name: activePlayerName }) : m.battle_defending({ name: activePlayerName })}
+   </p>   
 
    <!-- Difficulty -->
    <div class="relative z-10 flex flex-col items-center">
@@ -214,7 +279,8 @@
       </span>
      {/key}
     </div>
-    <div class="{activeCard ? 'h-28' : 'h-0'} flex items-start justify-center mt-4 transition-[height] duration-300">
+
+    <div class="relative z-10 h-28 flex items-start justify-center mt-4 transition-[height] duration-300">
      {#if activeCard}
       <div transition:fade={{ duration: 300 }}>
        <Card type={activeCard.type} value={activeCard.value} />
@@ -223,16 +289,16 @@
     </div>
 
     {#if showDice}
-     <div class="{!revealedRoll ? 'dice-float mt-4' : 'mt-3'} relative transition-all duration-700
+     <div class="relative -top-28 {!revealedRoll ? 'dice-float mt-4' : 'mt-3'} transition-all duration-700
       {rollOutcome === 'fail' ? 'grayscale-100' : ''}" transition:fade={{ duration: 400 }}>
       {#if (!diceRolling && !revealedRoll) || rollOutcome}
        <span
         class="text-white text-center px-6 py-2 shadow-lg mb-2 whitespace-nowrap absolute bottom-6 left-1/2 -translate-x-1/2 z-10 rounded-sm bg-secondary"
        >
         {#if rollOutcome === 'success'}
-         Úspěch!
+         {m.battle_success()}!
         {:else if rollOutcome === 'fail'}
-         Neúspěch!
+         {m.battle_failure()}!
         {:else}
          {activePlayerName}, {m.battle_roll_dice()}
         {/if}
@@ -241,7 +307,7 @@
 
       <div class="relative flex items-center justify-center">
        <img
-        class="h-40 object-contain drop-shadow-lg {diceRolling ? 'dice-rolling' : ''}"
+        class="h-34 object-contain drop-shadow-lg {diceRolling ? 'dice-rolling' : ''}"
         srcset={optimize("/img/dice.png")}
         alt="Dice"
        />
@@ -251,12 +317,19 @@
         </div>
        {/if}
       </div>
-      {#if !revealedRoll}
-      <div class="dice-shadow {diceRolling ? 'shadow-rolling' : ''}"></div>
-      {/if}
+      <div class="dice-shadow {diceRolling ? 'shadow-rolling' : ''} {revealedRoll ? 'opacity-0' : ''}"></div>
      </div>
     {/if}
    </div>
+
+   </div>
+
+   <!-- Player 2 Log (right) -->
+   <div class="mr-14 mt-14">
+    <BattleLog playerNumber={2} />
+   </div>
+
+  </div>
   </div>
  </div>
 {/if}

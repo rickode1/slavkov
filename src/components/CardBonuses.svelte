@@ -18,21 +18,28 @@
   return $gameSession[`round_${round}`] || null;
  });
 
+ let lifeUsed = $derived(() => {
+  const rd = roundData();
+  return rd?.[`life_used${suffix}`] || 0;
+ });
+
  let allCards = $derived(() => {
   const rd = roundData();
   if (!rd) return [];
   const cards = [];
   if (rd[`bonus_unit${suffix}`] !== undefined)
-   cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`] });
+   cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`], disabled: false });
   if (rd[`bonus_loc${suffix}`] !== undefined)
-   cards.push({ type: "loc", value: rd[`bonus_loc${suffix}`] });
+   cards.push({ type: "loc", value: rd[`bonus_loc${suffix}`], disabled: false });
   if (!hideBonuses) {
    for (let i = 0; i < (rd[`bonuses_def${suffix}`] || 0); i++)
-    cards.push({ type: "def", value: 1 });
+    cards.push({ type: "def", value: 1, disabled: false });
    for (let i = 0; i < (rd[`bonuses_dmg${suffix}`] || 0); i++)
-    cards.push({ type: "dmg", value: 1 });
-   for (let i = 0; i < (rd[`bonuses_life${suffix}`] || 0); i++)
-    cards.push({ type: "life", value: 1 });
+    cards.push({ type: "dmg", value: 1, disabled: false });
+   const lifeCount = rd[`bonuses_life${suffix}`] || 0;
+   const used = lifeUsed();
+   for (let i = 0; i < lifeCount; i++)
+    cards.push({ type: "life", value: 1, disabled: i < used });
   }
   return cards;
  });
@@ -41,6 +48,11 @@
   const groups = [];
   const seen = new Map();
   for (const card of cards) {
+   // Life cards are shown individually, not stacked
+   if (card.type === 'life') {
+    groups.push({ type: card.type, items: [card] });
+    continue;
+   }
    if (!seen.has(card.type)) {
     const group = { type: card.type, items: [] };
     groups.push(group);
@@ -54,10 +66,14 @@
  let grouped = $derived(() => {
   const groups = groupCards(allCards());
   // Show total on top card for stacked bonus cards
-  return groups.map((g) => ({
-   ...g,
-   displayValue: g.items.length > 1 ? g.items.length : g.items[0]?.value,
-  }));
+  return groups.map((g) => {
+   const active = g.items.filter((c) => !c.disabled).length;
+   return {
+    ...g,
+    displayValue: g.items.length > 1 ? active : g.items[0]?.value,
+    allDisabled: active === 0,
+   };
+  });
  });
 
  let rows = $derived(() => {
@@ -80,7 +96,7 @@
        class={i > 0 ? "absolute" : "relative"}
        style="{i > 0 ? `right: ${i * 2}px; bottom: ${i * 2}px;` : ''} z-index: {i}"
       >
-       <Card type={bonus.type} value={i === group.items.length - 1 ? group.displayValue : bonus.value} highlighted={highlightTypes?.has(bonus.type)} strokeStyle={highlightStroke} />
+       <Card type={bonus.type} value={i === group.items.length - 1 ? group.displayValue : bonus.value} highlighted={!group.allDisabled && highlightTypes?.has(bonus.type)} disabled={group.allDisabled} strokeStyle={highlightStroke} />
       </div>
      {/each}
     </div>

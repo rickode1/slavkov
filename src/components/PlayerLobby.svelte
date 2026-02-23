@@ -11,7 +11,7 @@
  }
 </script>
 
-<div class="flex flex-col items-center w-1/2">
+<div class="flex flex-col items-center justify-end w-1/2">
  {#if !isPlayerReady(player)}
   <img
    class="h-50 w-auto lg:w-76 lg:h-auto"

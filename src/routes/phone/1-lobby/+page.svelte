@@ -111,9 +111,9 @@
   urlParams = {
    time: page.url.searchParams.get("time") ?? 0,
    nick: page.url.searchParams.get("nick") ?? "",
-   dmg: page.url.searchParams.get("dmg") ?? Math.floor(Math.random() * 9),
-   def: page.url.searchParams.get("def") ?? Math.floor(Math.random() * 9),
-   life: page.url.searchParams.get("life") ?? Math.floor(Math.random() * 3),
+   dmg: page.url.searchParams.get("dmg") ?? Math.floor(Math.random() * 8) + 1,
+   def: page.url.searchParams.get("def") ?? Math.floor(Math.random() * 8) + 1,
+   life: page.url.searchParams.get("life") ?? Math.floor(Math.random() * 2) + 2,
   };
   nick = urlParams.nick;
  });

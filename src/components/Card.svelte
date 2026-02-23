@@ -9,6 +9,7 @@
   selected = false,
   highlighted = false,
   disabled = false,
+  hideValue = false,
   onclick = null,
   strokeStyle = "",
  } = $props();
@@ -45,7 +46,7 @@
    />
 
    <div class="flex flex-col items-center">
-    {#if type !== "unit"}
+    {#if !hideValue && type !== "unit" && type !== "life"}
      <strong class="text-center font-bold {small ? 'text-xs' : 'text-sm'}"
       >{valueLabel}</strong
      >

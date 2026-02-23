@@ -6,7 +6,7 @@ import { SUPABASE_SECRET_KEY } from '$env/static/private';
 const supabaseAdmin = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SECRET_KEY);
 
 export async function POST({ request }) {
-	const { sessionId, playerCode } = await request.json();
+	const { sessionId, playerCode, debugRoll } = await request.json();
 
 	if (!sessionId || !playerCode) {
 		return json({ error: 'missing_fields' }, { status: 400 });
@@ -48,19 +48,54 @@ export async function POST({ request }) {
 		return json({ error: 'already_rolled' }, { status: 409 });
 	}
 
-	const roll = Math.floor(Math.random() * 20) + 1;
+	// Calculate difficulty (same logic as client)
+	const role = currentTurn.role || 'dmg';
+	const playerSuffix = `_${currentTurn.player}`;
+	let difficulty = role === 'def' ? 14 : 10;
+
+	const locVal = roundData[`bonus_loc${playerSuffix}`] || 0;
+	difficulty -= locVal;
+
+	const bonusVal = roundData[`bonuses_${role}${playerSuffix}`] || 0;
+	difficulty -= bonusVal;
+
+	const roll = debugRoll || Math.floor(Math.random() * 20) + 1;
+	const success = roll > difficulty;
+	const hasUnitBonus = role === 'dmg' && (roundData[`bonus_unit${playerSuffix}`] || 0) > 0;
 
 	const existingTurns = roundData.turns || {};
+
+	// Only allow unit retry if the previous turn wasn't already a retry for this player
+	const prevTurn = existingTurns[turnNumber - 1];
+	const alreadyRetried = prevTurn && prevTurn.player === currentTurn.player && prevTurn.role === 'dmg' && prevTurn.unit_retry;
+	const unitRetry = !success && hasUnitBonus && !alreadyRetried;
+
+	const lifeSelected = roundData[`bonuses_life${playerSuffix}`] || 0;
+	const lifeUsed = roundData[`life_used${playerSuffix}`] || 0;
+	const hasLifeBonus = role === 'def' && (lifeSelected - lifeUsed) > 0;
+	const lifeRetry = !success && hasLifeBonus;
+
+	const turnData = {
+		...(existingTurns[turnNumber] || {}),
+		player: currentTurn.player,
+		role: currentTurn.role,
+		roll,
+		difficulty,
+	};
+
+	if (unitRetry) {
+		turnData.unit_retry = true;
+	}
+
+	if (lifeRetry) {
+		turnData.life_retry = true;
+	}
+
 	const updatedRoundData = {
 		...roundData,
 		turns: {
 			...existingTurns,
-			[turnNumber]: {
-				...(existingTurns[turnNumber] || {}),
-				player: currentTurn.player,
-				role: currentTurn.role,
-				roll,
-			}
+			[turnNumber]: turnData
 		}
 	};
 

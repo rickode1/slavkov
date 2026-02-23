@@ -145,6 +145,12 @@
   if (!unit || !bust) return null;
   return `/img/unit_${bust}_${unit}.png`;
  });
+
+ let unitRotate = $derived(() => {
+  const unit = deployedUnit();
+  if (!unit) return false;
+  return (myPlayerNumber === 1 && unit === 'cavalry') || (myPlayerNumber === 2 && unit === 'cannon');
+ });
 </script>
 
 {#if $gameSession}
@@ -168,6 +174,7 @@
     onSlotSelect={handleSlotSelect}
     selectedSlotId={selectedSlot?.id}
     unitImage={unitImage()}
+    unitRotate={unitRotate()}
     classes=""
    />
 
