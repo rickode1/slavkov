@@ -55,7 +55,7 @@
  let visibleLog = $derived(log().slice(0, visibleCount));
 </script>
 
-<div class="relative z-10 w-80 flex flex-col gap-3 shrink-0 max-h-123 overflow-y-auto scrollbar-thin">
+<div class="relative z-10 w-80 flex flex-col justify-end gap-3 shrink-0 max-h-123 overflow-hidden">
  {#each visibleLog as entry}
   <div class="flex flex-col gap-1 px-4 py-2" transition:fade={{ duration: 400 }}>
    <div class="flex items-center gap-3">
