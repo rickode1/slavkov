@@ -1,4 +1,5 @@
 <script>
+ import { onMount, onDestroy } from "svelte";
  import {
   sessionId,
   gameSession,
@@ -7,6 +8,7 @@
  import { optimize } from "$lib/image";
  import * as m from "$lib/paraglide/messages";
  import { strokeStyle } from "$lib/constants.js";
+ import { startTimer, stopTimer, resetTimer } from "$lib/stores/timer.js";
 
  import PlayerBust from "$components/PlayerBust.svelte";
  import Button from "$components/Button.svelte";
@@ -53,6 +55,7 @@
 
  async function handleDeploy() {
   if (!selectedUnit || deploying) return;
+  resetTimer(30);
   deploying = true;
   try {
    const response = await fetch("/api/session/deploy", {
@@ -103,12 +106,17 @@
  let deployingLocation = $state(false);
  let locationSelected = $state(false);
 
+ // Timer: 30s to select unit
+ onMount(() => startTimer(30));
+ onDestroy(() => stopTimer());
+
  function handleSlotSelect(slot) {
   selectedSlot = slot;
  }
 
  async function handleDeployLocation() {
   if (!selectedSlot || deployingLocation) return;
+  stopTimer();
   deployingLocation = true;
   try {
    const response = await fetch("/api/session/location", {

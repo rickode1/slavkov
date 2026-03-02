@@ -12,6 +12,7 @@
  import { terminalStates, gameScreens } from "$lib/constants.js";
  import { currentLocale } from "$lib/stores/locale.js";
  import LangSwitcher from "$components/LangSwitcher.svelte";
+ import Timer from "$components/Timer.svelte";
 
  let { children } = $props();
 
@@ -68,4 +69,5 @@
   {@render children()}
  {/key}
  <LangSwitcher classes="fixed left-4 bottom-4" />
+ <Timer />
 </main>

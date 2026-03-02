@@ -45,5 +45,6 @@
  "battle_success": "Úspěch",
  "battle_failure": "Neúspěch",
  "shoot": "Vystřel!",
- "jump": "Vyskoč!"
+ "jump": "Vyskoč!",
+ "cancel_game": "Opravdu chcete bitvu ukončit?"
 }

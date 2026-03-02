@@ -1,4 +1,5 @@
 <script>
+ import { onMount, onDestroy } from "svelte";
  import {
   sessionId,
   gameSession,
@@ -7,6 +8,7 @@
  import { optimize } from "$lib/image";
  import * as m from "$lib/paraglide/messages";
  import { strokeStyle } from "$lib/constants.js";
+ import { startTimer, stopTimer } from "$lib/stores/timer.js";
 
  import PlayerBust from "$components/PlayerBust.svelte";
  import Card from "$components/Card.svelte";
@@ -64,6 +66,10 @@
  let submitting = $state(false);
  let submitted = $state(false);
 
+ // Timer: 30s to choose bonuses
+ onMount(() => startTimer(30));
+ onDestroy(() => stopTimer());
+
  function toggleCard(id) {
   const next = new Set(selectedCards);
   if (next.has(id)) {
@@ -78,6 +84,7 @@
 
  async function submitBonuses() {
   if (submitting) return;
+  stopTimer();
   submitting = true;
 
   // Count selected cards per type

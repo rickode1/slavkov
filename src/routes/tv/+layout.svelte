@@ -12,21 +12,47 @@
  import { subscribeToSession, cleanupSession } from "$lib/sessionRealtime.js";
  import { terminalStates, gameScreens } from "$lib/constants.js";
  import { currentLocale } from "$lib/stores/locale.js";
+ import { fly } from "svelte/transition";
+ import * as m from "$lib/paraglide/messages.js";
  import LangSwitcher from "$components/LangSwitcher.svelte";
  import ErrorIcon from "$components/ErrorIcon.svelte";
+ import Notification from "$components/Notification.svelte";
 
  let { children } = $props();
 
- async function handleCancel() {
-  if (!confirm("Are you sure you want to cancel the game session?")) {
-   return;
+ let cancelExpanded = $state(false);
+ let autoCloseTimer = $state(null);
+
+ function toggleCancelPanel() {
+  cancelExpanded = !cancelExpanded;
+  clearAutoClose();
+  if (cancelExpanded) {
+   autoCloseTimer = setTimeout(() => {
+    cancelExpanded = false;
+    autoCloseTimer = null;
+   }, 5000);
   }
+ }
+
+ function clearAutoClose() {
+  if (autoCloseTimer) {
+   clearTimeout(autoCloseTimer);
+   autoCloseTimer = null;
+  }
+ }
+
+ async function confirmCancel() {
+  cancelExpanded = false;
+  clearAutoClose();
+
+  const isGameEnd = page.url.pathname.includes('8-gameend');
+  const status = isGameEnd ? '0-finished' : '0-canceled';
 
   try {
    const response = await fetch("/api/session/status", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId: $sessionId, status: "0-canceled" }),
+    body: JSON.stringify({ sessionId: $sessionId, status }),
    });
 
    if (!response.ok) {
@@ -93,12 +119,17 @@
   }
  });
 
- onDestroy(cleanupSession);
+ onDestroy(() => {
+  cleanupSession();
+  clearAutoClose();
+ });
 </script>
 
 <main
  class="max-w-480 relative px-10 h-screen mx-auto flex flex-col items-center"
 >
+ <Notification />
+ 
  {#key $currentLocale}
   {@render children()}
  {/key}
@@ -110,12 +141,31 @@
  />
 
  {#if $sessionId && page.url.pathname !== "/tv"}
-  <button
-   class="absolute right-8 bottom-6"
-   onclick={handleCancel}
-   aria-label="Cancel game session"
-  >
-   <ErrorIcon classes="w-14 lg:w-20 h-14 lg:h-20" />
-  </button>
+  <div class="absolute right-8 bottom-6 flex items-start">
+   {#if cancelExpanded}
+   <div class="flex flex-col items-end mr-6 gap-y-2">
+    <span
+     class="text-black text-xl whitespace-nowrap"
+     transition:fly={{ x: 80, duration: 300 }}
+    >
+     {m.cancel_game()}
+    </span>
+    <button
+     class="text-white bg-secondary rounded-lg text-sm lg:text-lg px-4 py-1 lg:py-2 cursor-pointer whitespace-nowrap"
+     onclick={confirmCancel}
+     transition:fly={{ x: 80, duration: 300, delay: 50 }}
+    >
+     {m.confirm()}
+    </button>
+   </div>
+   {/if}
+   <button
+    class="relative z-10"
+    onclick={toggleCancelPanel}
+    aria-label="Cancel game session"
+   >
+    <ErrorIcon classes="w-14 lg:w-20 h-14 lg:h-20" />
+   </button>
+  </div>
  {/if}
 </main>

@@ -1,4 +1,5 @@
 <script>
+ import { onDestroy } from "svelte";
  import {
   sessionId,
   gameSession,
@@ -6,6 +7,7 @@
  } from "$lib/stores/gameSession.js";
  import { optimize } from "$lib/image";
  import * as m from "$lib/paraglide/messages";
+ import { startTimer, stopTimer } from "$lib/stores/timer.js";
 
  import Help from "$components/Help.svelte";
  import Button from "$components/Button.svelte";
@@ -46,6 +48,23 @@
  let rolled = $derived(animationDone && !!sessionRoll());
  let rollResult = $derived(rolled ? sessionRoll() : null);
 
+ // Timer: 30s to roll the dice each time it's the active player's turn
+ let prevTimerTurn = -1;
+ $effect(() => {
+  const active = isActivePlayer;
+  const turn = turnNumber();
+  const hasRolled = !!sessionRoll();
+  if (active && !hasRolled) {
+   if (turn !== prevTimerTurn) {
+    prevTimerTurn = turn;
+    startTimer(30);
+   }
+  } else {
+   stopTimer();
+  }
+ });
+ onDestroy(() => stopTimer());
+
  let uiTimer = null;
  $effect(() => {
   const active = isActivePlayer;
@@ -67,6 +86,7 @@
 
  async function rollDice(forcedRoll = null) {
   if (rolling) return;
+  stopTimer();
   rolling = true;
 
   const body = { sessionId: $sessionId, playerCode: $playerCode };

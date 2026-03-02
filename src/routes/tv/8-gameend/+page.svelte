@@ -1,11 +1,27 @@
 <script>
  import { onMount } from "svelte";
  import { optimize } from "$lib/image";
- import { gameSession } from "$lib/stores/gameSession.js";
+ import { gameSession, sessionId } from "$lib/stores/gameSession.js";
  import { positions } from "$lib/stores/positions.js";
  import PlayerBust from "$components/PlayerBust.svelte";
  import Logo from "$components/svg/Logo.svelte";
+ import Timer from "$components/Timer.svelte";
+ import { startTimer, stopTimer } from "$lib/stores/timer.js";
  import * as m from "$lib/paraglide/messages.js";
+
+ async function finishSession() {
+  const id = $sessionId;
+  if (!id) return;
+  try {
+   await fetch('/api/session/status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId: id, status: '0-finished' }),
+   });
+  } catch (e) {
+   console.error('Failed to finish session', e);
+  }
+ }
 
  const labelMap = {
   telnitz: () => m.location_telnitz(),
@@ -17,6 +33,7 @@
  let loserRound = $state(0); // which round's loser has been dimmed
  let loserRevealed = $state(false);
  let winnerCelebrate = $state(false);
+ let showTimer = $state(false);
 
  let winner = $derived(() => {
   if (!$gameSession) return null;
@@ -68,11 +85,12 @@
   const afterRounds = 2 * roundDelay + loserDelay + 1200;
   setTimeout(() => { loserRevealed = true; }, afterRounds);
   setTimeout(() => { winnerCelebrate = true; }, afterRounds + 1200);
+  setTimeout(() => { showTimer = true; startTimer(30); }, afterRounds + 2400);
  });
 </script>
 
 {#if $gameSession}
- <Logo classes="max-w-70 absolute top-10 left-1/2 -translate-x-1/2" />
+ <Logo classes="max-w-60 absolute top-10 left-1/2 -translate-x-1/2" />
 
  <div class="flex flex-col items-center justify-center h-full gap-6 mt-18">
   {#if winner()}
@@ -93,7 +111,7 @@
    </div>
 
    <!-- Rounds row -->
-   <div class="flex items-start gap-16 mt-10">
+   <div class="flex items-start gap-16 mt-6">
     {#each rounds() as rd}
      <div class="flex flex-col items-center gap-4 w-44 transition-opacity duration-800 ease-in-out {revealedRound >= rd.round ? 'opacity-100' : 'opacity-0'}">
       <p class="text-2xl text-center">{rd.label}</p>
@@ -127,23 +145,9 @@
     {/each}
    </div>
   {/if}
+
+  <div class="mt-10 h-16 lg:h-22 flex items-center justify-center transition-opacity duration-700 ease-in-out {showTimer ? 'opacity-100' : 'opacity-0'}">
+   <Timer classes="relative" onExpiry={finishSession} />
+  </div>
  </div>
 {/if}
-
-<style>
- .winner-celebrate {
-  animation: winner-stomp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards,
-             winner-glow 1.5s ease-in-out 0.4s infinite;
- }
-
- @keyframes winner-stomp {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.18); }
-  100% { transform: scale(1.1); }
- }
-
- @keyframes winner-glow {
-  0%, 100% { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6)); }
-  50% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.9)) drop-shadow(0 0 40px rgba(255, 180, 0, 0.4)); }
- }
-</style>

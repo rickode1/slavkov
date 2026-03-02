@@ -1,5 +1,5 @@
 <script>
- import { onMount } from "svelte";
+ import { onMount, onDestroy } from "svelte";
  import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
@@ -9,6 +9,7 @@
   gameSession,
   playerCode,
  } from "$lib/stores/gameSession.js";
+ import { startTimer, stopTimer, resetTimer } from "$lib/stores/timer.js";
  import { fly } from "svelte/transition";
  import Loader from "$components/Loader.svelte";
  import ErrorIcon from "$components/ErrorIcon.svelte";
@@ -118,13 +119,17 @@
   nick = urlParams.nick;
  });
 
+ onDestroy(() => stopTimer());
+
  function confirmNick() {
   if (!canConfirmNick) return;
   nickConfirmed = true;
+  resetTimer(30);
  }
 
  async function saveProfile() {
   if (!canConfirmBust) return;
+  stopTimer();
   savingProfile = true;
 
   const response = await fetch("/api/session/profile", {
@@ -179,6 +184,7 @@
 
   playerCode.set(data.playerCode);
   sessionId.set(data.session.id);
+  startTimer(30);
  }
 
  function handleInput(index, event) {

@@ -44,5 +44,6 @@
  "battle_success": "Succès",
  "battle_failure": "Échec",
  "shoot": "Feu !",
- "jump": "Saute !"
+ "jump": "Saute !",
+ "cancel_game": "Voulez-vous vraiment mettre fin à la bataille ?"
 }

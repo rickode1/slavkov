@@ -1,9 +1,8 @@
 <script>
  import { gameSession } from "$lib/stores/gameSession.js";
  import Logo from "$components/svg/Logo.svelte";
- import PlayerLobby from "$components/PlayerLobby.svelte";
+ import PlayerLobby from "$components/PlayerLobby.svelte"; 
 </script>
-
 
  <Logo classes="max-w-60 absolute top-10 left-8" />
 

@@ -1,10 +1,13 @@
 <script>
+ import { notify } from '$lib/stores/notification.js';
  import { gameSession } from "$lib/stores/gameSession.js";
  import PlayerBust from "$components/PlayerBust.svelte";
  import CardBonuses from "$components/CardBonuses.svelte";
  import Map from "$components/Map.svelte";
 
  let mapRef = $state(null);
+
+ notify('The units were placed!');
 </script>
 
 {#if $gameSession}
