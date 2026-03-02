@@ -42,5 +42,7 @@
  "battle_attack": "Attack",
  "battle_defense": "Defense",
  "battle_success": "Success",
- "battle_failure": "Failure"
+ "battle_failure": "Failure",
+ "shoot": "Fire!",
+ "jump": "Jump!"
 }

@@ -42,5 +42,7 @@
  "battle_attack": "Angriff",
  "battle_defense": "Verteidigung",
  "battle_success": "Erfolg",
- "battle_failure": "Misserfolg"
+ "battle_failure": "Misserfolg",
+ "shoot": "Feuer!",
+ "jump": "Spring!"
 }

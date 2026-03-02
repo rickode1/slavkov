@@ -43,5 +43,7 @@
  "battle_attack": "Útok",
  "battle_defense": "Obrana",
  "battle_success": "Úspěch",
- "battle_failure": "Neúspěch"
+ "battle_failure": "Neúspěch",
+ "shoot": "Vystřel!",
+ "jump": "Vyskoč!"
 }
