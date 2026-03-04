@@ -19,20 +19,6 @@
    srcset={optimize("/img/bust_" + player?.bust + ".png")}
    alt=""
   />
-  {#if player?.bust && !small}
-   <div
-    class="absolute -top-1 -right-2 lg:top-0 lg:-right-1 w-6 h-6 lg:w-10 lg:h-10"
-    style={emblemColor()}
-   >
-    {#if player.bust === "fr"}
-     <EmblemFr classes="w-full h-full" />
-    {:else if player.bust === "at"}
-     <EmblemAt classes="w-full h-full" />
-    {:else if player.bust === "ru"}
-     <EmblemRu classes="w-full h-full" />
-    {/if}
-   </div>
-  {/if}
  </div>
  {#if !small}
  <p class="text-lg lg:text-2xl text-center">{player?.nick}</p>

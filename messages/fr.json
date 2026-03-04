@@ -10,6 +10,8 @@
  "error_session_not_found": "Session non trouvée",
  "error_unknown": "Une erreur est survenue",
  "connected": "Connecté",
+ "choosing_side": "Choisit son camp",
+ "waiting_for_opponent": "En attente de l'adversaire",
  "player": "Joueur",
  "name_label": "Nom",
  "confirm": "Confirmer",

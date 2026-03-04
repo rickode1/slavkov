@@ -1,6 +1,8 @@
 <script>
  import { onMount } from "svelte";
  import { gameSession } from "$lib/stores/gameSession.js";
+ import { notify } from "$lib/stores/notification.js";
+ import { m } from "$lib/paraglide/messages.js";
  import PlayerBust from "$components/PlayerBust.svelte";
  import Map from "$components/Map.svelte";
 
@@ -11,6 +13,10 @@
    const round = $gameSession?.current_round;
    mapRef?.zoomTo(parseInt(round), true);
   }, 3000);
+
+  setTimeout(() => {
+   notify(m.pick_units());
+  }, 4500);
  });
 </script>
 

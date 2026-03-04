@@ -6,7 +6,7 @@
   playerCode,
  } from "$lib/stores/gameSession.js";
  import { optimize } from "$lib/image";
- import * as m from "$lib/paraglide/messages";
+ import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
  import { startTimer, stopTimer } from "$lib/stores/timer.js";
 
@@ -15,6 +15,10 @@
  import Button from "$components/Button.svelte";
  import Loader from "$components/Loader.svelte";
  import Help from "$components/Help.svelte";
+ import LookTV from "$components/LookTV.svelte";
+ import HourglassIcon from "$components/HourglassIcon.svelte";
+
+ let introDone = $state(false);
 
  // Get current player's data
  let myPlayer = $derived(() => {
@@ -67,7 +71,12 @@
  let submitted = $state(false);
 
  // Timer: 30s to choose bonuses
- onMount(() => startTimer(30));
+ onMount(() => {
+  setTimeout(() => {
+   introDone = true;
+   startTimer(30);
+  }, 5000);
+ });
  onDestroy(() => stopTimer());
 
  function toggleCard(id) {
@@ -117,6 +126,7 @@
  }
 </script>
 
+{#if introDone}
 {#if $gameSession}
  <Help player={myPlayer()}>
   <p class="text-xl">{m.pick_bonuses()}.</p>
@@ -155,5 +165,14 @@
     classes="!text-2xl !h-12 min-w-auto mt-4"
    />
   {/if}
+ {:else}
+    <p class="text-xl text-center mt-4">{m.waiting_for_opponent()}</p>
+    <div class="flex flex-col items-center gap-3 mt-2">
+     <HourglassIcon />
+    </div>  
  {/if}
+
+{/if}
+{:else}
+ <LookTV />
 {/if}

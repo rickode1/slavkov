@@ -6,7 +6,7 @@
   playerCode,
  } from "$lib/stores/gameSession.js";
  import { optimize } from "$lib/image";
- import * as m from "$lib/paraglide/messages";
+ import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
  import { startTimer, stopTimer, resetTimer } from "$lib/stores/timer.js";
 
@@ -15,6 +15,8 @@
  import Loader from "$components/Loader.svelte";
  import Map from "$components/Map.svelte";
  import Help from "$components/Help.svelte";
+ import LookTV from "$components/LookTV.svelte";
+ import HourglassIcon from "$components/HourglassIcon.svelte";
 
  // Get current player's data
  let myPlayer = $derived(() => {
@@ -27,6 +29,8 @@
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
 
  let myStrokeStyle = $derived(() => strokeStyle(myPlayer()?.bust));
+
+ let introDone = $state(false);
 
  let selectedUnit = $state(null);
  let deploying = $state(false);
@@ -107,7 +111,13 @@
  let locationSelected = $state(false);
 
  // Timer: 30s to select unit
- onMount(() => startTimer(30));
+  onMount(() => {
+  setTimeout(() => {
+   introDone = true;
+   startTimer(30);
+  }, 8000);
+ });
+
  onDestroy(() => stopTimer());
 
  function handleSlotSelect(slot) {
@@ -161,18 +171,15 @@
  });
 </script>
 
+{#if introDone}
 {#if $gameSession}
  <Help player={myPlayer()}>
-   {#if selected()}
-     <p class="text-xl">{m.deploy_place_unit()}.</p>
-   {:else}
      <p class="text-xl">{m.deploy_select_unit()}.</p>  
      <img
       class="w-30 h-auto"
       srcset={optimize("/img/bonus_unit.png")}
       alt=""
      />
-   {/if}
  </Help>
 
  <div class="flex flex-col items-center gap-y-4 pt-24">
@@ -195,6 +202,11 @@
      onclick={handleDeployLocation}
      classes="!text-2xl !h-12 min-w-auto mt-4"
     />
+   {:else}
+    <p class="text-xl text-center mt-4">{m.waiting_for_opponent()}</p>
+    <div class="flex flex-col items-center gap-3 mt-2">
+     <HourglassIcon />
+    </div>    
    {/if}
   {:else}
    {#each units() as unit}
@@ -231,3 +243,8 @@
   {/if}
  </div>
 {/if}
+{:else}
+ <LookTV />
+{/if}
+
+

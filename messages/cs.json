@@ -10,6 +10,8 @@
  "error_session_not_found": "Relace nenalezena",
  "error_unknown": "Něco se pokazilo",
  "connected": "Připojen",
+ "choosing_side": "Vybírá si stranu",
+ "waiting_for_opponent": "Čekej na protihráče",
  "player": "Hráč",
  "name_label": "Jméno",
  "confirm": "Potvrdit",
@@ -46,5 +48,7 @@
  "battle_failure": "Neúspěch",
  "shoot": "Vystřel!",
  "jump": "Vyskoč!",
- "cancel_game": "Opravdu chcete bitvu ukončit?"
+ "cancel_game": "Opravdu chcete bitvu ukončit?",
+ "pick_units": "Vyber a umísti jednotku na bojiště.",
+ "look_tv": "Podívej se na TV"
 }

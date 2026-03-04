@@ -10,6 +10,8 @@
  "error_session_not_found": "Sitzung nicht gefunden",
  "error_unknown": "Etwas ist schief gelaufen",
  "connected": "Verbunden",
+ "choosing_side": "Wählt eine Seite",
+ "waiting_for_opponent": "Warte auf den Gegner",
  "player": "Spieler",
  "name_label": "Name",
  "confirm": "Bestätigen",

@@ -12,6 +12,10 @@
  function toggle() {
   open = !open;
  }
+
+ onMount(() => {
+  open = true;
+ });
 </script>
 
 <div class="fixed top-0 left-0 right-0 z-50 flex flex-col items-center pointer-events-none">
@@ -45,7 +49,7 @@
   <div
    class="absolute right-8 bottom-0 z-10 w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white"
   >
-   <span class="text-xl font-bold">?</span>
+   <span class="text-xl font-bold">{ open ? '×' : '?'}</span>
   </div>
  </button>
 </div>

@@ -1,4 +1,6 @@
 <script>
+ import { m } from "$lib/paraglide/messages.js";
+ import { onMount } from "svelte";
  import { notify } from '$lib/stores/notification.js';
  import { gameSession } from "$lib/stores/gameSession.js";
  import PlayerBust from "$components/PlayerBust.svelte";
@@ -7,7 +9,11 @@
 
  let mapRef = $state(null);
 
- notify('The units were placed!');
+ onMount(() => {
+  setTimeout(() => {
+   notify(m.pick_bonuses());
+  }, 3000);
+ });
 </script>
 
 {#if $gameSession}

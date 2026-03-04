@@ -25,6 +25,17 @@
    setLocale(lang, { reload: false });
    currentLocale.set(lang);
   }
+
+  function handleKeydown(e) {
+   if (e.key !== ".") return;
+   const current = $sessionId ?? "(none)";
+   const input = prompt(`Session ID: ${current}\n\nEnter new ID to reconnect:`);
+   if (input && input.trim() && input.trim() !== $sessionId) {
+    sessionId.set(input.trim());
+   }
+  }
+  window.addEventListener("keydown", handleKeydown);
+  return () => window.removeEventListener("keydown", handleKeydown);
  });
 
  $effect(() => {

@@ -10,6 +10,8 @@
  "error_session_not_found": "Session not found",
  "error_unknown": "Something went wrong",
  "connected": "Connected",
+ "choosing_side": "Choosing a side",
+ "waiting_for_opponent": "Waiting for the opponent to connect",
  "player": "Player",
  "name_label": "Name",
  "confirm": "Confirm",

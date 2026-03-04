@@ -119,6 +119,13 @@
   nick = urlParams.nick;
  });
 
+ $effect(() => {
+  const opponent = opponentPlayer();
+  if (opponent?.bust === "fr" && selectedBustIndex === 0) {
+   selectedBustIndex = 1;
+  }
+ });
+
  onDestroy(() => stopTimer());
 
  function confirmNick() {
@@ -212,7 +219,7 @@
 
 {#if $gameSession}
  {#if profileSaved}
-  <PlayerLobby player={myPlayer()} playerNumber={myPlayerNumber} />
+  <PlayerLobby player={myPlayer()} playerNumber={myPlayerNumber} isPhone={true} opponent={opponentPlayer()} />
  {:else if !nickConfirmed}
   <!-- Step 1: Nick Input -->
   <div class="flex flex-col items-center gap-6">
