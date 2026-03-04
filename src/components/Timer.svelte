@@ -1,7 +1,8 @@
 <script>
  import { onDestroy } from 'svelte';
+ import { get } from 'svelte/store';
  import { timerActive, timerRemaining } from '$lib/stores/timer.js';
- import { sessionId } from '$lib/stores/gameSession.js';
+ import { sessionId, gameSession } from '$lib/stores/gameSession.js';
 
  let { classes = 'fixed right-4 bottom-4', onExpiry = null } = $props();
 
@@ -9,6 +10,7 @@
   const active = $timerActive;
   if (active) {
    const interval = setInterval(() => {
+    if (get(gameSession)?.debug) return;
     timerRemaining.update((r) => {
      if (r <= 1) {
       clearInterval(interval);

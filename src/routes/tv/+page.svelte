@@ -1,7 +1,9 @@
 <script>
  import { m } from "$lib/paraglide/messages.js";
  import { beforeNavigate, goto } from "$app/navigation";
+ import { onMount } from "svelte";
  import { sessionId, deviceParam } from "$lib/stores/gameSession.js";
+ import { notify } from "$lib/stores/notification.js";
 
  import LangSwitcher from "$components/LangSwitcher.svelte";
  import Logo from "$components/svg/Logo.svelte";
@@ -13,8 +15,7 @@
  let sessionCreated = false;
  let currentSessionId = $state();
  let currentDevice = $state();
- let debugSession = $state(null);
- let seedingDebug = $state(false);
+ let debug = $state(false);
 
  sessionId.subscribe((value) => {
   currentSessionId = value;
@@ -24,18 +25,16 @@
   currentDevice = value;
  });
 
- async function seedDebugSession() {
-  seedingDebug = true;
-  const res = await fetch('/api/session/debug', { method: 'POST' });
-  const { session } = await res.json();
-  seedingDebug = false;
-  debugSession = session;
- }
-
- function proceedWithDebug() {
-  sessionId.set(debugSession.id);
-  debugSession = null;
- }
+ onMount(() => {
+  function handleKeydown(e) {
+   if (e.key === 'd' || e.key === 'D') {
+    debug = !debug;
+    notify(`Debug ${debug ? 'on' : 'off'}`);
+   }
+  }
+  window.addEventListener('keydown', handleKeydown);
+  return () => window.removeEventListener('keydown', handleKeydown);
+ });
 
  beforeNavigate(async ({ to, from, cancel }) => {
   if (
@@ -46,11 +45,15 @@
    cancel();
 
    try {
-    const body = currentDevice ? { device: currentDevice } : undefined;
+    const body = {
+     ...(currentDevice ? { device: currentDevice } : {}),
+     ...(debug ? { debug: true } : {}),
+    };
+    const hasBody = Object.keys(body).length > 0;
     const response = await fetch("/api/session/create", {
      method: "POST",
-     headers: body ? { "Content-Type": "application/json" } : {},
-     body: body ? JSON.stringify(body) : undefined,
+     headers: hasBody ? { "Content-Type": "application/json" } : {},
+     body: hasBody ? JSON.stringify(body) : undefined,
     });
     const { session, error } = await response.json();
 

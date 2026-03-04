@@ -142,10 +142,12 @@
      onclick={() => rollDice()}
      classes="!text-2xl !h-14 min-w-auto mt-4"
     />
+    {#if $gameSession?.debug}
     <div class="flex gap-2 mt-2">
      <button class="px-3 py-1 text-xs bg-primary text-white" onclick={() => rollDice(1)}>1</button>
      <button class="px-3 py-1 text-xs bg-primary text-white" onclick={() => rollDice(20)}>20</button>
     </div>
+   {/if}
    {/if}
   {/if}
   {/if}

@@ -2,6 +2,7 @@
  import { optimize } from "$lib/image";
  import { onMount, onDestroy } from "svelte";
  import * as m from "$lib/paraglide/messages.js";
+ import { gameSession } from "$lib/stores/gameSession.js";
 
  // --- state ---
  let stopped = false;
@@ -169,6 +170,7 @@
 {/if}
 
 <!-- debug panel -->
+{#if $gameSession?.debug}
 <div class="fixed top-2 left-2 z-50 text-xs p-3 flex flex-col gap-1.5 w-52">
   <span class="font-bold text-sm">Movement</span>
 
@@ -204,3 +206,4 @@
     <input type="range" min="2" max="70" step="1" bind:value={hbHeight} />
   </label>
 </div>
+{/if}

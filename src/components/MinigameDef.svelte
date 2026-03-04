@@ -2,6 +2,7 @@
  import { optimize } from "$lib/image";
  import { onMount, onDestroy } from "svelte";
  import * as m from "$lib/paraglide/messages.js";
+ import { gameSession } from "$lib/stores/gameSession.js";
 
  let groundSpeed = 6;
  let obstacleInterval = 200;
@@ -216,6 +217,7 @@
 {/if}
 
 <!-- debug panel -->
+{#if $gameSession?.debug}
 <div class="fixed top-2 left-2 z-50 text-xs p-3 flex flex-col gap-1.5 w-52">
   <span class="font-bold text-sm">Difficulty</span>
 
@@ -229,3 +231,4 @@
     <input type="range" min="100" max="600" step="10" bind:value={obstacleInterval} />
   </label>
 </div>
+{/if}

@@ -29,9 +29,11 @@ async function generateUniqueCode(supabase) {
 
 export async function POST({ request }) {
 	let device = null;
+	let debug = false;
 	try {
 		const body = await request.json();
 		device = body.device || null;
+		debug = !!body.debug;
 	} catch {
 		// No body or invalid JSON — that's fine
 	}
@@ -47,6 +49,10 @@ export async function POST({ request }) {
 
 	if (device) {
 		insertData.device = device;
+	}
+
+	if (debug) {
+		insertData.debug = true;
 	}
 
 	const { data, error } = await supabaseAdmin

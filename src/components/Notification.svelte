@@ -22,7 +22,7 @@
   visible = false;
 
   // Paint the initial hidden state, then slide in
-  requestAnimationFrame(() => { visible = true; });
+  requestAnimationFrame(() => { requestAnimationFrame(() => { visible = true; }); });
 
   hideTimer = setTimeout(() => {
    visible = false;
