@@ -50,5 +50,12 @@
  "cancel_game": "Voulez-vous vraiment mettre fin à la bataille ?",
  "bonus_unit_advantage": "{name} a obtenu l'avantage Cercle de force grâce au choix de l'unité.",
  "bonus_loc_advantage": "{name} a obtenu l'avantage Terrain grâce à un bon choix de position.",
- "bonus_loc_disadvantage": "{name} a le désavantage Terrain en raison d'une position défavorable."
+ "bonus_loc_disadvantage": "{name} a le désavantage Terrain en raison d'une position défavorable.",
+ "minigame_initiative": "{name} a pris l'initiative et attaquera en premier.",
+ "minigame_dmg_cta": "{name}, approchez-vous de la TV et jouez le mini-jeu d'attaque.",
+ "minigame_def_cta": "{name}, approchez-vous de la TV et jouez le mini-jeu de d\u00e9fense.",
+ "minigame_dmg_success": "{name} a obtenu le bonus d'attaque\u00a0!",
+ "minigame_dmg_fail": "{name} n'a pas obtenu le bonus d'attaque.",
+ "minigame_def_success": "{name} a obtenu le bonus de d\u00e9fense\u00a0!",
+ "minigame_def_fail": "{name} n'a pas obtenu le bonus de d\u00e9fense."
 }

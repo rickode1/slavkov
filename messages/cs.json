@@ -53,5 +53,12 @@
  "look_tv": "Podívej se na TV",
  "bonus_unit_advantage": "{name} získal výhodu Kruh síly díky výběru jednotky.",
  "bonus_loc_advantage": "{name} získal výhodu Terén díky vhodnému výběru pozice.",
- "bonus_loc_disadvantage": "{name} má nevýhodu Terén kvůli nevýhodné pozici."
+ "bonus_loc_disadvantage": "{name} má nevýhodu Terén kvůli nevýhodné pozici.",
+ "minigame_initiative": "{name} získal iniciativu a bude útočit jako první.",
+ "minigame_dmg_cta": "{name}, přistup k TV a zahraj si minihru o bonus do útoku.",
+ "minigame_def_cta": "{name}, p\u0159istup k TV a zahraj si minihru o bonus do obrany.",
+ "minigame_dmg_success": "{name} z\u00edskal bonus do \u00fatoku!",
+ "minigame_dmg_fail": "{name} nez\u00edskal bonus do \u00fatoku.",
+ "minigame_def_success": "{name} z\u00edskal bonus do obrany!",
+ "minigame_def_fail": "{name} nez\u00edskal bonus do obrany."
 }

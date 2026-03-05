@@ -27,20 +27,25 @@
   const rd = roundData();
   if (!rd) return [];
   const cards = [];
+  const rot = () => (Math.random() - 0.5) * 4;
   if (rd[`bonus_unit${suffix}`] !== undefined)
-   cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`], disabled: false });
+   cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`], disabled: false, rot: rot() });
   if (rd[`bonus_loc${suffix}`] !== undefined)
-   cards.push({ type: "loc", value: rd[`bonus_loc${suffix}`], disabled: false });
+   cards.push({ type: "loc", value: rd[`bonus_loc${suffix}`], disabled: false, rot: rot() });
   if (!hideBonuses) {
    for (let i = 0; i < (rd[`bonuses_def${suffix}`] || 0); i++)
-    cards.push({ type: "def", value: 1, disabled: false });
+    cards.push({ type: "def", value: 1, disabled: false, rot: rot() });
    for (let i = 0; i < (rd[`bonuses_dmg${suffix}`] || 0); i++)
-    cards.push({ type: "dmg", value: 1, disabled: false });
+    cards.push({ type: "dmg", value: 1, disabled: false, rot: rot() });
    const lifeCount = rd[`bonuses_life${suffix}`] || 0;
    const used = lifeUsed();
    for (let i = 0; i < lifeCount; i++)
-    cards.push({ type: "life", value: 1, disabled: i < used });
+    cards.push({ type: "life", value: 1, disabled: i < used, rot: rot() });
   }
+  if (rd[`bonus_minigame_dmg${suffix}`] !== undefined)
+   cards.push({ type: "minigame_dmg", value: rd[`bonus_minigame_dmg${suffix}`], disabled: false, rot: rot() });
+  if (rd[`bonus_minigame_def${suffix}`] !== undefined)
+   cards.push({ type: "minigame_def", value: rd[`bonus_minigame_def${suffix}`], disabled: false, rot: rot() });
   return cards;
  });
 
@@ -94,7 +99,7 @@
      {#each group.items as bonus, i}
       <div
        class={i > 0 ? "absolute" : "relative"}
-       style="{i > 0 ? `right: ${i * 2}px; bottom: ${i * 2}px;` : ''} z-index: {i}"
+       style="{i > 0 ? `right: ${i * 2}px; bottom: ${i * 2}px;` : ''} z-index: {i}; transform: rotate({bonus.rot}deg);"
       >
        <Card type={bonus.type} value={i === group.items.length - 1 ? group.displayValue : bonus.value} highlighted={!group.allDisabled && highlightTypes?.has(bonus.type)} disabled={group.allDisabled} strokeStyle={highlightStroke} />
       </div>

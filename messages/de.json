@@ -50,5 +50,12 @@
  "cancel_game": "Möchten Sie die Schlacht wirklich beenden?",
  "bonus_unit_advantage": "{name} hat den Vorteil Kraftkreis durch die Einheitenwahl erhalten.",
  "bonus_loc_advantage": "{name} hat den Vorteil Gelände durch eine günstige Positionswahl erhalten.",
- "bonus_loc_disadvantage": "{name} hat den Nachteil Gelände durch eine ungünstige Position."
+ "bonus_loc_disadvantage": "{name} hat den Nachteil Gelände durch eine ungünstige Position.",
+ "minigame_initiative": "{name} hat die Initiative erhalten und greift als Erster an.",
+ "minigame_dmg_cta": "{name}, tritt vor den TV und spiele das Angriffs-Minispiel.",
+ "minigame_def_cta": "{name}, tritt vor den TV und spiele das Verteidigungs-Minispiel.",
+ "minigame_dmg_success": "{name} hat den Angriffsbonus erhalten!",
+ "minigame_dmg_fail": "{name} hat den Angriffsbonus nicht erhalten.",
+ "minigame_def_success": "{name} hat den Verteidigungsbonus erhalten!",
+ "minigame_def_fail": "{name} hat den Verteidigungsbonus nicht erhalten."
 }

@@ -3,10 +3,20 @@
  import { onMount, onDestroy } from "svelte";
  import * as m from "$lib/paraglide/messages.js";
  import { gameSession } from "$lib/stores/gameSession.js";
+ import { startTimer, stopTimer } from "$lib/stores/timer.js";
+ import Timer from "$components/Timer.svelte";
+
+ export let onResult = null;
+ export let debug = false;
 
  // --- state ---
  let stopped = false;
  let hit = false;
+ let resultFired = false;
+
+ // countdown
+ let countdown = null;
+ let countdownInterval = null;
 
  // crosshair offset relative to the target centre (px)
  let crossX = 0;
@@ -84,7 +94,15 @@
        cy <= tRect.bottom;
    }
 
-   restartTimeout = setTimeout(restart, 3000);
+   if (hit && onResult && !debug && !resultFired) {
+     stopTimer();
+     restartTimeout = setTimeout(() => { resultFired = true; onResult(true); }, 1500);
+   } else if (onResult && !debug && !resultFired) {
+     stopTimer();
+     restartTimeout = setTimeout(() => { resultFired = true; onResult(false); }, 1500);
+   } else {
+     restartTimeout = setTimeout(restart, 3000);
+   }
  }
 
  function restart() {
@@ -97,13 +115,38 @@
    animFrame = requestAnimationFrame(moveCross);
  }
 
+ function startCountdown() {
+   countdown = 5;
+   countdownInterval = setInterval(() => {
+     countdown--;
+     if (countdown <= 0) {
+       clearInterval(countdownInterval);
+       countdownInterval = null;
+       countdown = null;
+       animFrame = requestAnimationFrame(moveCross);
+       if (onResult && !debug) startTimer(30);
+     }
+   }, 1000);
+ }
+
+ function handleTimerExpiry() {
+   if (!resultFired) {
+     resultFired = true;
+     stopped = true;
+     cancelAnimationFrame(animFrame);
+     onResult(false);
+   }
+ }
+
  onMount(() => {
-   animFrame = requestAnimationFrame(moveCross);
+   startCountdown();
  });
 
  onDestroy(() => {
    cancelAnimationFrame(animFrame);
    clearTimeout(restartTimeout);
+   clearInterval(countdownInterval);
+   stopTimer();
  });
 </script>
 
@@ -169,8 +212,18 @@
   </div>
 {/if}
 
+{#if countdown !== null}
+ <div class="fixed inset-0 flex items-center justify-center z-40 bg-black/60 pointer-events-none">
+  <span class="text-[14rem] font-bold text-white drop-shadow-2xl">{countdown}</span>
+ </div>
+{/if}
+
+{#if onResult && countdown === null && !stopped}
+ <Timer classes="fixed right-8 top-6" onExpiry={handleTimerExpiry} />
+{/if}
+
 <!-- debug panel -->
-{#if $gameSession?.debug}
+{#if debug}
 <div class="fixed top-2 left-2 z-50 text-xs p-3 flex flex-col gap-1.5 w-52">
   <span class="font-bold text-sm">Movement</span>
 

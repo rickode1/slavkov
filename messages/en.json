@@ -50,5 +50,12 @@
  "cancel_game": "Do you really want to end the battle?",
  "bonus_unit_advantage": "{name} gained the Circle of Power advantage through unit selection.",
  "bonus_loc_advantage": "{name} gained the Terrain advantage through a well-chosen position.",
- "bonus_loc_disadvantage": "{name} has a Terrain disadvantage due to an unfavorable position."
+ "bonus_loc_disadvantage": "{name} has a Terrain disadvantage due to an unfavorable position.",
+ "minigame_initiative": "{name} gained initiative and will attack first.",
+ "minigame_dmg_cta": "{name}, step up to the TV and play the attack bonus minigame.",
+ "minigame_def_cta": "{name}, step up to the TV and play the defence bonus minigame.",
+ "minigame_dmg_success": "{name} gained the attack bonus!",
+ "minigame_dmg_fail": "{name} did not gain the attack bonus.",
+ "minigame_def_success": "{name} gained the defence bonus!",
+ "minigame_def_fail": "{name} did not gain the defence bonus."
 }

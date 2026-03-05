@@ -30,8 +30,7 @@
    onExpiry();
    return;
   }
-  //disabled for test
-  return;
+
   const id = $sessionId;
   if (!id) return;
   try {

@@ -111,10 +111,6 @@
 </script>
 
 {#if $gameSession}
- <Help player={myPlayer()}>
-  <p class="text-xl"></p>
- </Help>
-
  <div class="flex flex-col items-center gap-6 mt-60">
   {#if isActivePlayer && showUI}
   <div class="dice-float">

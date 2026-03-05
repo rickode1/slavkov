@@ -1,7 +1,6 @@
 <script>
  import { onMount } from "svelte";
  import { optimize } from "$lib/image";
- import PlayerBust from "$components/PlayerBust.svelte";
 
  let { player = null, children } = $props();
 
@@ -34,12 +33,7 @@
     class="w-full h-130 object-cover object-bottom absolute inset-0"
    />
    <div class="relative px-13 max-h-110 overflow-y-auto">
-    {#if player}
-     <div class="float-right ml-2">
-      <PlayerBust {player} />
-     </div>
-    {/if}
-    <div class="mt-4 text-left space-y-4">
+    <div class="mt-4 text-center space-y-4">
     {@render children()}
     </div>
    </div>

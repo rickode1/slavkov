@@ -3,6 +3,15 @@
  import { onMount, onDestroy } from "svelte";
  import * as m from "$lib/paraglide/messages.js";
  import { gameSession } from "$lib/stores/gameSession.js";
+ import { startTimer, stopTimer } from "$lib/stores/timer.js";
+ import Timer from "$components/Timer.svelte";
+
+ export let onResult = null;
+ export let debug = false;
+
+ // countdown
+ let countdown = null;
+ let countdownInterval = null;
 
  let groundSpeed = 6;
  let obstacleInterval = 200;
@@ -55,6 +64,7 @@
      gameWidth = gameAreaEl.clientWidth;
    }
 
+   if (onResult && !debug) startTimer(30);
    animFrame = requestAnimationFrame(gameLoop);
  }
 
@@ -88,7 +98,8 @@
    if (finishReached && finishX <= SOLDIER_HB_LEFT) {
      gameState = 'won';
      cancelAnimationFrame(animFrame);
-     setTimeout(resetGame, 3000);
+     stopTimer();
+     if (onResult && !debug) { setTimeout(() => onResult(true), 2000); } else { setTimeout(resetGame, 3000); }
      return;
    }
 
@@ -117,7 +128,8 @@
        if (soldierBottom > -OBS_HEIGHT) {
          gameState = 'lost';
          cancelAnimationFrame(animFrame);
-         setTimeout(resetGame, 3000);
+         stopTimer();
+         if (onResult && !debug) { setTimeout(() => onResult(false), 2000); } else { setTimeout(resetGame, 3000); }
          return;
        }
      }
@@ -136,15 +148,38 @@
    startGame();
  }
 
- onMount(() => {
-   if (gameAreaEl) {
-     gameWidth = gameAreaEl.clientWidth;
+ function handleTimerExpiry() {
+   if (gameState === 'running') {
+     gameState = 'lost';
+     cancelAnimationFrame(animFrame);
+     if (onResult && !debug) setTimeout(() => onResult(false), 1500);
+     else setTimeout(resetGame, 1500);
    }
-   startGame();
+ }
+
+ function startCountdown() {
+   if (gameAreaEl) gameWidth = gameAreaEl.clientWidth;
+   countdown = 5;
+   countdownInterval = setInterval(() => {
+     countdown--;
+     if (countdown <= 0) {
+       clearInterval(countdownInterval);
+       countdownInterval = null;
+       countdown = null;
+       startGame();
+     }
+   }, 1000);
+ }
+
+ onMount(() => {
+   if (gameAreaEl) gameWidth = gameAreaEl.clientWidth;
+   startCountdown();
  });
 
  onDestroy(() => {
    cancelAnimationFrame(animFrame);
+   clearInterval(countdownInterval);
+   stopTimer();
  });
 </script>
 
@@ -216,8 +251,18 @@
   </div>
 {/if}
 
+{#if countdown !== null}
+ <div class="fixed inset-0 flex items-center justify-center z-40 bg-black/60 pointer-events-none">
+  <span class="text-[14rem] font-bold text-white drop-shadow-2xl">{countdown}</span>
+ </div>
+{/if}
+
+{#if onResult && gameState === 'running'}
+ <Timer classes="fixed right-8 top-6" onExpiry={handleTimerExpiry} />
+{/if}
+
 <!-- debug panel -->
-{#if $gameSession?.debug}
+{#if debug}
 <div class="fixed top-2 left-2 z-50 text-xs p-3 flex flex-col gap-1.5 w-52">
   <span class="font-bold text-sm">Difficulty</span>
 

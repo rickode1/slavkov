@@ -63,7 +63,7 @@ export async function POST({ request }) {
 		await new Promise((resolve) => setTimeout(resolve, 2000));
 		const { error: statusError } = await supabaseAdmin
 			.from('sessions')
-			.update({ status: '6-battle' })
+			.update({ status: '5-minigames' })
 			.eq('id', sessionId);
 
 		if (statusError) {
