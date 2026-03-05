@@ -47,5 +47,8 @@
  "battle_failure": "Failure",
  "shoot": "Fire!",
  "jump": "Jump!",
- "cancel_game": "Do you really want to end the battle?"
+ "cancel_game": "Do you really want to end the battle?",
+ "bonus_unit_advantage": "{name} gained the Circle of Power advantage through unit selection.",
+ "bonus_loc_advantage": "{name} gained the Terrain advantage through a well-chosen position.",
+ "bonus_loc_disadvantage": "{name} has a Terrain disadvantage due to an unfavorable position."
 }

@@ -47,5 +47,8 @@
  "battle_failure": "Échec",
  "shoot": "Feu !",
  "jump": "Saute !",
- "cancel_game": "Voulez-vous vraiment mettre fin à la bataille ?"
+ "cancel_game": "Voulez-vous vraiment mettre fin à la bataille ?",
+ "bonus_unit_advantage": "{name} a obtenu l'avantage Cercle de force grâce au choix de l'unité.",
+ "bonus_loc_advantage": "{name} a obtenu l'avantage Terrain grâce à un bon choix de position.",
+ "bonus_loc_disadvantage": "{name} a le désavantage Terrain en raison d'une position défavorable."
 }

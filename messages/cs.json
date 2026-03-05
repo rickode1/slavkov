@@ -50,5 +50,8 @@
  "jump": "Vyskoč!",
  "cancel_game": "Opravdu chcete bitvu ukončit?",
  "pick_units": "Vyber a umísti jednotku na bojiště.",
- "look_tv": "Podívej se na TV"
+ "look_tv": "Podívej se na TV",
+ "bonus_unit_advantage": "{name} získal výhodu Kruh síly díky výběru jednotky.",
+ "bonus_loc_advantage": "{name} získal výhodu Terén díky vhodnému výběru pozice.",
+ "bonus_loc_disadvantage": "{name} má nevýhodu Terén kvůli nevýhodné pozici."
 }

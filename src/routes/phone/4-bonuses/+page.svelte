@@ -72,10 +72,25 @@
 
  // Timer: 30s to choose bonuses
  onMount(() => {
+  // Mirror the TV notification queue to know when pick_bonuses appears
+  const session = $gameSession;
+  let bonusCount = 0;
+  if (session) {
+   const round = session.current_round || 1;
+   const rd = session[`round_${round}`] || {};
+   for (const suffix of ['_1', '_2']) {
+    if (rd[`bonus_unit${suffix}`] > 0) bonusCount++;
+   }
+   for (const suffix of ['_1', '_2']) {
+    if (rd[`bonus_loc${suffix}`] !== 0 && rd[`bonus_loc${suffix}`] !== undefined) bonusCount++;
+   }
+  }
+  const introDoneDelay = 2000 + bonusCount * (5000 + 600);
+
   setTimeout(() => {
    introDone = true;
    startTimer(30);
-  }, 5000);
+  }, introDoneDelay);
  });
  onDestroy(() => stopTimer());
 

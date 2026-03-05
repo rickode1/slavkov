@@ -47,5 +47,8 @@
  "battle_failure": "Misserfolg",
  "shoot": "Feuer!",
  "jump": "Spring!",
- "cancel_game": "Möchten Sie die Schlacht wirklich beenden?"
+ "cancel_game": "Möchten Sie die Schlacht wirklich beenden?",
+ "bonus_unit_advantage": "{name} hat den Vorteil Kraftkreis durch die Einheitenwahl erhalten.",
+ "bonus_loc_advantage": "{name} hat den Vorteil Gelände durch eine günstige Positionswahl erhalten.",
+ "bonus_loc_disadvantage": "{name} hat den Nachteil Gelände durch eine ungünstige Position."
 }

@@ -18,7 +18,7 @@
   if (!msg) return;
 
   clearTimers();
-  currentMessage = msg;
+  currentMessage = msg.html;
   visible = false;
 
   // Paint the initial hidden state, then slide in
@@ -30,7 +30,7 @@
     currentMessage = null;
     notificationMessage.set(null);
    }, 500);
-  }, 4000);
+  }, msg.duration);
  });
 
  onDestroy(clearTimers);
@@ -42,14 +42,14 @@
          transition-transform duration-500 ease-in-out
          {visible ? 'translate-y-0' : '-translate-y-full'}"
  >
-  <div class="relative w-full max-w-3xl">
+  <div class="relative w-full max-w-2xl">
    <img
     srcset={optimize("/img/notification_bg.png")}
     alt=""
-    class="w-full h-auto object-cover object-bottom"
+    class="w-full h-50 object-cover object-bottom"
    />
-   <div class="absolute inset-0 w-full pt-20 pb-14 py-6">
-    <p class="text-2xl text-center">{@html currentMessage}</p>
+   <div class="absolute inset-0 w-full flex items-center justify-center px-6 pb-10">
+    <p class="text-lg text-center leading-tight">{@html currentMessage}</p>
    </div>
   </div>
  </div>

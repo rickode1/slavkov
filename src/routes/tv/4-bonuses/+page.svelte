@@ -9,12 +9,52 @@
 
  let mapRef = $state(null);
 
+ const unitImg = `<img src="/img/bonus_unit.png" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
+ const locImg  = `<img src="/img/bonus_loc.png"  class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
+
  onMount(() => {
   setTimeout(() => {
-   notify(m.pick_bonuses());
-  }, 3000);
+   const session = $gameSession;
+   const queue = [];
+
+   if (session) {
+    const round = session.current_round || 1;
+    const rd = session[`round_${round}`] || {};
+
+    const players = [
+     { player: session.player_1, suffix: '_1' },
+     { player: session.player_2, suffix: '_2' },
+    ];
+
+    for (const { player, suffix } of players) {
+     const name = player?.nick || '';
+     if (rd[`bonus_unit${suffix}`] > 0) {
+      queue.push({ html: unitImg + m.bonus_unit_advantage({ name }), duration: 5000 });
+     }
+    }
+
+    for (const { player, suffix } of players) {
+     const name = player?.nick || '';
+     const locBonus = rd[`bonus_loc${suffix}`];
+     if (locBonus > 0) {
+      queue.push({ html: locImg + m.bonus_loc_advantage({ name }), duration: 5000 });
+     } else if (locBonus < 0) {
+      queue.push({ html: locImg + m.bonus_loc_disadvantage({ name }), duration: 5000 });
+     }
+    }
+   }
+
+   queue.push({ html: m.pick_bonuses(), duration: 5000 });
+
+   let delay = 0;
+   for (const item of queue) {
+    setTimeout(() => notify(item.html, item.duration), delay);
+    delay += item.duration + 600;
+   }
+  }, 2000);
  });
 </script>
+
 
 {#if $gameSession}
  <div class="absolute left-10 top-6 flex w-[calc(100%-5rem)] justify-between">

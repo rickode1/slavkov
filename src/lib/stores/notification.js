@@ -2,6 +2,6 @@ import { writable } from 'svelte/store';
 
 export const notificationMessage = writable(null);
 
-export function notify(html) {
-	notificationMessage.set(html);
+export function notify(html, duration = 4000) {
+	notificationMessage.set({ html, duration });
 }
