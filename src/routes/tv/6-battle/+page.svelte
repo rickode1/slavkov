@@ -24,12 +24,14 @@
  });
 
  let filteredHighlights = $derived(() => {
-  if (!highlightCardTypes.size) return null;
   const role = activeRole();
   const allowed = new Set(['loc', role]);
   if (role === 'dmg') allowed.add('unit');
   if (role === 'def') allowed.add('life');
   const filtered = new Set([...highlightCardTypes].filter((t) => allowed.has(t)));
+  // Always highlight relevant minigame bonus cards
+  if (role === 'dmg') filtered.add('minigame_dmg');
+  if (role === 'def') filtered.add('minigame_def');
   return filtered.size ? filtered : null;
  });
 
@@ -59,12 +61,18 @@
   </div>
  </div>
 
- <Map
-  bind:this={mapRef}
-  unitsAnimated={false}
-  onBattleReady={handleBattleReady}
-  classes="w-[calc(100%-27rem)] mt-10"
- />
+ <div class="relative w-[calc(100%-27rem)] mt-10 flex flex-col lg:items-center">
+  <div class="transition-opacity duration-400 {showBattle ? 'opacity-0 pointer-events-none' : 'opacity-100'}">
+   <Map
+    bind:this={mapRef}
+    unitsAnimated={false}
+    onBattleReady={handleBattleReady}
+    classes="w-full"
+   />
+  </div>
 
- <Battle visible={showBattle} onHighlightCard={handleHighlightCard} />
+  <div class="absolute inset-0 transition-opacity duration-400 {showBattle ? 'opacity-100' : 'opacity-0 pointer-events-none'}">
+   <Battle onHighlightCard={handleHighlightCard} />
+  </div>
+ </div>
 {/if}

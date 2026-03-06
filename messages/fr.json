@@ -57,5 +57,16 @@
  "minigame_dmg_success": "{name} a obtenu le bonus d'attaque\u00a0!",
  "minigame_dmg_fail": "{name} n'a pas obtenu le bonus d'attaque.",
  "minigame_def_success": "{name} a obtenu le bonus de d\u00e9fense\u00a0!",
- "minigame_def_fail": "{name} n'a pas obtenu le bonus de d\u00e9fense."
+ "minigame_def_fail": "{name} n'a pas obtenu le bonus de défense.",
+ "battle_base": "Base",
+ "battle_bonus": "Bonus",
+ "battle_must_roll": "Vous devez lancer au moins {num}",
+ "battle_attack_roll": "{name} attaque, lancez au moins {num}!",
+ "battle_defense_roll": "{name} se défend, lancez au moins {num}!",
+ "battle_attack_success": "L'attaque de {name} a réussi avec un {roll} !",
+ "battle_attack_failure": "L'attaque de {name} a échoué avec un {roll} !",
+ "battle_defense_success": "La défense de {name} a réussi avec un {roll} !",
+ "battle_defense_failure": "La défense de {name} a échoué avec un {roll} !",
+ "battle_unit_retry": "{name} utilise le Cercle de force et peut attaquer à nouveau !",
+ "battle_life_retry": "{name} utilise le Pansement de campagne et survit à l'attaque !"
 }

@@ -26,6 +26,11 @@
  });
 
  onMount(() => {
+  if (window.location.hostname === 'localhost') {
+   debug = true;
+   notify('Debug on');
+  }
+
   function handleKeydown(e) {
    if (e.key === 'd' || e.key === 'D') {
     debug = !debug;

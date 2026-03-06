@@ -3,7 +3,7 @@
  import { gameSession, playerCode } from "$lib/stores/gameSession.js";
  import PlayerBust from "$components/PlayerBust.svelte";
  import Logo from "$components/svg/Logo.svelte";
- import * as m from "$lib/paraglide/messages.js";
+ import {m} from "$lib/paraglide/messages.js";
 
  let winnerCelebrate = $state(false);
  let loserRevealed = $state(false);
@@ -47,7 +47,7 @@
   <Logo classes="max-w-32 mb-4" />
 
   <div class="transition-[filter] duration-800 ease-in-out {winnerCelebrate ? 'winner-celebrate' : ''}" style={loserRevealed ? 'filter: grayscale(1) brightness(0.6)' : ''}>
-   <PlayerBust player={myPlayer} />
+   <PlayerBust player={myPlayer} hideStars />
   </div>
 
   <p class="text-3xl text-center">

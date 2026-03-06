@@ -3,11 +3,11 @@
  import { gameSession } from "$lib/stores/gameSession.js";
  import Star from "$components/svg/Star.svelte";
 
- let { player = null, small = false } = $props();
+ let { player = null, small = false, hideStars = false } = $props();
 
  const MAX_ROUNDS = 3;
 
- let bustColor = $derived(player?.bust ? `var(--color-bust-${player.bust}-dark)` : null);
+ let bustColor = $derived(player?.bust ? `var(--color-bust-${player.bust})` : null);
 
  let playerNum = $derived(
   $gameSession?.player_1 === player ? 1 : $gameSession?.player_2 === player ? 2 : null
@@ -29,8 +29,8 @@
    srcset={optimize("/img/bust_" + player?.bust + ".png")}
    alt=""
   />
-  {#if !small && playerNum !== null}
-   <div class="absolute top-0 {playerNum === 1 ? 'left-full' : 'right-full'} flex flex-row gap-2 pt-2">
+  {#if !small && !hideStars && playerNum !== null}
+   <div class="absolute top-0 {playerNum === 1 ? 'left-[calc(100%-1rem)]' : 'right-[calc(100%-1rem)]'} flex flex-row gap-2 pt-2">
     {#each { length: MAX_ROUNDS } as _, i}
      <div class="w-5" style={roundWins()[i] ? `color: ${bustColor}` : 'color: color-mix(in srgb, #6b7280 60%, transparent)'}>
       <Star />

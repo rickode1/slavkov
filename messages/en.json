@@ -57,5 +57,16 @@
  "minigame_dmg_success": "{name} gained the attack bonus!",
  "minigame_dmg_fail": "{name} did not gain the attack bonus.",
  "minigame_def_success": "{name} gained the defence bonus!",
- "minigame_def_fail": "{name} did not gain the defence bonus."
+ "minigame_def_fail": "{name} did not gain the defence bonus.",
+ "battle_base": "Base",
+ "battle_bonus": "Bonuses",
+ "battle_must_roll": "You must roll at least {num}",
+ "battle_attack_roll": "{name} is attacking, roll at least {num}!",
+ "battle_defense_roll": "{name} is defending, roll at least {num}!",
+ "battle_attack_success": "{name}'s attack succeeded with a {roll}!",
+ "battle_attack_failure": "{name}'s attack failed with a {roll}!",
+ "battle_defense_success": "{name}'s defense succeeded with a {roll}!",
+ "battle_defense_failure": "{name}'s defense failed with a {roll}!",
+ "battle_unit_retry": "{name} uses the Circle of Power and can attack again!",
+ "battle_life_retry": "{name} uses Field Dressing and survives the attack!"
 }

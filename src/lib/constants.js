@@ -1,5 +1,11 @@
 export const terminalStates = ['0-canceled', '0-abandoned', '0-finished'];
 
+export function nickHtml(player) {
+	if (!player) return '';
+	const color = player.bust ? `var(--color-bust-${player.bust})` : 'inherit';
+	return `<span style="color:${color};font-weight:bold">${player.nick || ''}</span>`;
+}
+
 export const gameScreens = ['1-lobby', '2-onboarding', '3-deployment','5-minigames', '4-bonuses', '6-battle', '7-roundend', '8-gameend'];
 
 export function strokeStyle(bust, size = 5) {

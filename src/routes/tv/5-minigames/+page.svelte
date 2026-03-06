@@ -2,6 +2,7 @@
  import { m } from "$lib/paraglide/messages.js";
  import { onMount } from "svelte";
  import { notify } from '$lib/stores/notification.js';
+ import { nickHtml } from '$lib/constants.js';
  import { gameSession, sessionId } from "$lib/stores/gameSession.js";
  import PlayerBust from "$components/PlayerBust.svelte";
  import CardBonuses from "$components/CardBonuses.svelte";
@@ -46,8 +47,8 @@
   const attCode = getAttackerCode(rd);
   const attPlayer = attCode === 'code_1' ? session.player_1 : session.player_2;
   const defPlayer = attCode === 'code_1' ? session.player_2 : session.player_1;
-  const attName = attPlayer?.nick || '';
-  const defName = defPlayer?.nick || '';
+  const attName = nickHtml(attPlayer);
+  const defName = nickHtml(defPlayer);
 
   const hasInitiative = !!rd?.current_turn;
 
@@ -75,17 +76,17 @@
  }
 
  async function handleDmgResult(success) {
-  const attName = attacker()?.nick || '';
+  const attName = nickHtml(attacker());
   await saveBonus(attackerCode(), 'dmg', success ? 1 : 0);
   phase = 'idle';
   notify(dmgImg + (success ? m.minigame_dmg_success({ name: attName }) : m.minigame_dmg_fail({ name: attName })), NOTIF_DURATION);
-  const name = defender()?.nick || '';
+  const name = nickHtml(defender());
   setTimeout(() => notify(m.minigame_def_cta({ name }), NOTIF_DURATION), NOTIF_DURATION + NOTIF_GAP);
   setTimeout(() => { phase = 'def'; }, (NOTIF_DURATION + NOTIF_GAP) * 2);
  }
 
  async function handleDefResult(success) {
-  const defName = defender()?.nick || '';
+  const defName = nickHtml(defender());
   await saveBonus(defenderCode(), 'def', success ? 1 : 0);
   phase = 'idle';
   notify(defImg + (success ? m.minigame_def_success({ name: defName }) : m.minigame_def_fail({ name: defName })), NOTIF_DURATION);

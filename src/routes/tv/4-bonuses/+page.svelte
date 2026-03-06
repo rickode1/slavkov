@@ -2,6 +2,7 @@
  import { m } from "$lib/paraglide/messages.js";
  import { onMount } from "svelte";
  import { notify } from '$lib/stores/notification.js';
+ import { nickHtml } from '$lib/constants.js';
  import { gameSession } from "$lib/stores/gameSession.js";
  import PlayerBust from "$components/PlayerBust.svelte";
  import CardBonuses from "$components/CardBonuses.svelte";
@@ -27,14 +28,14 @@
     ];
 
     for (const { player, suffix } of players) {
-     const name = player?.nick || '';
+     const name = nickHtml(player);
      if (rd[`bonus_unit${suffix}`] > 0) {
       queue.push({ html: unitImg + m.bonus_unit_advantage({ name }), duration: 5000 });
      }
     }
 
     for (const { player, suffix } of players) {
-     const name = player?.nick || '';
+     const name = nickHtml(player);
      const locBonus = rd[`bonus_loc${suffix}`];
      if (locBonus > 0) {
       queue.push({ html: locImg + m.bonus_loc_advantage({ name }), duration: 5000 });

@@ -1,28 +1,42 @@
 <script>
  import { untrack } from "svelte";
- import { fly, fade } from "svelte/transition";
+ import { m } from "$lib/paraglide/messages.js";
+ import { fly } from "svelte/transition";
+ import { flip } from "svelte/animate";
  import { optimize } from "$lib/image";
  import { gameSession, sessionId } from "$lib/stores/gameSession.js";
- import { strokeStyle } from "$lib/constants.js";
+ import { strokeStyle, nickHtml } from "$lib/constants.js";
  import Card from "$components/Card.svelte";
- import BattleLog from "$components/BattleLog.svelte";
- import * as m from "$lib/paraglide/messages.js";
+ import BattlePlayer from "$components/BattlePlayer.svelte";
 
- let { visible = false, onHighlightCard = null } = $props();
+ let { onHighlightCard = null } = $props();
 
  let displayedDifficulty = $state(10);
  let activeCard = $state(null);
- let showDice = $state(false);
  let diceRolling = $state(false);
  let revealedRoll = $state(null);
  let rollOutcome = $state(null); // 'success' | 'fail' | null
  let processingTurn = null;
+
+ let messages = $state([]);
+ let _msgId = 0;
+
+ export function addMessage(text, img = '') {
+  if(img) {
+   img = `<img src="/img/bonus_${img}.png"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">`;
+  }
+
+  const prev = untrack(() => messages);
+  messages = [{ id: _msgId++, text: img + text }, ...prev];
+ }
 
  let roundData = $derived(() => {
   if (!$gameSession) return null;
   const round = $gameSession.current_round || 1;
   return $gameSession[`round_${round}`] || null;
  });
+
+ let rd = $derived(roundData());
 
  let startingPlayer = $derived(roundData()?.current_turn?.player || 1);
  let defenderNum = $derived(startingPlayer === 1 ? 2 : 1);
@@ -77,34 +91,46 @@
  let activePlayerName = $derived(
   $gameSession?.[`player_${startingPlayer}`]?.nick || ""
  );
+ let activePlayerNickHtml = $derived(
+  nickHtml($gameSession?.[`player_${startingPlayer}`])
+ );
 
  $effect(() => {
-  if (visible && turnNumber != null) {
-   startTurnSequence();
+  if (turnNumber != null) {
+   untrack(() => startTurnSequence());
   }
  });
 
  $effect(() => {
   const roll = currentRoll();
-  if (roll != null && processingTurn !== turnNumber) {
-   processingTurn = turnNumber;
-   revealRoll(roll);
+  const tn = turnNumber;
+  if (roll != null && processingTurn !== tn) {
+   untrack(() => {
+    processingTurn = tn;
+    revealRoll(roll);
+   });
   }
  });
 
  async function revealRoll(roll) {
-  showDice = true;
   diceRolling = true;
   await sleep(2000);
   diceRolling = false;
   revealedRoll = roll;
   await sleep(1000);
   rollOutcome = roll > displayedDifficulty ? 'success' : 'fail';
+  const name = activePlayerNickHtml;
+  const boldRoll = `<img src="/img/dice.png"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${roll}`;
+  addMessage(
+   rollOutcome === 'success'
+    ? (role === 'dmg' ? m.battle_attack_success({ name, roll: boldRoll }) : m.battle_defense_success({ name, roll: boldRoll }))
+    : (role === 'dmg' ? m.battle_attack_failure({ name, roll: boldRoll }) : m.battle_defense_failure({ name, roll: boldRoll }))
+  );
 
-  // Check for unit retry — show card before advancing
   const turnData = currentTurnData();
   if (rollOutcome === 'fail' && turnData?.unit_retry) {
    await sleep(1500);
+   addMessage(m.battle_unit_retry({ name }), 'unit');
    untrack(() => onHighlightCard?.('unit'));
    activeCard = { type: 'unit', value: roundData()?.[`bonus_unit_${startingPlayer}`] || 1 };
    await sleep(2000);
@@ -112,6 +138,7 @@
    await sleep(500);
   } else if (rollOutcome === 'fail' && turnData?.life_retry) {
    await sleep(1500);
+   addMessage(m.battle_life_retry({ name }), 'life');
    untrack(() => onHighlightCard?.('life'));
    activeCard = { type: 'life', value: 1 };
    await sleep(2000);
@@ -137,14 +164,12 @@
   if (res.ok) {
    const data = await res.json();
    if (data.next !== 'round') {
-    showDice = false;
     diceRolling = false;
     revealedRoll = null;
     rollOutcome = null;
     activeCard = null;
     processingTurn = null;
    } else {
-    visible = false;
     await Promise.all([
      fetch('/api/session/status', {
       method: 'POST',
@@ -170,9 +195,7 @@
   displayedDifficulty = baseDifficulty;
 
   const suffix = `_${startingPlayer}`;
-  const steps = [];
 
-  // Check if previous turn was a unit_retry — highlight unit card for this retry turn
   const prevTurn = rd.turns?.[turnNumber - 1];
   if (prevTurn?.unit_retry && prevTurn?.player === startingPlayer) {
    untrack(() => onHighlightCard?.('unit'));
@@ -181,133 +204,67 @@
    untrack(() => onHighlightCard?.('life'));
   }
 
-  const locVal = rd[`bonus_loc${suffix}`];
-  if (locVal !== undefined && locVal !== 0) {
-   steps.push({ type: "loc", value: locVal });
-  }
+  const locVal = rd[`bonus_loc${suffix}`] ?? 0;
+  const bonusVal = rd[`bonuses_${role}${suffix}`] || 0;
+  const minigameVal = rd[`bonus_minigame_${role}${suffix}`] || 0;
 
-  const dmgCount = rd[`bonuses_${role}${suffix}`] || 0;
-  if (dmgCount > 0) {
-   steps.push({ type: role, value: dmgCount });
-  }
+  if (locVal !== 0) untrack(() => onHighlightCard?.('loc'));
+  if (bonusVal > 0) untrack(() => onHighlightCard?.(role));
+  if (minigameVal > 0) untrack(() => onHighlightCard?.(`minigame_${role}`));
 
-  let current = baseDifficulty;
+  displayedDifficulty = baseDifficulty - locVal - bonusVal - minigameVal;
 
-  await sleep(1500);
-
-  for (const step of steps) {
-   untrack(() => onHighlightCard?.(step.type));
-   activeCard = { type: step.type, value: step.value };
-   await sleep(800);
-   const target = current - step.value;
-   while (current !== target) {
-    current += current < target ? 1 : -1;
-    displayedDifficulty = current;
-    await sleep(400);
-   }
-   await sleep(600);
-   activeCard = null;
-   await sleep(400);
-  }
-
-  await sleep(300);
-  showDice = true;
+  const name = activePlayerNickHtml;
+  addMessage(
+   role === 'dmg'
+    ? m.battle_attack_roll({ name, num: `<img src="/img/dice.png"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${displayedDifficulty}` })
+    : m.battle_defense_roll({ name, num: `<img src="/img/dice.png"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${displayedDifficulty}` })
+  );
  }
 </script>
 
-{#if visible}
- <div class="fixed inset-0 z-50 flex items-start justify-center my-30 max-w-360 mx-auto">
-  <div
-   class="relative w-[calc(100%-10rem)] flex items-start justify-center gap-6"
-   transition:fly={{ y: -500, duration: 600 }}
-  >
+<div class="flex flex-col lg:items-center w-full h-full relative mt-12">
+  <img
+   class="absolute inset-0 w-full h-full z-10 pointer-events-none"
+   srcset={optimize("/img/map_frame.png")}
+   alt=""
+  />
 
-  <div
-    class="relative flex-1 aspect-31/18 pt-24 flex items-start justify-between"
-   >
-   <img
-    class="absolute inset-0 w-full h-full object-cover rounded-2xl"
-    srcset={optimize("/img/battle_bg.png")}
-    alt=""
-   />
+  <!-- Content layer -->
+  <div class="relative z-20 w-full h-full flex flex-col px-10 py-8">
 
-   <!-- Player 1 Log (left) -->
-   <div class="ml-20 mt-14">
-    <BattleLog playerNumber={1} />
-   </div>   
-
-   <div class="flex flex-col items-center justify-start gap-4">
-   <!-- Units -->
-   <div class="relative z-10 flex items-end justify-center gap-4">
-    {#if player1UnitImg()}
-     <img
-      class="h-22 object-contain {(startingPlayer === 1 && role === 'dmg') || (defenderNum === 1 && role === 'def') ? 'rotate-10 -translate-y-2' : ''} {player1UnitRotate() ? 'scale-x-[-1]' : ''}"
-      style={startingPlayer === 1 ? player1Stroke : ''}
-      srcset={optimize(player1UnitImg())}
-      alt="Player 1"
-     />
-    {/if}
-    {#if player2UnitImg()}
-     <img
-      class="h-22 object-contain {(startingPlayer === 2 && role === 'dmg') || (defenderNum === 2 && role === 'def') ? '-rotate-10 -translate-y-2' : ''} {player2UnitRotate() ? 'scale-x-[-1]' : ''}"
-      style={startingPlayer === 2 ? player2Stroke : ''}
-      srcset={optimize(player2UnitImg())}
-      alt="Player 2"
-     />
-    {/if}
+   <!-- Top row: unit + stats for each player -->
+   <div class="flex justify-between items-start">
+    <BattlePlayer
+     unitImg={player1UnitImg()}
+     unitRotate={player1UnitRotate()}
+     stroke={player1Stroke}
+     active={startingPlayer === 1}
+     bust={$gameSession?.player_1?.bust}
+     dmgBonus={(rd?.bonuses_dmg_1 || 0) + (rd?.bonus_minigame_dmg_1 || 0)}
+     defBonus={(rd?.bonuses_def_1 || 0) + (rd?.bonus_minigame_def_1 || 0)}
+     locBonus={rd?.bonus_loc_1 || 0}
+     {role}
+    />
+    <BattlePlayer
+     unitImg={player2UnitImg()}
+     unitRotate={player2UnitRotate()}
+     stroke={player2Stroke}
+     active={startingPlayer === 2}
+     bust={$gameSession?.player_2?.bust}
+     dmgBonus={(rd?.bonuses_dmg_2 || 0) + (rd?.bonus_minigame_dmg_2 || 0)}
+     defBonus={(rd?.bonuses_def_2 || 0) + (rd?.bonus_minigame_def_2 || 0)}
+     locBonus={rd?.bonus_loc_2 || 0}
+     {role}
+     flip
+    />
    </div>
+   
 
-   <!-- Turn title -->
-   <p class="relative z-10 text-2xl text-center">
-    {role === 'dmg' ? m.battle_attacking({ name: activePlayerName }) : m.battle_defending({ name: activePlayerName })}
-   </p>   
-
-   <!-- Difficulty -->
-   <div class="relative z-10 flex flex-col items-center">
-     <div
-      class="flex items-center justify-center overflow-hidden h-26 w-26 rounded-full bg-primary text-white transition-all duration-700
-       {rollOutcome === 'success' ? 'grayscale-100' : ''}"
-     >
-      <span class="absolute top-4 text-center text-sm">{m.battle_difficulty()}</span>
-     {#key displayedDifficulty}
-      <span
-       class="absolute w-full text-4xl text-center mt-3 lining-nums font-mono"
-       in:fly={{ y: -80, duration: 400 }}
-       out:fly={{ y: 80, duration: 400 }}
-      >
-       {displayedDifficulty}
-      </span>
-     {/key}
-    </div>
-
-    <div class="relative z-10 h-28 flex items-start justify-center mt-4 transition-[height] duration-300">
-     {#if activeCard}
-      <div transition:fade={{ duration: 300 }}>
-       <Card type={activeCard.type} value={activeCard.value} />
-      </div>
-     {/if}
-    </div>
-
-    {#if showDice}
-     <div class="relative -top-28 {!revealedRoll ? 'dice-float mt-4' : 'mt-3'} transition-all duration-700
-      {rollOutcome === 'fail' ? 'grayscale-100' : ''}" transition:fade={{ duration: 400 }}>
-      {#if (!diceRolling && !revealedRoll) || rollOutcome}
-       <span
-        class="text-white text-center px-6 py-2 shadow-lg mb-2 whitespace-nowrap absolute bottom-6 left-1/2 -translate-x-1/2 z-10 rounded-sm bg-secondary"
-       >
-        {#if rollOutcome === 'success'}
-         {m.battle_success()}!
-        {:else if rollOutcome === 'fail'}
-         {m.battle_failure()}!
-        {:else}
-         {activePlayerName}, {m.battle_roll_dice()}
-        {/if}
-       </span>
-      {/if}
-
+   <div class="absolute left-1/2 -translate-x-1/2 top-12 {!diceRolling ? 'dice-float' : ''} transition-all duration-700" transition:fade={{ duration: 400 }}>
       <div class="relative flex items-center justify-center">
        <img
-        class="h-34 object-contain drop-shadow-lg {diceRolling ? 'dice-rolling' : ''}"
+        class="h-48 object-contain drop-shadow-lg {diceRolling ? 'dice-rolling' : ''}"
         srcset={optimize("/img/dice.png")}
         alt="Dice"
        />
@@ -317,19 +274,23 @@
         </div>
        {/if}
       </div>
-      <div class="dice-shadow {diceRolling ? 'shadow-rolling' : ''} {revealedRoll ? 'opacity-0' : ''}"></div>
-     </div>
-    {/if}
+      <div class="dice-shadow {diceRolling ? 'hidden!' : ''}"></div>
    </div>
 
-   </div>
+   <div class="mx-auto max-w-3xl w-full text-center mt-28">
+    {#key messages[0]?.id ?? -1}
+     {#if messages[0]}
+      <p class="text-3xl" in:fly={{ y: -24, duration: 500 }} out:fly={{ y: 40, duration: 350 }}>
+       {@html messages[0].text}
+      </p>
+     {/if}
+    {/key}
 
-   <!-- Player 2 Log (right) -->
-   <div class="mr-14 mt-14">
-    <BattleLog playerNumber={2} />
+    <div class="mt-6 pt-1 flex flex-col gap-y-3 text-lg max-h-65 overflow-hidden relative">
+     {#each messages.slice(1) as msg (msg.id)}
+      <p animate:flip={{ duration: 400 }} in:fly={{ y: -16, duration: 350 }}>{@html msg.text}</p>
+     {/each}
+    </div>
    </div>
-
   </div>
-  </div>
- </div>
-{/if}
+</div>

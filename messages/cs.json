@@ -60,5 +60,16 @@
  "minigame_dmg_success": "{name} z\u00edskal bonus do \u00fatoku!",
  "minigame_dmg_fail": "{name} nez\u00edskal bonus do \u00fatoku.",
  "minigame_def_success": "{name} z\u00edskal bonus do obrany!",
- "minigame_def_fail": "{name} nez\u00edskal bonus do obrany."
+ "minigame_def_fail": "{name} nezískal bonus do obrany.",
+ "battle_base": "základ",
+ "battle_bonus": "bonusy",
+ "battle_must_roll": "Musíš hodit alespoň {num}",
+ "battle_attack_roll": "{name} útočí, hoď alespoň {num}!",
+ "battle_defense_roll": "{name} se brání, hoď alespoň {num}!",
+ "battle_attack_success": "{name} útok vyšel s hodem {roll}!",
+ "battle_attack_failure": "{name} útok nevyšel s hodem {roll}!",
+ "battle_defense_success": "{name} obrana vyšla s hodem {roll}!",
+ "battle_defense_failure": "{name} obrana nevyšla s hodem {roll}!",
+ "battle_unit_retry": "{name} využívá Kruh síly a může znovu útočit!",
+ "battle_life_retry": "{name} využívá Obvazy a přežívá útok!"
 }

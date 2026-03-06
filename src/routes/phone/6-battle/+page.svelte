@@ -12,6 +12,7 @@
  import Help from "$components/Help.svelte";
  import Button from "$components/Button.svelte";
  import Loader from "$components/Loader.svelte";
+ import LookTV from "$components/LookTV.svelte";
 
  // Get current player's data
  let myPlayer = $derived(() => {
@@ -75,12 +76,12 @@
    animationDone = false;
    uiTimer = setTimeout(() => {
     showUI = true;
-   }, 4500);
+   }, 2500);
   } else if (showUI) {
    if (uiTimer) clearTimeout(uiTimer);
    uiTimer = setTimeout(() => {
     showUI = false;
-   }, 5000);
+   }, 3000);
   }
  });
 
@@ -111,41 +112,43 @@
 </script>
 
 {#if $gameSession}
- <div class="flex flex-col items-center gap-6 mt-60">
+ <div class="flex flex-col items-center gap-6">
   {#if isActivePlayer && showUI}
-  <div class="dice-float">
-   <div class="relative flex items-center justify-center">
-    <img
-     class="h-32 object-contain drop-shadow-lg {rolling ? 'dice-rolling' : ''}"
-     srcset={optimize("/img/dice.png")}
-     alt="Dice"
-    />
-    {#if rolled && rollResult}
-     <div class="roll-result absolute inset-0 flex items-center justify-center text-black/90">
-      <span class="text-3xl mb-5 lining-nums">{rollResult}</span>
+   <div class="dice-float mt-34">
+    <div class="relative flex items-center justify-center">
+     <img
+      class="h-32 object-contain drop-shadow-lg {rolling ? 'dice-rolling' : ''}"
+      srcset={optimize("/img/dice.png")}
+      alt="Dice"
+     />
+     {#if rolled && rollResult}
+      <div class="roll-result absolute inset-0 flex items-center justify-center text-black/90">
+       <span class="text-3xl mb-5 lining-nums">{rollResult}</span>
+      </div>
+     {/if}
+    </div>
+    <div class="dice-shadow {rolling ? 'shadow-rolling' : ''}"></div>
+   </div>
+
+   {#if !rolled}
+    {#if rolling}
+     <Loader classes="mt-4" />
+    {:else}
+     <Button
+      text={m.battle_roll_button()}
+      onclick={() => rollDice()}
+      classes="!text-2xl !h-14 min-w-auto mt-4"
+     />
+     {#if $gameSession?.debug}
+     <div class="flex gap-2 mt-2">
+      <button class="px-3 py-1 text-xs bg-primary text-white" onclick={() => rollDice(1)}>1</button>
+      <button class="px-3 py-1 text-xs bg-primary text-white" onclick={() => rollDice(20)}>20</button>
      </div>
     {/if}
-   </div>
-   <div class="dice-shadow {rolling ? 'shadow-rolling' : ''}"></div>
-  </div>
-
-  {#if !rolled}
-   {#if rolling}
-    <Loader classes="mt-4" />
-   {:else}
-    <Button
-     text={m.battle_roll_button()}
-     onclick={() => rollDice()}
-     classes="!text-2xl !h-14 min-w-auto mt-4"
-    />
-    {#if $gameSession?.debug}
-    <div class="flex gap-2 mt-2">
-     <button class="px-3 py-1 text-xs bg-primary text-white" onclick={() => rollDice(1)}>1</button>
-     <button class="px-3 py-1 text-xs bg-primary text-white" onclick={() => rollDice(20)}>20</button>
-    </div>
+    {/if}
    {/if}
-   {/if}
-  {/if}
+  {:else}
+   <LookTV />
   {/if}
  </div>
 {/if}

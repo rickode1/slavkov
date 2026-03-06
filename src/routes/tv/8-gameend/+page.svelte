@@ -5,9 +5,10 @@
  import { positions } from "$lib/stores/positions.js";
  import PlayerBust from "$components/PlayerBust.svelte";
  import Logo from "$components/svg/Logo.svelte";
+ import Star from "$components/svg/Star.svelte";
  import Timer from "$components/Timer.svelte";
  import { startTimer, stopTimer } from "$lib/stores/timer.js";
- import * as m from "$lib/paraglide/messages.js";
+ import {m} from "$lib/paraglide/messages.js";
 
  async function finishSession() {
   const id = $sessionId;
@@ -65,6 +66,7 @@
     round: r,
     label,
     winner: rd?.winner || null,
+    winnerBustColor: rd?.winner ? `var(--color-bust-${$gameSession[`player_${rd.winner}`]?.bust})` : null,
     unit1Img: p1Bust && unit1 ? `/img/unit_${p1Bust}_${unit1}.png` : null,
     unit2Img: p2Bust && unit2 ? `/img/unit_${p2Bust}_${unit2}.png` : null,
     unit1Rotate: unit1 === 'cavalry',
@@ -100,13 +102,13 @@
      class="transition-[filter] duration-800 ease-in-out {winnerCelebrate && winner() === 1 ? 'winner-celebrate' : ''}"
      style={loserRevealed && loser === 1 ? 'filter: grayscale(1) brightness(0.6)' : ''}
     >
-     <PlayerBust player={$gameSession.player_1} />
+     <PlayerBust player={$gameSession.player_1} hideStars />
     </div>
     <div
      class="transition-[filter] duration-800 ease-in-out {winnerCelebrate && winner() === 2 ? 'winner-celebrate' : ''}"
      style={loserRevealed && loser === 2 ? 'filter: grayscale(1) brightness(0.6)' : ''}
     >
-     <PlayerBust player={$gameSession.player_2} />
+     <PlayerBust player={$gameSession.player_2} hideStars />
     </div>
    </div>
 
@@ -114,7 +116,12 @@
    <div class="flex items-start gap-16 mt-6">
     {#each rounds() as rd}
      <div class="flex flex-col items-center gap-4 w-44 transition-opacity duration-800 ease-in-out {revealedRound >= rd.round ? 'opacity-100' : 'opacity-0'}">
-      <p class="text-2xl text-center">{rd.label}</p>
+      <p class="text-2xl text-center">
+       {#if rd.winner}
+        <span style="color: {rd.winnerBustColor}" class="inline-block w-5 align-middle mr-1 -mt-1"><Star /></span>
+       {/if}<br>
+       {rd.label}
+      </p>
       <div class="flex items-end justify-center gap-4">
        {#if rd.unit1Img}
         <div
