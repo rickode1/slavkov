@@ -88,6 +88,7 @@
 
   function handleKeydown(e) {
    if (e.key !== ".") return;
+   if (window.location.hostname !== 'localhost') return;
    const current = $sessionId ?? "(none)";
    const input = prompt(`Session ID: ${current}\n\nEnter new ID to reconnect:`);
    if (input && input.trim() && input.trim() !== $sessionId) {

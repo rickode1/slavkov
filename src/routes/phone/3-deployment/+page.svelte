@@ -171,17 +171,17 @@
  });
 </script>
 
-{#if introDone}
-{#if $gameSession}
- <Help player={myPlayer()}>
+<Help player={myPlayer()} autoOpen={introDone}>
      <p class="text-xl">{m.deploy_select_unit()}.</p>  
      <img
       class="w-30 h-auto"
       srcset={optimize("/img/bonus_unit.png")}
       alt=""
      />
- </Help>
+</Help>
 
+{#if introDone}
+{#if $gameSession}
  <div class="flex flex-col items-center gap-y-4 pt-24">
   {#if selected()}
    <Map
@@ -204,7 +204,7 @@
     />
    {:else}
     <p class="text-xl text-center mt-4">{m.waiting_for_opponent()}</p>
-    <div class="flex flex-col items-center gap-3 mt-2">
+    <div class="flex flex-col items-center -mt-2">
      <HourglassIcon />
     </div>    
    {/if}

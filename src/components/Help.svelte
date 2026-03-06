@@ -1,8 +1,7 @@
 <script>
- import { onMount } from "svelte";
  import { optimize } from "$lib/image";
 
- let { player = null, children } = $props();
+ let { player = null, children, autoOpen = false } = $props();
 
  let open = $state(false);
  let scrollEl = $state(null);
@@ -12,8 +11,8 @@
   open = !open;
  }
 
- onMount(() => {
-  open = true;
+ $effect(() => {
+  if (autoOpen) open = true;
  });
 </script>
 

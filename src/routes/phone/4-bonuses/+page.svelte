@@ -141,12 +141,12 @@
  }
 </script>
 
+<Help player={myPlayer()} autoOpen={introDone}>
+  <p class="text-xl">{m.pick_bonuses()}.</p>
+</Help>
+
 {#if introDone}
 {#if $gameSession}
- <Help player={myPlayer()}>
-  <p class="text-xl">{m.pick_bonuses()}.</p>
- </Help>
-
  <div class="pt-20 pb-6 w-full">
  {#if cardGroups().length === 0}
   <p class="text-xl text-center mt-4">{m.no_bonuses()}</p>

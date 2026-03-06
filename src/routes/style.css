@@ -27,6 +27,11 @@
 }
 
 @layer utilities {
+  html, body {
+   overscroll-behavior: none;
+   touch-action: manipulation;
+  }
+
   body {
    font-family: Slabo, sans-serif;
    font-optical-sizing: auto;

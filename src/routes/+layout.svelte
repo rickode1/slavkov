@@ -11,11 +11,43 @@
  onMount(() => {
   loadPositions();
 
-  const handler = (e) => {
+  // Prevent accidental page unload
+  const unloadHandler = (e) => e.preventDefault();
+  window.addEventListener("beforeunload", unloadHandler);
+
+  let touchStartY = 0;
+
+  const onTouchStart = (e) => {
+   touchStartY = e.touches[0].clientY;
+  };
+
+  const onTouchMove = (e) => {
+   // Walk up from the target to find the first scrollable ancestor
+   let el = e.target;
+   while (el && el !== document.body) {
+    const { overflowY } = getComputedStyle(el);
+    const isScrollable = overflowY === "auto" || overflowY === "scroll";
+    if (isScrollable && el.scrollHeight > el.clientHeight) {
+     // Let the element scroll; only block if already at the top and pulling down
+     if (el.scrollTop === 0 && e.touches[0].clientY > touchStartY) {
+      e.preventDefault();
+     }
+     return;
+    }
+    el = el.parentElement;
+   }
+   // No scrollable ancestor found — always block to prevent page pull-to-refresh
    e.preventDefault();
   };
-  window.addEventListener("beforeunload", handler);
-  return () => window.removeEventListener("beforeunload", handler);
+
+  document.addEventListener("touchstart", onTouchStart, { passive: true });
+  document.addEventListener("touchmove", onTouchMove, { passive: false });
+
+  return () => {
+   window.removeEventListener("beforeunload", unloadHandler);
+   document.removeEventListener("touchstart", onTouchStart);
+   document.removeEventListener("touchmove", onTouchMove);
+  };
  });
 
  // Dynamically load all images from /img folder
