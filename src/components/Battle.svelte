@@ -118,7 +118,7 @@
   diceRolling = false;
   revealedRoll = roll;
   await sleep(1000);
-  rollOutcome = roll > displayedDifficulty ? 'success' : 'fail';
+  rollOutcome = roll >= displayedDifficulty ? 'success' : 'fail';
   const name = activePlayerNickHtml;
   const boldRoll = `<img src="/img/dice.png"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${roll}`;
   addMessage(
@@ -130,7 +130,7 @@
   const turnData = currentTurnData();
   if (rollOutcome === 'fail' && turnData?.unit_retry) {
    await sleep(1500);
-   addMessage(m.battle_unit_retry({ name }), 'unit');
+   addMessage(m.battle_unit_retry({ name }));
    untrack(() => onHighlightCard?.('unit'));
    activeCard = { type: 'unit', value: roundData()?.[`bonus_unit_${startingPlayer}`] || 1 };
    await sleep(2000);
@@ -138,7 +138,7 @@
    await sleep(500);
   } else if (rollOutcome === 'fail' && turnData?.life_retry) {
    await sleep(1500);
-   addMessage(m.battle_life_retry({ name }), 'life');
+   addMessage(m.battle_life_retry({ name }));
    untrack(() => onHighlightCard?.('life'));
    activeCard = { type: 'life', value: 1 };
    await sleep(2000);
@@ -264,7 +264,8 @@
    <div class="absolute left-1/2 -translate-x-1/2 top-12 {!diceRolling ? 'dice-float' : ''} transition-all duration-700" transition:fade={{ duration: 400 }}>
       <div class="relative flex items-center justify-center">
        <img
-        class="h-48 object-contain drop-shadow-lg {diceRolling ? 'dice-rolling' : ''}"
+        class="h-48 object-contain transition-[filter] duration-700 {diceRolling ? 'dice-rolling' : ''}"
+        style={rollOutcome === 'success' ? 'filter: drop-shadow(0 0 18px gold) drop-shadow(0 0 36px goldenrod)' : rollOutcome === 'fail' ? 'filter: drop-shadow(0 0 18px #111) drop-shadow(0 0 36px #000)' : 'filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4))'}
         srcset={optimize("/img/dice.png")}
         alt="Dice"
        />
@@ -286,7 +287,7 @@
      {/if}
     {/key}
 
-    <div class="mt-6 pt-1 flex flex-col gap-y-3 text-lg max-h-65 overflow-hidden relative">
+    <div class="mt-6 pt-1 flex flex-col gap-y-3 text-lg max-h-120 overflow-hidden relative">
      {#each messages.slice(1) as msg (msg.id)}
       <p animate:flip={{ duration: 400 }} in:fly={{ y: -16, duration: 350 }}>{@html msg.text}</p>
      {/each}

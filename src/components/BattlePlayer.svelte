@@ -28,6 +28,6 @@
  {/if}
  <div class="flex flex-col gap-1.5 {flip ? 'items-end' : ''}">
   <BattleStatRow base={10} bonus={dmgBonus + locBonus} active={active && role === 'dmg'} iconSrc="/img/bonus_dmg.png" {bust} />
-  <BattleStatRow base={14} bonus={defBonus + locBonus} active={active && role === 'def'} iconSrc="/img/bonus_def.png" {bust} />
+  <BattleStatRow base={6} bonus={defBonus + locBonus} active={active && role === 'def'} iconSrc="/img/bonus_def.png" {bust} />
  </div>
 </div>

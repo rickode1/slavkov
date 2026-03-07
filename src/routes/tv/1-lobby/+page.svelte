@@ -1,4 +1,6 @@
 <script>
+ import { optimize } from "$lib/image";
+ import { m } from "$lib/paraglide/messages.js";
  import { gameSession } from "$lib/stores/gameSession.js";
  import Logo from "$components/svg/Logo.svelte";
  import PlayerLobby from "$components/PlayerLobby.svelte"; 
@@ -21,4 +23,11 @@
   </div>
  {/if}
 
-
+<div class="absolute left-1/2 -translate-x-20 bottom-8 w-40">
+ <p class="text-center text-sm mb-2">{@html m.wifi()}</p>
+ <img
+  class="w-30 h-auto mx-auto"
+  srcset={optimize("/img/wifi.png")}
+  alt=""
+ />
+</div>

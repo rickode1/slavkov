@@ -1,5 +1,6 @@
 {
  "$schema": "https://inlang.com/schema/inlang-message-format",
+ "wifi": "Máš pomalá data? Připoj se na WiFi",
  "logo_title_line1": "Bitva",
  "logo_title_line2": "u Slavkova",
  "start": "Zahájit bitvu",
@@ -70,6 +71,6 @@
  "battle_attack_failure": "{name} útok nevyšel s hodem {roll}!",
  "battle_defense_success": "{name} obrana vyšla s hodem {roll}!",
  "battle_defense_failure": "{name} obrana nevyšla s hodem {roll}!",
- "battle_unit_retry": "{name} využívá Kruh síly a může znovu útočit!",
- "battle_life_retry": "{name} využívá Obvazy a přežívá útok!"
+ "battle_unit_retry": "{name} využívá <img src='/img/bonus_unit.png' class='inline-block h-8 w-auto align-middle mr-2 -mt-1'>Kruh síly a může znovu útočit!",
+ "battle_life_retry": "{name} využívá <img src='/img/bonus_life.png' class='inline-block h-8 w-auto align-middle mr-2 -mt-1'>Obvazy a přežívá útok!"
 }

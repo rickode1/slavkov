@@ -15,6 +15,10 @@
  // phase: 'idle' | 'dmg' | 'def' | 'done'
  let phase = $state('idle');
 
+ // Which card types to animate per player when returning to idle.
+ // Initially: the bonus cards revealed for the first time on this page.
+ let animatedCards = $state({ code_1: ['def', 'dmg', 'life'], code_2: ['def', 'dmg', 'life'] });
+
  const dmgImg = `<img src="/img/bonus_minigame_dmg.png" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
  const defImg = `<img src="/img/bonus_minigame_def.png" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
 
@@ -77,7 +81,11 @@
 
  async function handleDmgResult(success) {
   const attName = nickHtml(attacker());
-  await saveBonus(attackerCode(), 'dmg', success ? 1 : 0);
+  const attCode = attackerCode();
+  const defCode = defenderCode();
+  await saveBonus(attCode, 'dmg', success ? 1 : 0);
+  // Only animate the minigame_dmg card for the attacker; nothing new for the defender.
+  animatedCards = { [attCode]: ['minigame_dmg'], [defCode]: false };
   phase = 'idle';
   notify(dmgImg + (success ? m.minigame_dmg_success({ name: attName }) : m.minigame_dmg_fail({ name: attName })), NOTIF_DURATION);
   const name = nickHtml(defender());
@@ -87,7 +95,11 @@
 
  async function handleDefResult(success) {
   const defName = nickHtml(defender());
-  await saveBonus(defenderCode(), 'def', success ? 1 : 0);
+  const attCode = attackerCode();
+  const defCode = defenderCode();
+  await saveBonus(defCode, 'def', success ? 1 : 0);
+  // Only animate the minigame_def card for the defender; nothing new for the attacker.
+  animatedCards = { [attCode]: false, [defCode]: ['minigame_def'] };
   phase = 'idle';
   notify(defImg + (success ? m.minigame_def_success({ name: defName }) : m.minigame_def_fail({ name: defName })), NOTIF_DURATION);
   const id = $sessionId;
@@ -108,12 +120,12 @@
   <div class="absolute left-10 top-6 flex w-[calc(100%-5rem)] justify-between z-10">
    <div class="flex flex-col items-center">
     <PlayerBust player={$gameSession.player_1} />
-    <CardBonuses playerCode="code_1" />
+    <CardBonuses playerCode="code_1" animated={animatedCards.code_1} />
    </div>
 
    <div class="flex flex-col items-center">
     <PlayerBust player={$gameSession.player_2} />
-    <CardBonuses playerCode="code_2" />
+    <CardBonuses playerCode="code_2" animated={animatedCards.code_2} />
    </div>
   </div>
   <Map

@@ -3,7 +3,21 @@
  import { strokeStyle as makeStroke } from "$lib/constants.js";
  import Card from "$components/Card.svelte";
 
+ /**
+  * animated: true  → all cards animate
+  *           false → no cards animate
+  *           string[] → only cards whose type is in the array animate
+  */
  let { playerCode = "code_1", animated = true, hideBonuses = false, highlightTypes = null } = $props();
+
+ // Stable rotations: generated once per component instance, indexed by card slot.
+ const ROTATIONS = Array.from({ length: 32 }, () => (Math.random() - 0.5) * 4);
+
+ function isAnimated(type) {
+  if (animated === true) return true;
+  if (!animated) return false;
+  return Array.isArray(animated) && animated.includes(type);
+ }
 
  let playerBust = $derived(
   $gameSession?.[playerCode === "code_1" ? "player_1" : "player_2"]?.bust
@@ -27,25 +41,26 @@
   const rd = roundData();
   if (!rd) return [];
   const cards = [];
-  const rot = () => (Math.random() - 0.5) * 4;
+  const rot = (idx) => ROTATIONS[idx % ROTATIONS.length];
+  let idx = 0;
   if (rd[`bonus_unit${suffix}`] !== undefined)
-   cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`], disabled: false, rot: rot() });
+   cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`], disabled: false, rot: rot(idx++) });
   if (rd[`bonus_loc${suffix}`] !== undefined)
-   cards.push({ type: "loc", value: rd[`bonus_loc${suffix}`], disabled: false, rot: rot() });
+   cards.push({ type: "loc", value: rd[`bonus_loc${suffix}`], disabled: false, rot: rot(idx++) });
   if (!hideBonuses) {
    for (let i = 0; i < (rd[`bonuses_def${suffix}`] || 0); i++)
-    cards.push({ type: "def", value: 1, disabled: false, rot: rot() });
+    cards.push({ type: "def", value: 1, disabled: false, rot: rot(idx++) });
    for (let i = 0; i < (rd[`bonuses_dmg${suffix}`] || 0); i++)
-    cards.push({ type: "dmg", value: 1, disabled: false, rot: rot() });
+    cards.push({ type: "dmg", value: 1, disabled: false, rot: rot(idx++) });
    const lifeCount = rd[`bonuses_life${suffix}`] || 0;
    const used = lifeUsed();
    for (let i = 0; i < lifeCount; i++)
-    cards.push({ type: "life", value: 1, disabled: i < used, rot: rot() });
+    cards.push({ type: "life", value: 1, disabled: i < used, rot: rot(idx++) });
   }
   if (rd[`bonus_minigame_dmg${suffix}`] !== undefined)
-   cards.push({ type: "minigame_dmg", value: rd[`bonus_minigame_dmg${suffix}`], disabled: false, rot: rot() });
+   cards.push({ type: "minigame_dmg", value: rd[`bonus_minigame_dmg${suffix}`], disabled: false, rot: rot(idx++) });
   if (rd[`bonus_minigame_def${suffix}`] !== undefined)
-   cards.push({ type: "minigame_def", value: rd[`bonus_minigame_def${suffix}`], disabled: false, rot: rot() });
+   cards.push({ type: "minigame_def", value: rd[`bonus_minigame_def${suffix}`], disabled: false, rot: rot(idx++) });
   return cards;
  });
 
@@ -95,7 +110,7 @@
  {#each rows() as row}
   <div class="flex gap-1">
    {#each row as group, gi}
-    <div class="relative {animated ? 'card-drop' : ''}" style="{animated ? `animation-delay: ${gi * 0.15}s` : ''}">
+    <div class="relative {isAnimated(group.type) ? 'card-drop' : ''}" style="{isAnimated(group.type) ? `animation-delay: ${gi * 0.15}s` : ''}">
      {#each group.items as bonus, i}
       <div
        class={i > 0 ? "absolute" : "relative"}

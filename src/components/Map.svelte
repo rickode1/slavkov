@@ -96,6 +96,7 @@
  let battlePhase = $state(null);
  let battleTargets = $state({});
  let losingSlotId = $state(null);
+ let battleDone = $state(false);
 
  if (browser) {
   isMobile = window.innerWidth < 1024;
@@ -226,8 +227,7 @@
      // After units settle, grey out the loser
      setTimeout(() => {
       losingSlotId = losingSlot.id;
-      setTimeout(() => {
-       resetZoom();
+      setTimeout(() => {        battleDone = true;       resetZoom();
        setTimeout(() => {
         onBattleEndComplete?.();
        }, 800);
@@ -290,9 +290,10 @@
       <button
        class="absolute rounded-full h-8 w-8 lg:h-16 lg:w-16
        -translate-x-1/2 -translate-y-1/2
-       transition-all duration-2000 ease-in-out overflow-hidden
+       overflow-hidden
+       {battleDone ? 'transition-opacity duration-700 ease-in-out' : 'transition-all duration-2000 ease-in-out'}
        {onSlotSelect ? 'cursor-pointer' : ''}
-       {(activeLocationId === loc.id || battleTargets[slot.id]) && zoomed
+       {(activeLocationId === loc.id || battleTargets[slot.id]) && zoomed && !battleDone
         ? 'opacity-100'
         : 'opacity-0 pointer-events-none'}"
        style="left: {battleTargets[slot.id] ? battleTargets[slot.id].x : slot.x}%; top: {battleTargets[slot.id] ? battleTargets[slot.id].y : slot.y}%; background-color: {battlePhase ? 'transparent' : getSlotColor(slot.p)}; {losingSlotId === slot.id ? 'transition: filter 0.8s ease; filter: grayscale(1) brightness(0.6);' : ''}"

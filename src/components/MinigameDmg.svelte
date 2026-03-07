@@ -84,14 +84,25 @@
    if (targetEl && crossEl) {
      const tRect = targetEl.getBoundingClientRect();
      const cRect = crossEl.getBoundingClientRect();
-     const cx = cRect.left + cRect.width / 2;
-     const cy = cRect.top  + cRect.height / 2;
 
-     hit =
-       cx >= tRect.left &&
-       cx <= tRect.right &&
-       cy >= tRect.top &&
-       cy <= tRect.bottom;
+     // centres in screen space
+     const cx = cRect.left + cRect.width  / 2;
+     const cy = cRect.top  + cRect.height / 2;
+     const tx = tRect.left + tRect.width  / 2;
+     const ty = tRect.top  + tRect.height / 2;
+
+     // rotate offset into the target's un-rotated local space
+     const angle  = -hbRotate * Math.PI / 180;
+     const dx     = cx - tx;
+     const dy     = cy - ty;
+     const localX = dx * Math.cos(angle) - dy * Math.sin(angle);
+     const localY = dx * Math.sin(angle) + dy * Math.cos(angle);
+
+     // ellipse semi-axes (rounded-full on a rect becomes an ellipse)
+     const a = (hbWidth  * 4) / 2;
+     const b = (hbHeight * 4) / 2;
+
+     hit = (localX / a) ** 2 + (localY / b) ** 2 <= 1;
    }
 
    if (hit && onResult && !debug && !resultFired) {

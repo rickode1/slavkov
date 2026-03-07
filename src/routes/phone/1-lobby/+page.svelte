@@ -92,10 +92,6 @@
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
  let profileSaved = $derived(myPlayer()?.bust && myPlayer()?.nick);
 
- let emblemColor = $derived(() => {
-  return `color: var(--color-bust-${selectedBust}-dark)`;
- });
-
  let bustStrokeStyle = $derived(() => strokeStyle(selectedBust));
 
  function prevBust() {
@@ -260,22 +256,6 @@
         in:fly={{ x: 100 * slideDirection, duration: 300 }}
         out:fly={{ x: -100 * slideDirection, duration: 300 }}
        />
-       <div
-        class="absolute top-0 right-0 w-8 h-8 {isBustAvailable
-         ? ''
-         : 'opacity-30 grayscale'}"
-        style={emblemColor()}
-        in:fly={{ x: 100 * slideDirection, duration: 300 }}
-        out:fly={{ x: -100 * slideDirection, duration: 300 }}
-       >
-        {#if selectedBust === "fr"}
-         <EmblemFr classes="w-full h-full" />
-        {:else if selectedBust === "at"}
-         <EmblemAt classes="w-full h-full" />
-        {:else if selectedBust === "ru"}
-         <EmblemRu classes="w-full h-full" />
-        {/if}
-       </div>
       </div>
      {/key}
     </div>
