@@ -9,8 +9,7 @@
   resetSession,
   deviceParam,
  } from "$lib/stores/gameSession.js";
- import { subscribeToSession, cleanupSession } from "$lib/sessionRealtime.js";
- import { terminalStates, gameScreens } from "$lib/constants.js";
+ import { subscribeToSession, cleanupSession } from "$lib/sessionRealtime.js"; import { initSoundListener, subscribeSoundChannel, cleanupSoundChannel } from '$lib/stores/sounds.js'; import { terminalStates, gameScreens } from "$lib/constants.js";
  import { currentLocale } from "$lib/stores/locale.js";
  import { fly } from "svelte/transition";
  import * as m from "$lib/paraglide/messages.js";
@@ -82,6 +81,8 @@
    deviceParam.set(device);
   }
 
+  initSoundListener('tv');
+
   if (paramsChanged) {
    window.history.replaceState({}, "", url);
   }
@@ -103,6 +104,7 @@
   const id = $sessionId;
   if (id) {
    subscribeToSession(id);
+   subscribeSoundChannel(id);
   } else if (page.url.pathname !== "/tv") {
    goto("/tv");
   }
@@ -133,6 +135,7 @@
 
  onDestroy(() => {
   cleanupSession();
+  cleanupSoundChannel();
   clearAutoClose();
  });
 </script>

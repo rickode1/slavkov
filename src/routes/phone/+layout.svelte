@@ -7,8 +7,10 @@
   sessionId,
   gameSession,
   resetSession,
- } from "$lib/stores/gameSession.js";
- import { subscribeToSession, cleanupSession } from "$lib/sessionRealtime.js";
+  playerCode,
+ } from '$lib/stores/gameSession.js';
+ import { subscribeToSession, cleanupSession } from '$lib/sessionRealtime.js';
+ import { initSoundListener, subscribeSoundChannel, cleanupSoundChannel } from '$lib/stores/sounds.js';
  import { terminalStates, gameScreens } from "$lib/constants.js";
  import { currentLocale } from "$lib/stores/locale.js";
  import LangSwitcher from "$components/LangSwitcher.svelte";
@@ -39,9 +41,16 @@
  });
 
  $effect(() => {
+  if ($playerCode) {
+   initSoundListener($playerCode === 'code_1' ? 'player_1' : 'player_2');
+  }
+ });
+
+ $effect(() => {
   const id = $sessionId;
   if (id) {
    subscribeToSession(id);
+   subscribeSoundChannel(id);
   } else if (page.url.pathname !== "/phone/1-lobby") {
    goto("/phone/1-lobby");
   }
@@ -70,7 +79,10 @@
   }
  });
 
- onDestroy(cleanupSession);
+ onDestroy(() => {
+  cleanupSession();
+  cleanupSoundChannel();
+ });
 </script>
 
 <main
