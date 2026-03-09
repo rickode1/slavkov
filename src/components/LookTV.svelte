@@ -1,15 +1,5 @@
 <script>
- import { onMount, onDestroy } from "svelte";
  import { m } from "$lib/paraglide/messages.js";
- import { playSound } from "$lib/stores/sounds.js";
-
- onMount(() => {
-  playSound('ding.mp3', 'tv');
- });
-
- onDestroy(() => {
-  playSound('ding.mp3', 'phones');
- });
 </script>
 
 <div class="relative mt-30">

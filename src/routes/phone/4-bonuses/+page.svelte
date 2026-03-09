@@ -9,6 +9,7 @@
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
  import { startTimer, stopTimer } from "$lib/stores/timer.js";
+ import { playSound } from '$lib/stores/sounds.js';
 
  import PlayerBust from "$components/PlayerBust.svelte";
  import Card from "$components/Card.svelte";
@@ -93,6 +94,13 @@
   }, introDoneDelay);
  });
  onDestroy(() => stopTimer());
+
+ $effect(() => {
+  if (!introDone) {
+   playSound('ding.mp3', 'tv');
+   return () => playSound('ding.mp3', 'phones');
+  }
+ });
 
  function toggleCard(id) {
   const next = new Set(selectedCards);

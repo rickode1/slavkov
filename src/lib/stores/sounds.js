@@ -47,7 +47,14 @@ export async function playSound(file, target = 'all') {
 	});
 }
 
+const recentlyPlayed = new Map();
+const DEDUP_MS = 500;
+
 function playAudio(file) {
+	const now = Date.now();
+	const last = recentlyPlayed.get(file) ?? 0;
+	if (now - last < DEDUP_MS) return;
+	recentlyPlayed.set(file, now);
 	const audio = new Audio(`/sounds/${file}`);
 	audio.play().catch((e) => console.warn('Sound playback failed:', e));
 }

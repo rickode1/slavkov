@@ -1,5 +1,6 @@
 <script>
  import { onDestroy } from "svelte";
+ import { playSound } from '$lib/stores/sounds.js';
  import {
   sessionId,
   gameSession,
@@ -65,6 +66,14 @@
   }
  });
  onDestroy(() => stopTimer());
+
+ $effect(() => {
+  const showLookTV = !(isActivePlayer && showUI);
+  if (showLookTV) {
+   playSound('ding.mp3', 'tv');
+   return () => playSound('ding.mp3', 'phones');
+  }
+ });
 
  let uiTimer = null;
  $effect(() => {

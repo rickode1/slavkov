@@ -9,6 +9,7 @@
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
  import { startTimer, stopTimer, resetTimer } from "$lib/stores/timer.js";
+ import { playSound } from '$lib/stores/sounds.js';
 
  import PlayerBust from "$components/PlayerBust.svelte";
  import Button from "$components/Button.svelte";
@@ -119,6 +120,13 @@
  });
 
  onDestroy(() => stopTimer());
+
+ $effect(() => {
+  if (!introDone) {
+   playSound('ding.mp3', 'tv');
+   return () => playSound('ding.mp3', 'phones');
+  }
+ });
 
  function handleSlotSelect(slot) {
   selectedSlot = slot;

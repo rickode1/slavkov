@@ -18,7 +18,20 @@
 
  let { children } = $props();
 
+ let wakeLock = null;
+
+ async function requestWakeLock() {
+  try {
+   if ('wakeLock' in navigator) {
+    wakeLock = await navigator.wakeLock.request('screen');
+   }
+  } catch (e) {
+   console.warn('Wake lock failed:', e);
+  }
+ }
+
  onMount(() => {
+  requestWakeLock();
   const lang = page.url.searchParams.get("lang");
   if (lang && locales.includes(lang)) {
    const url = new URL(window.location.href);
@@ -37,7 +50,11 @@
    }
   }
   window.addEventListener("keydown", handleKeydown);
-  return () => window.removeEventListener("keydown", handleKeydown);
+
+  return () => {
+   window.removeEventListener("keydown", handleKeydown);
+   wakeLock?.release();
+  };
  });
 
  $effect(() => {
