@@ -252,7 +252,7 @@
  >
   <img
    class="absolute inset-0 w-full h-full z-10 pointer-events-none"
-   srcset={optimize("/img/map_frame.png")}
+   src="/img/map_frame.png"
    alt=""
   />
 
@@ -262,7 +262,7 @@
     : ''}"
    style="transform: scale({scale}); transform-origin: {zoomOrigin}"
   >
-   <img class="w-full" srcset={optimize("/img/map.png")} alt="" />
+   <img class="w-full" src="/img/map.png" alt="" />
 
    {#each locations as loc (loc.id)}
     {@const winner = locationWinners()[loc.id]}

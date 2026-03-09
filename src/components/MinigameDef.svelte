@@ -39,16 +39,19 @@
  let animFrame;
  let gameAreaEl;
  let gameWidth = 480;
- let fallKey = 0;
+ let fallVideoEl;
  let slowdownStart = 0;
  let speedAtFinish = 0;
  let showWinPose = false;
 
- const FALL_SRC = "/img/mini_def_soldier_fall.webp";
+ const FALL_SRC = "/img/mini_def_soldier_fall.webm";
 
  function triggerFall() {
    gameState = 'lost';
-   fallKey++;
+   if (fallVideoEl) {
+     fallVideoEl.currentTime = 0;
+     fallVideoEl.play();
+   }
  }
 
  const OBSTACLE_IMGS = [
@@ -212,8 +215,7 @@
 
  onMount(() => {
    if (gameAreaEl) gameWidth = gameAreaEl.clientWidth;
-   const preload = new Image();
-   preload.src = FALL_SRC;
+   // video is preloaded via preload="auto" attribute
    startCountdown();
  });
 
@@ -259,14 +261,16 @@
     src="/img/mini_def_soldier_win.webp"
     alt=""
   />
-  {#key fallKey}
-  <img
-      class="absolute bottom-8 z-10 w-180 object-contain"
-      style="left: {SOLDIER_LEFT+270}px; display: {gameState !== 'lost' ? 'none' : 'block'};"
-      src={FALL_SRC}
-      alt=""
-   />
-  {/key}
+  <video
+    bind:this={fallVideoEl}
+    class="absolute bottom-8 z-10 w-180 object-contain"
+    style="left: {SOLDIER_LEFT+270}px; display: {gameState !== 'lost' ? 'none' : 'block'};"
+    muted
+    playsinline
+    preload="auto"
+  >
+    <source src={FALL_SRC} type="video/webm" />
+  </video>
 
   <!-- obstacles -->
   {#each obstacles as obs}
