@@ -68,5 +68,7 @@
  "battle_defense_success": "{name}s Verteidigung war erfolgreich mit einer {roll}!",
  "battle_defense_failure": "{name}s Verteidigung ist gescheitert mit einer {roll}!",
  "battle_unit_retry": "{name} nutzt den Kraftkreis und kann erneut angreifen!",
- "battle_life_retry": "{name} nutzt den Feldverband und überlebt den Angriff!"
+ "battle_life_retry": "{name} nutzt den Feldverband und überlebt den Angriff!",
+ "minigame_win": "Sieg!",
+ "minigame_fail": "Nieder!"
 }

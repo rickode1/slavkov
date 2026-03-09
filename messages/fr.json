@@ -68,5 +68,7 @@
  "battle_defense_success": "La défense de {name} a réussi avec un {roll} !",
  "battle_defense_failure": "La défense de {name} a échoué avec un {roll} !",
  "battle_unit_retry": "{name} utilise le Cercle de force et peut attaquer à nouveau !",
- "battle_life_retry": "{name} utilise le Pansement de campagne et survit à l'attaque !"
+ "battle_life_retry": "{name} utilise le Pansement de campagne et survit à l'attaque !",
+ "minigame_win": "Victoire !",
+ "minigame_fail": "Défaite !"
 }

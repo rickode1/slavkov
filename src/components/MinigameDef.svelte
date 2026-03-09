@@ -15,7 +15,7 @@
 
  let groundSpeed = 6;
  let obstacleInterval = 200;
- let jumpHeight = 150;
+ let jumpHeight = 200;
  let jumpDuration = 1500;
 
  const GAME_DURATION_S = 30;
@@ -39,6 +39,24 @@
  let animFrame;
  let gameAreaEl;
  let gameWidth = 480;
+ let fallKey = 0;
+ let slowdownStart = 0;
+ let speedAtFinish = 0;
+ let showWinPose = false;
+
+ const FALL_SRC = "/img/mini_def_soldier_fall.webp";
+
+ function triggerFall() {
+   gameState = 'lost';
+   fallKey++;
+ }
+
+ const OBSTACLE_IMGS = [
+   { src: "/img/mini_def_obstacle.png",  height: 80  },
+   { src: "/img/mini_def_obstacle2.png", height: 80  },
+   { src: "/img/mini_def_obstacle3.png", height: 140 },
+   { src: "/img/mini_def_obstacle4.png", height: 140 },   
+ ];
 
  // obstacle size
  const OBS_WIDTH = 130;
@@ -54,6 +72,7 @@
    groundOffset = 0;
    soldierY = 0;
    isJumping = false;
+   showWinPose = false;
    obstacles = [];
    frameCount = 0;
    nextObstacleAt = 60;
@@ -69,70 +88,90 @@
  }
 
  function gameLoop(ts) {
-   if (gameState !== 'running') return;
+   if (gameState !== 'running' && gameState !== 'slowing') return;
+
+   // --- compute effective speed (decelerate to 0 over 1s after finish) ---
+   let currentSpeed = groundSpeed;
+   if (gameState === 'slowing') {
+     const elapsed = performance.now() - slowdownStart;
+     if (elapsed >= 1000) {
+       gameState = 'won';
+       cancelAnimationFrame(animFrame);
+       if (onResult && !debug) { setTimeout(() => onResult(true), 3000); } else { setTimeout(resetGame, 3000); }
+       return;
+     }
+     currentSpeed = speedAtFinish * (1 - elapsed / 1500);
+   }
 
    // move ground
-   groundOffset = (groundOffset + groundSpeed) % gameWidth;
+   groundOffset = (groundOffset + currentSpeed) % gameWidth;
 
    // move obstacles
    for (let i = 0; i < obstacles.length; i++) {
-     obstacles[i].x -= groundSpeed;
+     obstacles[i].x -= currentSpeed;
    }
    // remove off-screen obstacles
    obstacles = obstacles.filter(o => o.x > -OBS_WIDTH);
 
-   // spawn obstacles (semi-random intervals) — stop when finish is approaching
-   frameCount++;
-   if (frameCount >= nextObstacleAt && !finishReached && finishX > gameWidth + 200) {
-     obstacles = [...obstacles, { x: gameWidth + 20 }];
-     const variance = obstacleInterval * 0.5;
-     const gap = Math.max(40, obstacleInterval + Math.floor(Math.random() * variance * 2 - variance));
-     nextObstacleAt = frameCount + gap;
-   }
-
-   // move finish line
-   finishX -= groundSpeed;
-   if (finishX <= SOLDIER_HB_LEFT + SOLDIER_HB_WIDTH && !finishReached) {
-     finishReached = true;
-   }
-   if (finishReached && finishX <= SOLDIER_HB_LEFT) {
-     gameState = 'won';
-     cancelAnimationFrame(animFrame);
-     stopTimer();
-     if (onResult && !debug) { setTimeout(() => onResult(true), 2000); } else { setTimeout(resetGame, 3000); }
-     return;
-   }
-
-   if (isJumping) {
-     const elapsed = performance.now() - jumpStart;
-     if (elapsed < jumpDuration) {
-       const p = elapsed / jumpDuration;
-       const t = Math.pow(Math.sin(p * Math.PI), 0.6);
-       soldierY = -jumpHeight * t;
-     } else {
-       soldierY = 0;
-       isJumping = false;
+   if (gameState === 'running') {
+     // spawn obstacles (semi-random intervals) — stop when finish is approaching
+     frameCount++;
+     if (frameCount >= nextObstacleAt && !finishReached && finishX > gameWidth + 200) {
+       const def = OBSTACLE_IMGS[Math.floor(Math.random() * OBSTACLE_IMGS.length)];
+       obstacles = [...obstacles, { x: gameWidth + 20, img: def.src, height: def.height }];
+       const variance = obstacleInterval * 0.5;
+       const gap = Math.max(40, obstacleInterval + Math.floor(Math.random() * variance * 2 - variance));
+       nextObstacleAt = frameCount + gap;
      }
-   }
 
-   // collision detection
-   for (const obs of obstacles) {
-     const obsLeft = obs.x;
-     const obsRight = obs.x + OBS_WIDTH;
-     const soldierLeft = SOLDIER_HB_LEFT;
-     const soldierRight = SOLDIER_HB_LEFT + SOLDIER_HB_WIDTH;
-     const soldierBottom = soldierY;
+     // move finish line
+     finishX -= groundSpeed;
+     if (finishX <= SOLDIER_HB_LEFT + SOLDIER_HB_WIDTH && !finishReached) {
+       finishReached = true;
+       setTimeout(()=>{showWinPose = true}, 1300);
+     }
+     if (finishReached && finishX <= SOLDIER_HB_LEFT && !isJumping) {
+       gameState = 'slowing';
+       slowdownStart = performance.now();
+       speedAtFinish = groundSpeed;
+       stopTimer();
+     }
 
-     // horizontal overlap
-     if (soldierRight > obsLeft && soldierLeft < obsRight) {
-       if (soldierBottom > -OBS_HEIGHT) {
-         gameState = 'lost';
-         cancelAnimationFrame(animFrame);
-         stopTimer();
-         if (onResult && !debug) { setTimeout(() => onResult(false), 2000); } else { setTimeout(resetGame, 3000); }
-         return;
+     if (isJumping) {
+       const elapsed = performance.now() - jumpStart;
+       if (elapsed < jumpDuration) {
+         const p = elapsed / jumpDuration;
+         const t = Math.pow(Math.sin(p * Math.PI), 0.6);
+         soldierY = -jumpHeight * t;
+       } else {
+         soldierY = 0;
+         isJumping = false;
        }
      }
+
+     // collision detection
+     for (const obs of obstacles) {
+       const obsLeft = obs.x;
+       const obsRight = obs.x + OBS_WIDTH;
+       const soldierLeft = SOLDIER_HB_LEFT;
+       const soldierRight = SOLDIER_HB_LEFT + SOLDIER_HB_WIDTH;
+       const soldierBottom = soldierY;
+
+       // horizontal overlap
+       if (soldierRight > obsLeft && soldierLeft < obsRight) {      
+         if (soldierBottom > -obs.height) {
+           if(isJumping) continue;
+           triggerFall();
+           cancelAnimationFrame(animFrame);
+           stopTimer();
+           if (onResult && !debug) { setTimeout(() => onResult(false), 2000); } else { setTimeout(resetGame, 3000); }
+           return;
+         }
+       }
+     }
+   } else {
+     // slowing — keep finish line scrolling with the ground
+     finishX -= currentSpeed;
    }
 
    animFrame = requestAnimationFrame(gameLoop);
@@ -150,7 +189,7 @@
 
  function handleTimerExpiry() {
    if (gameState === 'running') {
-     gameState = 'lost';
+     triggerFall();
      cancelAnimationFrame(animFrame);
      if (onResult && !debug) setTimeout(() => onResult(false), 1500);
      else setTimeout(resetGame, 1500);
@@ -173,6 +212,8 @@
 
  onMount(() => {
    if (gameAreaEl) gameWidth = gameAreaEl.clientWidth;
+   const preload = new Image();
+   preload.src = FALL_SRC;
    startCountdown();
  });
 
@@ -185,9 +226,14 @@
 
 <div
   bind:this={gameAreaEl}
-  class="relative w-full z-10"
-  style="height: 70vh; overflow: clip;"
+  class="relative w-full z-10 -mt-[10vh]"
+  style="height: 85vh; overflow: clip;"
 >
+  <img
+   class="absolute inset-0 w-full h-full z-10 pointer-events-none"
+   srcset={optimize("/img/map_frame.png")}
+   alt=""
+  />
   <img
     class="absolute bottom-0 h-20 w-full object-cover"
     style="transform: translateX(-{groundOffset}px); width: 200%;"
@@ -203,17 +249,31 @@
 
   <img
     class="absolute bottom-11 z-10 w-100 object-contain"
-    style="left: {SOLDIER_LEFT}px; transform: translateY({soldierY}px);"
-    srcset={optimize("/img/mini_def_soldier.png")}
+    style="left: {SOLDIER_LEFT}px; transform: translateY({soldierY}px); display: {gameState === 'lost' || showWinPose ? 'none' : 'block'};"
+    src={gameState === 'ready' ? "/img/mini_def_soldier_start.png" : isJumping ? "/img/mini_def_soldier_jump.png" : "/img/mini_def_soldier_run.webp"}
     alt=""
   />
+  <img
+    class="absolute bottom-11 z-10 w-130 object-contain"
+    style="left: {SOLDIER_LEFT+270}px; display: {showWinPose ? 'block' : 'none'};"
+    src="/img/mini_def_soldier_win.webp"
+    alt=""
+  />
+  {#key fallKey}
+  <img
+      class="absolute bottom-8 z-10 w-180 object-contain"
+      style="left: {SOLDIER_LEFT+270}px; display: {gameState !== 'lost' ? 'none' : 'block'};"
+      src={FALL_SRC}
+      alt=""
+   />
+  {/key}
 
   <!-- obstacles -->
   {#each obstacles as obs}
     <img
-      class="absolute bottom-11 h-20 object-contain"
-      style="left: {obs.x}px;"
-      srcset={optimize("/img/mini_def_obstacle.png")}
+      class="absolute bottom-11 object-contain"
+      style="left: {obs.x}px; height: {obs.height}px;"
+      srcset={optimize(obs.img)}
       alt=""
     />
   {/each}
@@ -232,28 +292,25 @@
 <!-- button / result -->
 {#if gameState === 'running'}
   <button
-    class="absolute bottom-10 z-10 bg-primary text-white text-2xl font-bold h-35 w-35 rounded-full cursor-pointer"
+    class="absolute bottom-4 z-10 bg-primary text-white text-2xl font-bold h-35 w-35 rounded-full cursor-pointer result-pop"
     on:click={handleJump}
   >
     {m.jump()}
   </button>
-{:else if gameState === 'won'}
-  <div
-    class="absolute bottom-10 z-10 bg-primary text-2xl font-bold h-35 w-35 rounded-full flex items-center justify-center text-white"
-  >
-    WIN!
-  </div>
-{:else}
-  <div
-    class="absolute bottom-10 z-10 bg-primary text-2xl font-bold h-35 w-35 rounded-full flex items-center justify-center text-white"
-  >
-    FAIL!
-  </div>
 {/if}
 
-{#if countdown !== null}
+{#if gameState === 'won' || gameState === 'lost' || countdown !== null}
  <div class="fixed inset-0 flex items-center justify-center z-40 bg-black/60 pointer-events-none">
-  <span class="text-[14rem] font-bold text-white drop-shadow-2xl">{countdown}</span>
+  <span
+    class="text-[10rem] font-bold text-white drop-shadow-2xl -mt-[10vh]"
+    class:result-pop={countdown === null}
+  >
+    {#if countdown !== null}
+      {countdown}
+    {:else}
+      {gameState === 'won' ? m.minigame_win() : m.minigame_fail()}
+    {/if}
+  </span>
  </div>
 {/if}
 
@@ -263,7 +320,7 @@
 
 <!-- debug panel -->
 {#if debug}
-<div class="fixed top-2 left-2 z-50 text-xs p-3 flex flex-col gap-1.5 w-52">
+<div class="fixed top-0 left-0 z-50 text-xs p-3 flex flex-col gap-1.5 w-52 bg-white">
   <span class="font-bold text-sm">Difficulty</span>
 
   <label class="flex flex-col">
@@ -277,3 +334,15 @@
   </label>
 </div>
 {/if}
+
+<style>
+  @keyframes pop-in {
+    0%   { transform: scale(0.2); opacity: 0; }
+    60%  { transform: scale(1.15); opacity: 1; }
+    80%  { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  .result-pop {
+    animation: pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+</style>

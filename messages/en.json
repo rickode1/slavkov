@@ -68,5 +68,7 @@
  "battle_defense_success": "{name}'s defense succeeded with a {roll}!",
  "battle_defense_failure": "{name}'s defense failed with a {roll}!",
  "battle_unit_retry": "{name} uses the Circle of Power and can attack again!",
- "battle_life_retry": "{name} uses Field Dressing and survives the attack!"
+ "battle_life_retry": "{name} uses Field Dressing and survives the attack!",
+ "minigame_win": "Win!",
+ "minigame_fail": "Fail!"
 }
