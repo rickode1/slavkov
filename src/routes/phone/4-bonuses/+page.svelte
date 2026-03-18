@@ -9,7 +9,7 @@
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
  import { startTimer, stopTimer } from "$lib/stores/timer.js";
- import { playSound } from '$lib/stores/sounds.js';
+
 
  import PlayerBust from "$components/PlayerBust.svelte";
  import Card from "$components/Card.svelte";
@@ -73,7 +73,6 @@
 
  // Timer: 30s to choose bonuses
  onMount(() => {
-  // Mirror the TV notification queue to know when pick_bonuses appears
   const session = $gameSession;
   let bonusCount = 0;
   if (session) {
@@ -81,26 +80,20 @@
    const rd = session[`round_${round}`] || {};
    for (const suffix of ['_1', '_2']) {
     if (rd[`bonus_unit${suffix}`] > 0) bonusCount++;
-   }
-   for (const suffix of ['_1', '_2']) {
     if (rd[`bonus_loc${suffix}`] !== 0 && rd[`bonus_loc${suffix}`] !== undefined) bonusCount++;
    }
   }
-  const introDoneDelay = 2000 + bonusCount * (5000 + 600);
+
+  const delay = bonusCount > 0
+   ? 4000 + 12000 + (bonusCount * 3000)
+   : 16000;
 
   setTimeout(() => {
    introDone = true;
-   startTimer(30);
-  }, introDoneDelay);
+   startTimer();
+  }, delay);
  });
  onDestroy(() => stopTimer());
-
- $effect(() => {
-  if (!introDone) {
-   playSound('ding.mp3', 'tv');
-   return () => playSound('ding.mp3', 'phones');
-  }
- });
 
  function toggleCard(id) {
   const next = new Set(selectedCards);
@@ -113,6 +106,10 @@
  }
 
  let hasSelection = $derived(selectedCards.size > 0);
+
+ $effect(() => {
+  if (introDone) new Audio('/sounds/ding.mp3').play().catch(() => {});
+ });
 
  async function submitBonuses() {
   if (submitting) return;
@@ -150,7 +147,7 @@
 </script>
 
 <Help player={myPlayer()} autoOpen={introDone}>
-  <p class="text-xl">{m.pick_bonuses()}.</p>
+  <p class="text-xl">{m.pick_bonuses_mobile()}</p>
 </Help>
 
 {#if introDone}
@@ -160,13 +157,12 @@
   <p class="text-xl text-center mt-4">{m.no_bonuses()}</p>
  {:else}
   {#each cardGroups() as group, gi}
-   <div class="flex flex-wrap items-start w-full gap-1 mt-4">
+   <div class="flex flex-wrap items-start w-full gap-1 mt-2">
     {#each group as card}
      <Card
       type={card.type}
       value={card.value}
       small
-      hideValue
       selected={selectedCards.has(card.id)}
       disabled={card.disabled}
       strokeStyle={strokeSmStyle()}

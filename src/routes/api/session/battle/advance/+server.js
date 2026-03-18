@@ -105,20 +105,37 @@ export async function POST({ request }) {
 		}
 	}
 
-	// dmg success → opponent defends next
-	// def success → same player (defender) becomes new attacker
-	const nextPlayer = role === 'dmg' ? (player === 1 ? 2 : 1) : player;
-	const nextRole = role === 'dmg' ? 'def' : 'dmg';
-	const nextTurnNumber = turnNumber + 1;
+	let updatedRoundData;
 
-	const updatedRoundData = {
-		...roundData,
-		current_turn: {
-			player: nextPlayer,
-			role: nextRole,
-			number: nextTurnNumber,
-		},
-	};
+	if (role === 'dmg') {
+		// dmg success → opponent defends
+		updatedRoundData = {
+			...roundData,
+			current_turn: { player: player === 1 ? 2 : 1, role: 'def', number: turnNumber + 1 },
+		};
+	} else {
+		// def success → check if original attacker has an unused unit bonus for a retry
+		const originalAttacker = player === 1 ? 2 : 1;
+		const unitSuffix = `_${originalAttacker}`;
+		const hasUnitBonus = (roundData[`bonus_unit${unitSuffix}`] || 0) > 0;
+		const unitUsed = roundData[`unit_used${unitSuffix}`] || 0;
+
+		if (hasUnitBonus && unitUsed === 0) {
+			// grant counter-attack to original attacker — use unit_counter flag (not unit_retry)
+			// so the advance fail-path doesn't loop back a second time
+			updatedRoundData = {
+				...roundData,
+				[`unit_used${unitSuffix}`]: 1,
+				current_turn: { player: originalAttacker, role: 'dmg', number: turnNumber + 1, unit_counter: true },
+			};
+		} else {
+			// defender becomes new attacker
+			updatedRoundData = {
+				...roundData,
+				current_turn: { player, role: 'dmg', number: turnNumber + 1 },
+			};
+		}
+	}
 
 	const { data, error } = await supabaseAdmin
 		.from('sessions')

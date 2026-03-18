@@ -191,6 +191,37 @@
   100% { transform: scale(1); opacity: 1; }
  }
 
+ .hourglass-flip {
+  animation: hourglass-flip 2.5s ease-in-out infinite;
+ }
+
+ @keyframes hourglass-flip {
+  0%, 40%  { transform: rotate(0deg); }
+  60%, 100% { transform: rotate(180deg); }
+ }
+
+ .dice-arch-to-right {
+  animation: dice-arch-to-right 1s ease-in-out forwards;
+ }
+ .dice-arch-to-left {
+  animation: dice-arch-to-left 1s ease-in-out forwards;
+ }
+
+ @keyframes dice-arch-to-right {
+  0%   { left: 20%; top: 55%; animation-timing-function: linear; }
+  25%  { left: 35%; top: 24%; animation-timing-function: linear; }
+  50%  { left: 50%; top: 15%; animation-timing-function: linear; }
+  75%  { left: 65%; top: 24%; animation-timing-function: linear; }
+  100% { left: 80%; top: 55%; }
+ }
+ @keyframes dice-arch-to-left {
+  0%   { left: 80%; top: 55%; animation-timing-function: linear; }
+  25%  { left: 65%; top: 24%; animation-timing-function: linear; }
+  50%  { left: 50%; top: 15%; animation-timing-function: linear; }
+  75%  { left: 35%; top: 24%; animation-timing-function: linear; }
+  100% { left: 20%; top: 55%; }
+ }
+
  .winner-celebrate {
   animation: winner-stomp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards,
              winner-glow 1.5s ease-in-out 0.4s infinite;

@@ -1,3 +1,5 @@
 <script>
- import { gameSession, playerCode } from "$lib/stores/gameSession.js";
+ import LookTV from "$components/LookTV.svelte";
 </script>
+
+<LookTV />

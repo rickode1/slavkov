@@ -9,27 +9,36 @@
  let mapRef = $state(null);
 
  onMount(() => {
-  setTimeout(() => {
-   const round = $gameSession?.current_round;
-   mapRef?.zoomTo(parseInt(round), true);
-  }, 3000);
+  const round = $gameSession?.current_round ?? 1;
+  const introMsg = [m.intro_1, m.intro_2, m.intro_3][round - 1] ?? m.intro_1;
+
+  if (round === 1) new Audio('/sounds/ding.mp3').play().catch(() => {});
 
   setTimeout(() => {
-   notify(m.pick_units());
+   mapRef?.zoomTo(parseInt(round), true);
+  }, 4000);
+
+  setTimeout(() => {
+   notify(introMsg(), 15000);
   }, 4500);
  });
 </script>
 
 {#if $gameSession}
  <div class="absolute left-10 top-6 flex w-[calc(100%-5rem)] justify-between">
+  <div class="min-w-58">
   <PlayerBust player={$gameSession.player_1} />
+  </div>
+
+  <div class="min-w-58">
   <PlayerBust player={$gameSession.player_2} />
+  </div>
  </div>
 
  <Map
  bind:this={mapRef}
  hideUnits={true}
  autoZoom={false}
- classes="w-[calc(100%-27rem)] mt-10"
+ classes="w-[calc(100%-35rem)] mt-10"
  />
 {/if}

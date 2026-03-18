@@ -28,13 +28,18 @@
  onMount(() => {
   if (window.location.hostname === 'localhost') {
    debug = true;
-   notify('Debug on');
+    notify(`Debug on<br>No timer limits<br>Can force dice roll 1 or 20<br>For minigame debug use urls<br>/minigame/def and /minigame/dmg`, 7000);
   }
 
   function handleKeydown(e) {
    if (e.key === 'd' || e.key === 'D') {
     debug = !debug;
-    notify(`Debug ${debug ? 'on' : 'off'}`);
+    if(debug) {
+    notify(`Debug on<br>No timer limits<br>Can force dice roll 1 or 20<br>For minigame debug use urls<br>/minigame/def and /minigame/dmg`, 7000);
+    } else {
+     notify('Debug off');
+    }
+
    }
   }
   window.addEventListener('keydown', handleKeydown);
@@ -68,6 +73,7 @@
     }
 
     sessionId.set(session.id);
+    localStorage.setItem('sessionId', session.id);
     sessionCreated = true;
     goto(to.url.pathname);
    } catch (err) {

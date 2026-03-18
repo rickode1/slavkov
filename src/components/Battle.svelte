@@ -18,6 +18,31 @@
  let rollOutcome = $state(null); // 'success' | 'fail' | null
  let processingTurn = null;
 
+ let diceSide = $state(null); // null = not yet initialized
+ let diceArchClass = $state('');
+
+ $effect(() => {
+  const player = startingPlayer;
+  const session = $gameSession;
+  if (!session) return;
+
+  const current = untrack(() => diceSide);
+  if (current === null) {
+   untrack(() => { diceSide = player; });
+   return;
+  }
+  if (player !== current && !untrack(() => diceArchClass)) {
+   const cls = player === 2 ? 'dice-arch-to-right' : 'dice-arch-to-left';
+   untrack(() => {
+    diceArchClass = cls;
+    setTimeout(() => {
+     diceSide = player;
+     diceArchClass = '';
+    }, 1000);
+   });
+  }
+ });
+
  let messages = $state([]);
  let _msgId = 0;
 
@@ -128,7 +153,7 @@
   );
 
   const turnData = currentTurnData();
-  if (rollOutcome === 'fail' && turnData?.unit_retry) {
+  if (turnData?.unit_retry) {
    await sleep(1500);
    addMessage(m.battle_unit_retry({ name }));
    untrack(() => onHighlightCard?.('unit'));
@@ -188,7 +213,6 @@
 
  async function startTurnSequence() {
   const rd = roundData();
-
   if (!rd) return;
   if (currentRoll()) return;
 
@@ -197,7 +221,12 @@
   const suffix = `_${startingPlayer}`;
 
   const prevTurn = rd.turns?.[turnNumber - 1];
-  if (prevTurn?.unit_retry && prevTurn?.player === startingPlayer) {
+  if (rd.current_turn?.unit_counter) {
+   // defender succeeded and original attacker gets a counter-attack via unit bonus
+   const name = activePlayerNickHtml;
+   addMessage(m.battle_unit_retry({ name }));
+   untrack(() => onHighlightCard?.('unit'));
+  } else if (prevTurn?.unit_retry && prevTurn?.player === startingPlayer) {
    untrack(() => onHighlightCard?.('unit'));
   }
   if (prevTurn?.life_retry && prevTurn?.player === startingPlayer) {
@@ -261,7 +290,8 @@
    </div>
    
 
-   <div class="absolute left-1/2 -translate-x-1/2 top-12 {!diceRolling ? 'dice-float' : ''} transition-all duration-700" transition:fade={{ duration: 400 }}>
+   <div class="absolute -translate-x-1/2 -translate-y-1/2 {!diceRolling && !diceArchClass ? 'dice-float' : ''} {diceArchClass}"
+      style={diceArchClass ? '' : `left: ${diceSide === 2 ? '80%' : '20%'}; top: 55%;`}>
       <div class="relative flex items-center justify-center">
        <img
         class="h-48 object-contain transition-[filter] duration-700 {diceRolling ? 'dice-rolling' : ''}"
@@ -278,16 +308,16 @@
       <div class="dice-shadow {diceRolling ? 'hidden!' : ''}"></div>
    </div>
 
-   <div class="mx-auto max-w-3xl w-full text-center mt-28">
+   <div class="mx-auto max-w-3xl w-full text-center mt-14">
     {#key messages[0]?.id ?? -1}
      {#if messages[0]}
-      <p class="text-3xl" in:fly={{ y: -24, duration: 500 }} out:fly={{ y: 40, duration: 350 }}>
+      <p class="text-4xl" in:fly={{ y: -24, duration: 500 }} out:fly={{ y: 40, duration: 350 }}>
        {@html messages[0].text}
       </p>
      {/if}
     {/key}
 
-    <div class="mt-6 pt-1 flex flex-col gap-y-3 text-lg max-h-120 overflow-hidden relative">
+    <div class="mt-6 pt-1 flex flex-col gap-y-3 text-xl max-h-100 overflow-hidden relative">
      {#each messages.slice(1) as msg (msg.id)}
       <p animate:flip={{ duration: 400 }} in:fly={{ y: -16, duration: 350 }}>{@html msg.text}</p>
      {/each}

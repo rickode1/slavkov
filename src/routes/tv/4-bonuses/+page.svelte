@@ -14,6 +14,11 @@
  const locImg  = `<img src="/img/bonus_loc.png"  class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
 
  onMount(() => {
+
+  new Audio('/sounds/piece-move.mp3').play().catch(() => {});
+
+  setTimeout(() => { new Audio('/sounds/piece-move.mp3').play().catch(() => {}) }, 500);
+
   setTimeout(() => {
    const session = $gameSession;
    const queue = [];
@@ -30,7 +35,7 @@
     for (const { player, suffix } of players) {
      const name = nickHtml(player);
      if (rd[`bonus_unit${suffix}`] > 0) {
-      queue.push({ html: unitImg + m.bonus_unit_advantage({ name }), duration: 5000 });
+      queue.push({ html: unitImg + m.bonus_unit_advantage({ name }) });
      }
     }
 
@@ -38,22 +43,22 @@
      const name = nickHtml(player);
      const locBonus = rd[`bonus_loc${suffix}`];
      if (locBonus > 0) {
-      queue.push({ html: locImg + m.bonus_loc_advantage({ name }), duration: 5000 });
+      queue.push({ html: locImg + m.bonus_loc_advantage({ name }) });
      } else if (locBonus < 0) {
-      queue.push({ html: locImg + m.bonus_loc_disadvantage({ name }), duration: 5000 });
+      queue.push({ html: locImg + m.bonus_loc_disadvantage({ name }) });
      }
     }
    }
 
-   queue.push({ html: m.pick_bonuses(), duration: 5000 });
-
-   let delay = 0;
-   for (const item of queue) {
-    setTimeout(() => notify(item.html, item.duration), delay);
-    delay += item.duration + 600;
+   if (queue.length > 0) {    
+    const merged = queue.map(i => i.html).join('<br><br>');
+    notify(merged + '<br><br>' + m.pick_bonuses(), (queue.length * 3000) + 12000);
+   } else {
+    notify(m.pick_bonuses(), 12000);
    }
-  }, 2000);
+  }, 4000);
  });
+
 </script>
 
 
@@ -72,6 +77,6 @@
 
  <Map
   bind:this={mapRef}
-  classes="w-[calc(100%-27rem)] mt-10"
+  classes="w-[calc(100%-35rem)] mt-10"
  />
 {/if}

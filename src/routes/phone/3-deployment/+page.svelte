@@ -9,7 +9,7 @@
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
  import { startTimer, stopTimer, resetTimer } from "$lib/stores/timer.js";
- import { playSound } from '$lib/stores/sounds.js';
+
 
  import PlayerBust from "$components/PlayerBust.svelte";
  import Button from "$components/Button.svelte";
@@ -32,6 +32,7 @@
  let myStrokeStyle = $derived(() => strokeStyle(myPlayer()?.bust));
 
  let introDone = $state(false);
+ let helpKey = $derived(introDone ? (selected() ? 2 : 1) : 0);
 
  let selectedUnit = $state(null);
  let deploying = $state(false);
@@ -60,7 +61,7 @@
 
  async function handleDeploy() {
   if (!selectedUnit || deploying) return;
-  resetTimer(30);
+  resetTimer();
   deploying = true;
   try {
    const response = await fetch("/api/session/deploy", {
@@ -111,25 +112,22 @@
  let deployingLocation = $state(false);
  let locationSelected = $state(false);
 
- // Timer: 30s to select unit
   onMount(() => {
   setTimeout(() => {
    introDone = true;
-   startTimer(30);
-  }, 8000);
+   startTimer();
+  }, 17000);
  });
 
  onDestroy(() => stopTimer());
 
  $effect(() => {
-  if (!introDone) {
-   playSound('ding.mp3', 'tv');
-   return () => playSound('ding.mp3', 'phones');
-  }
+  if (introDone) new Audio('/sounds/ding.mp3').play().catch(() => {});
  });
 
  function handleSlotSelect(slot) {
   selectedSlot = slot;
+  new Audio('/sounds/piece-move.mp3').play().catch(() => {});
  }
 
  async function handleDeployLocation() {
@@ -179,18 +177,18 @@
  });
 </script>
 
-<Help player={myPlayer()} autoOpen={introDone}>
-     <p class="text-xl">{m.deploy_select_unit()}.</p>  
+<Help player={myPlayer()} autoOpen={helpKey}>
+     <p class="text-xl">{@html selectedUnit ? m.deploy_place_unit() : m.deploy_select_unit()}</p>  
      <img
-      class="w-30 h-auto"
-      srcset={optimize("/img/bonus_unit.png")}
+      class="w-30 h-auto mx-auto"
+      srcset={optimize(selectedUnit ? "/img/bonus_loc.png" : "/img/bonus_unit.png")}
       alt=""
      />
 </Help>
 
 {#if introDone}
 {#if $gameSession}
- <div class="flex flex-col items-center gap-y-4 pt-24">
+ <div class="flex flex-col items-center pt-24">
   {#if selected()}
    <Map
     playerFilter={myPlayerNumber}
@@ -212,7 +210,7 @@
     />
    {:else}
     <p class="text-xl text-center mt-4">{m.waiting_for_opponent()}</p>
-    <div class="flex flex-col items-center -mt-2">
+    <div class="flex flex-col items-center mt-2">
      <HourglassIcon />
     </div>    
    {/if}
@@ -220,7 +218,7 @@
    {#each units() as unit}
     {@const disabled = usedUnits().includes(unit.id)}
     <button
-     class="flex flex-col items-center cursor-pointer {disabled
+     class="flex flex-col items-center cursor-pointer px-10 py-4 {disabled
       ? 'grayscale opacity-70 pointer-events-none'
       : ''}"
      onclick={() => (selectedUnit = unit.id)}

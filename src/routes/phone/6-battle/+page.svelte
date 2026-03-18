@@ -1,6 +1,5 @@
 <script>
- import { onDestroy } from "svelte";
- import { playSound } from '$lib/stores/sounds.js';
+ import { onDestroy, onMount } from "svelte";
  import {
   sessionId,
   gameSession,
@@ -59,7 +58,7 @@
   if (active && !hasRolled) {
    if (turn !== prevTimerTurn) {
     prevTimerTurn = turn;
-    startTimer(30);
+    startTimer();
    }
   } else {
    stopTimer();
@@ -72,6 +71,7 @@
  });
 
  let uiTimer = null;
+
  $effect(() => {
   const active = isActivePlayer;
   const turn = turnNumber();
@@ -79,14 +79,15 @@
    if (uiTimer) clearTimeout(uiTimer);
    showUI = false;
    animationDone = false;
+   new Audio('/sounds/ding.mp3').play().catch(() => {});
    uiTimer = setTimeout(() => {
     showUI = true;
-   }, 2500);
+   }, 1000);
   } else if (showUI) {
    if (uiTimer) clearTimeout(uiTimer);
    uiTimer = setTimeout(() => {
     showUI = false;
-   }, 3000);
+   }, 1000);
   }
  });
 

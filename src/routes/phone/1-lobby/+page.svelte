@@ -127,7 +127,7 @@
  function confirmNick() {
   if (!canConfirmNick) return;
   nickConfirmed = true;
-  resetTimer(30);
+  resetTimer();
  }
 
  async function saveProfile() {
@@ -187,7 +187,8 @@
 
   playerCode.set(data.playerCode);
   sessionId.set(data.session.id);
-  startTimer(30);
+  startTimer();
+  setTimeout(() => {loading = false}, 1000);
  }
 
  function handleInput(index, event) {

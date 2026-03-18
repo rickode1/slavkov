@@ -18,6 +18,14 @@
  let illustration = $derived(`/img/bonus_${type}.png`);
 
  let valueLabel = $derived(value > 0 ? `+${value}` : `${value}`);
+
+ let bonusLabel = $derived.by(() => {
+  if (hideValue) return null;
+  const sub = m[`bonus_label_${type}`]?.();
+  if (!sub) return valueLabel;
+  if (type === 'unit' || type === 'life') return `+1 ${sub}`;
+  return `${valueLabel} ${sub}`;
+ });
 </script>
 
 {#if value !== 0}
@@ -25,7 +33,7 @@
   type="button"
   class="relative inline-flex flex-col items-center {small
    ? 'w-20'
-   : 'w-24'} {onclick && !disabled ? 'cursor-pointer' : ''} {disabled ? 'opacity-40 grayscale pointer-events-none' : ''}"
+   : 'w-28'} {onclick && !disabled ? 'cursor-pointer' : ''} {disabled ? 'brightness-80 grayscale pointer-events-none' : ''}"
   style={selected || highlighted ? strokeStyle : ""}
   onclick={disabled ? null : onclick}
   {disabled}
@@ -37,26 +45,22 @@
   />
 
   <div
-   class="absolute inset-0 flex flex-col items-center justify-between gap-2 px-1 py-4"
+   class="absolute inset-0 flex flex-col items-center justify-between gap-2 px-2 py-4"
   >
    <img
     srcset={optimize(illustration)}
     alt=""
-    class="{small ? 'h-11' : 'h-14'} w-auto object-contain"
+    class="{small ? 'h-10' : 'h-14'} w-auto object-contain"
    />
 
    <div class="flex flex-col items-center">
-    {#if !hideValue && type !== "unit" && type !== "life"}
-     <strong class="text-center font-bold {small ? 'text-xs' : 'text-sm'}"
-      >{valueLabel}</strong
-     >
-    {/if}
     <span
-     class="text-center leading-[1.1] {small ? 'text-xs' : 'text-sm'}">{title}</span
-    >
+     class="text-center mb-1 leading-[1.1] {small ? 'text-xs' : 'text-sm'}">{title}</span
+    >   
+    {#if bonusLabel}
+     <strong class="text-center leading-[1.1] font-bold {small ? 'text-xs' : 'text-sm'}">{bonusLabel}</strong>
+    {/if}
    </div>
   </div>
  </button>
 {/if}
-
-

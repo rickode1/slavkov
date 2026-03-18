@@ -25,7 +25,7 @@
    ? 'translate-y-0'
    : '-translate-y-[calc(100%-4.5rem)]'}"
  >
-  <div class="relative w-full h-130 pt-6 pb-20">
+  <div class="relative w-full h-135 pb-20">
    <img
     srcset={optimize("/img/help_bg.png")}
     alt=""
@@ -40,9 +40,9 @@
 
   <!-- Toggle indicator -->
   <div
-   class="absolute right-8 bottom-0 z-10 w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white"
+   class="absolute left-1/2 -translate-x-1/2 bottom-4 z-10 w-14 h-14 rounded-full bg-primary flex items-center justify-center text-white"
   >
-   <span class="text-xl font-bold">{ open ? '×' : '?'}</span>
+   <span class="text-xl uppercase">{ open ? 'ok' : '?'}</span>
   </div>
  </button>
 </div>

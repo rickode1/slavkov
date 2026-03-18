@@ -2,47 +2,70 @@ import { supabase } from '$lib/supabaseClient.js';
 import { gameSession } from '$lib/stores/gameSession.js';
 
 let channel = null;
+let currentSessionId = null;
 
-export function subscribeToSession(id) {
-	// Clean up previous channel
+export async function subscribeToSession(id) {
+	currentSessionId = id;
+
+	// Clean up previous channel first
 	if (channel) {
-		supabase.removeChannel(channel);
+		await supabase.removeChannel(channel);
 		channel = null;
 	}
 
-	if (id) {
-		// Fetch initial session data
-		supabase
-			.from('sessions')
-			.select('*')
-			.eq('id', id)
-			.single()
-			.then(({ data }) => {
-				gameSession.set(data);
-			});
+	if (!id) {
+		gameSession.set(null);
+		return;
+	}
 
-		// Subscribe to realtime updates
-		channel = supabase
-			.channel(`session-${id}`)
-			.on(
-				'postgres_changes',
-				{
-					event: '*',
-					schema: 'public',
-					table: 'sessions',
-					filter: `id=eq.${id}`
-				},
-				(payload) => {
+	channel = supabase
+		.channel(`session-${id}`)
+		.on(
+			'postgres_changes',
+			{
+				event: '*',
+				schema: 'public',
+				table: 'sessions',
+				filter: `id=eq.${id}`
+			},
+			(payload) => {
+				// payload.new is empty on DELETE, so guard it
+				if (payload.eventType === 'DELETE') {
+					gameSession.set(null);
+				} else {
 					gameSession.set(payload.new);
 				}
-			)
-			.subscribe();
-	}
+			}
+		)
+		.subscribe(async (status) => {
+			console.log('Realtime status:', status);
+
+			if (status === 'SUBSCRIBED' && currentSessionId === id) {
+				const { data, error } = await supabase
+					.from('sessions')
+					.select('*')
+					.eq('id', id)
+					.single();
+
+				if (!error && data && currentSessionId === id) {
+					gameSession.set(data);
+				}
+			} else if (status === 'TIMED_OUT' || status === 'CHANNEL_ERROR') {
+				console.warn('Realtime disconnected:', status, '— reconnecting in 2s');
+				setTimeout(() => {
+					if (currentSessionId === id) {
+						subscribeToSession(id);
+					}
+				}, 1000);
+			}
+		});
 }
 
-export function cleanupSession() {
+export async function cleanupSession() {
+	currentSessionId = null;
+
 	if (channel) {
-		supabase.removeChannel(channel);
+		await supabase.removeChannel(channel);
 		channel = null;
 	}
 }

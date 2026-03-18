@@ -17,7 +17,14 @@
  }
 
  onMount(() => {
-  mapRef?.showBattleEnd();
+  function tryStartBattle() {
+   if (mapRef) {
+    mapRef.showBattleEnd();
+   } else {
+    setTimeout(tryStartBattle, 200);
+   }
+  }
+  tryStartBattle();
  });
 </script>
 
@@ -38,6 +45,6 @@
   bind:this={mapRef}
   unitsAnimated={false}
   onBattleEndComplete={handleBattleEndComplete}
-  classes="w-[calc(100%-27rem)] mt-10"
+  classes="w-[calc(100%-35rem)] mt-10"
  />
 {/if}

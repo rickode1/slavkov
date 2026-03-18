@@ -42,14 +42,14 @@
          transition-transform duration-500 ease-in-out
          {visible ? 'translate-y-0' : '-translate-y-full'}"
  >
-  <div class="relative w-full max-w-2xl">
+  <div class="relative w-full max-w-4xl">
    <img
     srcset={optimize("/img/notification_bg.png")}
     alt=""
-    class="w-full h-50 object-cover object-bottom"
+    class="w-full h-120 object-cover object-bottom"
    />
-   <div class="absolute inset-0 w-full flex items-center justify-center px-6 pb-10">
-    <p class="text-lg text-center leading-tight">{@html currentMessage}</p>
+   <div class="absolute inset-0 w-full flex justify-center px-24 pt-8 pb-20">
+    <p class="text-lg text-center">{@html currentMessage}</p>
    </div>
   </div>
  </div>

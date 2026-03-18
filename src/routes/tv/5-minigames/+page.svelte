@@ -22,7 +22,7 @@
  const dmgImg = `<img src="/img/bonus_minigame_dmg.png" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
  const defImg = `<img src="/img/bonus_minigame_def.png" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
 
- const NOTIF_DURATION = 5000;
+ const NOTIF_DURATION = 9000;
  const NOTIF_GAP = 600;
 
  function getAttackerCode(rd) {
@@ -44,29 +44,39 @@
  );
 
  onMount(() => {
-  const session = $gameSession;
-  const round = session?.current_round || 1;
-  const rd = session?.[`round_${round}`] || {};
+  new Audio('/sounds/ding.mp3').play().catch(() => {});
 
-  const attCode = getAttackerCode(rd);
-  const attPlayer = attCode === 'code_1' ? session.player_1 : session.player_2;
-  const defPlayer = attCode === 'code_1' ? session.player_2 : session.player_1;
-  const attName = nickHtml(attPlayer);
-  const defName = nickHtml(defPlayer);
+  function init() {
+   const session = $gameSession;
+   if (!session) {
+    setTimeout(init, 500);
+    return;
+   }
 
-  const hasInitiative = !!rd?.current_turn;
+   const round = session?.current_round || 1;
+   const rd = session?.[`round_${round}`] || {};
 
-  let delay = 2000;
+   const attCode = getAttackerCode(rd);
+   const attPlayer = attCode === 'code_1' ? session.player_1 : session.player_2;
+   const defPlayer = attCode === 'code_1' ? session.player_2 : session.player_1;
+   const attName = nickHtml(attPlayer);
+   const defName = nickHtml(defPlayer);
 
-  if (hasInitiative) {
-   setTimeout(() => notify(m.minigame_initiative({ name: attName }), NOTIF_DURATION), delay);
+   const hasInitiative = !!rd?.current_turn;
+
+   let delay = 2000;
+
+   if (hasInitiative) {
+    const initiativeMsg = round === 1 ? m.minigame_initiative({ name: attName }) : m.minigame_initiative2({ name: attName });
+    setTimeout(() => notify(initiativeMsg, NOTIF_DURATION), delay);
+   }
+
    delay += NOTIF_DURATION + NOTIF_GAP;
+
+   setTimeout(() => { phase = 'dmg'; }, delay);
   }
 
-  setTimeout(() => notify(m.minigame_dmg_cta({ name: attName }), NOTIF_DURATION), delay);
-  delay += NOTIF_DURATION + NOTIF_GAP;
-
-  setTimeout(() => { phase = 'dmg'; }, delay);
+  init();
  });
 
  async function saveBonus(playerCode, type, value) {
@@ -87,10 +97,13 @@
   // Only animate the minigame_dmg card for the attacker; nothing new for the defender.
   animatedCards = { [attCode]: ['minigame_dmg'], [defCode]: false };
   phase = 'idle';
-  notify(dmgImg + (success ? m.minigame_dmg_success({ name: attName }) : m.minigame_dmg_fail({ name: attName })), NOTIF_DURATION);
-  const name = nickHtml(defender());
-  setTimeout(() => notify(m.minigame_def_cta({ name }), NOTIF_DURATION), NOTIF_DURATION + NOTIF_GAP);
-  setTimeout(() => { phase = 'def'; }, (NOTIF_DURATION + NOTIF_GAP) * 2);
+  const defName = nickHtml(defender());
+  notify(
+   dmgImg + (success ? m.minigame_dmg_success({ name: attName }) : m.minigame_dmg_fail({ name: attName }))
+   + '<br><br>' + m.minigame_def_cta({ name: defName }),
+   NOTIF_DURATION
+  );
+  setTimeout(() => { phase = 'def'; }, NOTIF_DURATION + NOTIF_GAP);
  }
 
  async function handleDefResult(success) {
@@ -130,7 +143,7 @@
   </div>
   <Map
    bind:this={mapRef}
-   classes="w-[calc(100%-27rem)] mt-10"
+   classes="w-[calc(100%-35rem)] mt-10"
   />
  {:else if phase === 'dmg'}
   <main class="max-w-440 relative w-full px-10 h-screen mx-auto flex flex-col items-center justify-center">

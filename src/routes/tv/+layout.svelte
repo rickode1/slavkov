@@ -9,7 +9,7 @@
   resetSession,
   deviceParam,
  } from "$lib/stores/gameSession.js";
- import { subscribeToSession, cleanupSession } from "$lib/sessionRealtime.js"; import { initSoundListener, subscribeSoundChannel, cleanupSoundChannel } from '$lib/stores/sounds.js'; import { terminalStates, gameScreens } from "$lib/constants.js";
+ import { subscribeToSession, cleanupSession } from "$lib/sessionRealtime.js"; import { terminalStates, gameScreens } from "$lib/constants.js";
  import { currentLocale } from "$lib/stores/locale.js";
  import { fly } from "svelte/transition";
  import * as m from "$lib/paraglide/messages.js";
@@ -63,6 +63,11 @@
  }
 
  onMount(() => {
+  const savedId = localStorage.getItem('sessionId');
+  if (savedId && !$sessionId) {
+   sessionId.set(savedId);
+  }
+
   const lang = page.url.searchParams.get("lang");
   const device = page.url.searchParams.get("device");
   const url = new URL(window.location.href);
@@ -81,30 +86,15 @@
    deviceParam.set(device);
   }
 
-  initSoundListener('tv');
-
   if (paramsChanged) {
    window.history.replaceState({}, "", url);
   }
-
-  function handleKeydown(e) {
-   if (e.key !== ".") return;
-   if (window.location.hostname !== 'localhost') return;
-   const current = $sessionId ?? "(none)";
-   const input = prompt(`Session ID: ${current}\n\nEnter new ID to reconnect:`);
-   if (input && input.trim() && input.trim() !== $sessionId) {
-    sessionId.set(input.trim());
-   }
-  }
-  window.addEventListener("keydown", handleKeydown);
-  return () => window.removeEventListener("keydown", handleKeydown);
  });
 
  $effect(() => {
   const id = $sessionId;
   if (id) {
    subscribeToSession(id);
-   subscribeSoundChannel(id);
   } else if (page.url.pathname !== "/tv") {
    goto("/tv");
   }
@@ -115,6 +105,7 @@
   if (session && terminalStates.includes(session.status)) {
    cleanupSession();
    resetSession();
+   localStorage.removeItem('sessionId');
    goto("/tv");
   }
  });
@@ -135,7 +126,6 @@
 
  onDestroy(() => {
   cleanupSession();
-  cleanupSoundChannel();
   clearAutoClose();
  });
 </script>

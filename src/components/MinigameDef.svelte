@@ -13,9 +13,9 @@
  let countdown = null;
  let countdownInterval = null;
 
- let groundSpeed = 6;
+ let groundSpeed = 7;
  let obstacleInterval = 200;
- let jumpHeight = 200;
+ let jumpHeight = 300;
  let jumpDuration = 1500;
 
  const GAME_DURATION_S = 30;

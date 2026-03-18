@@ -6,6 +6,8 @@
 
  let { classes = 'fixed right-4 bottom-4', onExpiry = null } = $props();
 
+ let tikTak = null;
+
  $effect(() => {
   const active = $timerActive;
   if (active) {
@@ -15,13 +17,24 @@
      if (r <= 1) {
       clearInterval(interval);
       timerActive.set(false);
+      tikTak?.pause();
+      tikTak = null;
       handleExpiry();
       return 0;
+     }
+     if (r === 20) {
+      tikTak = new Audio('/sounds/tik-tak.mp3');
+      tikTak.loop = true;
+      tikTak.play().catch(() => {});
      }
      return r - 1;
     });
    }, 1000);
-   return () => clearInterval(interval);
+   return () => {
+    clearInterval(interval);
+    tikTak?.pause();
+    tikTak = null;
+   };
   }
  });
 

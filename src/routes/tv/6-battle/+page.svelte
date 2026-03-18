@@ -36,7 +36,14 @@
  });
 
  onMount(() => {
-  mapRef?.startBattle();
+  function tryStartBattle() {
+   if (mapRef) {
+    mapRef.startBattle();
+   } else {
+    setTimeout(tryStartBattle, 200);
+   }
+  }
+  tryStartBattle();
  });
 
  function handleBattleReady() {
@@ -61,7 +68,7 @@
   </div>
  </div>
 
- <div class="relative w-[calc(100%-27rem)] mt-10 flex flex-col lg:items-center">
+ <div class="relative w-[calc(100%-35rem)] mt-10 flex flex-col lg:items-center">
   <div class="transition-opacity duration-400 {showBattle ? 'opacity-0 pointer-events-none' : 'opacity-100'}">
    <Map
     bind:this={mapRef}

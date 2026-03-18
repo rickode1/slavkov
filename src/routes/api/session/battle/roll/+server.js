@@ -62,13 +62,14 @@ export async function POST({ request }) {
 	const roll = debugRoll || Math.floor(Math.random() * 20) + 1;
 	const success = roll > difficulty;
 	const hasUnitBonus = role === 'dmg' && (roundData[`bonus_unit${playerSuffix}`] || 0) > 0;
+	const unitUsed = roundData[`unit_used${playerSuffix}`] || 0;
 
 	const existingTurns = roundData.turns || {};
 
-	// Only allow unit retry if the previous turn wasn't already a retry for this player
+	// Only allow unit retry if not already used this round and previous turn wasn't already a retry
 	const prevTurn = existingTurns[turnNumber - 1];
 	const alreadyRetried = prevTurn && prevTurn.player === currentTurn.player && prevTurn.role === 'dmg' && prevTurn.unit_retry;
-	const unitRetry = !success && hasUnitBonus && !alreadyRetried;
+	const unitRetry = !success && hasUnitBonus && !alreadyRetried && unitUsed === 0;
 
 	const lifeSelected = roundData[`bonuses_life${playerSuffix}`] || 0;
 	const lifeUsed = roundData[`life_used${playerSuffix}`] || 0;
@@ -81,6 +82,9 @@ export async function POST({ request }) {
 		role: currentTurn.role,
 		roll,
 		difficulty,
+		// preserve retry/counter markers if advance endpoint flagged this turn
+		...(currentTurn.unit_retry ? { unit_retry: true } : {}),
+		...(currentTurn.unit_counter ? { unit_counter: true } : {}),
 	};
 
 	if (unitRetry) {
@@ -96,7 +100,9 @@ export async function POST({ request }) {
 		turns: {
 			...existingTurns,
 			[turnNumber]: turnData
-		}
+		},
+		// mark unit bonus as used so card fades immediately
+		...(unitRetry ? { [`unit_used${playerSuffix}`]: 1 } : {}),
 	};
 
 	const { data, error } = await supabaseAdmin

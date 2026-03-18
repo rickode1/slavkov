@@ -1,6 +1,7 @@
 <script>
  import { gameSession } from "$lib/stores/gameSession.js";
  import { strokeStyle as makeStroke } from "$lib/constants.js";
+ import * as m from "$lib/paraglide/messages.js";
  import Card from "$components/Card.svelte";
 
  /**
@@ -9,6 +10,8 @@
   *           string[] → only cards whose type is in the array animate
   */
  let { playerCode = "code_1", animated = true, hideBonuses = false, highlightTypes = null } = $props();
+
+ const ALL_SLOT_TYPES = ['unit', 'loc', 'def', 'dmg', 'life', 'minigame'];
 
  // Stable rotations: generated once per component instance, indexed by card slot.
  const ROTATIONS = Array.from({ length: 32 }, () => (Math.random() - 0.5) * 4);
@@ -37,6 +40,11 @@
   return rd?.[`life_used${suffix}`] || 0;
  });
 
+ let unitUsed = $derived(() => {
+  const rd = roundData();
+  return rd?.[`unit_used${suffix}`] || 0;
+ });
+
  let allCards = $derived(() => {
   const rd = roundData();
   if (!rd) return [];
@@ -44,7 +52,7 @@
   const rot = (idx) => ROTATIONS[idx % ROTATIONS.length];
   let idx = 0;
   if (rd[`bonus_unit${suffix}`] !== undefined)
-   cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`], disabled: false, rot: rot(idx++) });
+   cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`], disabled: unitUsed() > 0, rot: rot(idx++) });
   if (rd[`bonus_loc${suffix}`] !== undefined)
    cards.push({ type: "loc", value: rd[`bonus_loc${suffix}`], disabled: false, rot: rot(idx++) });
   if (!hideBonuses) {
@@ -85,7 +93,6 @@
 
  let grouped = $derived(() => {
   const groups = groupCards(allCards());
-  // Show total on top card for stacked bonus cards
   return groups.map((g) => {
    const active = g.items.filter((c) => !c.disabled).length;
    return {
@@ -96,31 +103,58 @@
   });
  });
 
+ let slots = $derived(() => {
+  const groupMap = new Map(grouped().map(g => [g.type, g]));
+  return ALL_SLOT_TYPES
+   .map(type => {
+    if (type === 'minigame') {
+     const group = groupMap.get('minigame_dmg') ?? groupMap.get('minigame_def') ?? null;
+     return { type: 'minigame', title: m.card_minigame_dmg?.() ?? 'Minihra', group };
+    }
+    return { type, title: m[`card_${type}`]?.() ?? type, group: groupMap.get(type) ?? null };
+   });
+ });
+
  let rows = $derived(() => {
-  const g = grouped();
+  const s = slots();
   const result = [];
-  for (let i = 0; i < g.length; i += 2) {
-   result.push(g.slice(i, i + 2));
+  for (let i = 0; i < s.length; i += 2) {
+   result.push(s.slice(i, i + 2));
   }
   return result;
  });
 </script>
 
-<div class="flex flex-col mt-2 gap-1 w-49">
+<div class="flex flex-col mt-6 gap-2">
  {#each rows() as row}
-  <div class="flex gap-1">
-   {#each row as group, gi}
-    <div class="relative {isAnimated(group.type) ? 'card-drop' : ''}" style="{isAnimated(group.type) ? `animation-delay: ${gi * 0.15}s` : ''}">
-     {#each group.items as bonus, i}
-      <div
-       class={i > 0 ? "absolute" : "relative"}
-       style="{i > 0 ? `right: ${i * 2}px; bottom: ${i * 2}px;` : ''} z-index: {i}; transform: rotate({bonus.rot}deg);"
-      >
-       <Card type={bonus.type} value={i === group.items.length - 1 ? group.displayValue : bonus.value} highlighted={!group.allDisabled && highlightTypes?.has(bonus.type)} disabled={group.allDisabled} strokeStyle={highlightStroke} />
-      </div>
-     {/each}
+  <div class="flex gap-2">
+   {#each row as slot, gi}
+    <div class="relative w-28 h-38">
+     <!-- Slot placeholder (always visible behind card) -->
+     <div class="absolute inset-0 border-2 border-dashed border-black/25 rounded-lg flex items-center justify-center px-2">
+      <span class="text-sm text-center leading-tight opacity-50">{slot.title}</span>      
+     </div>
+     
+     <!-- Card overlay -->
+     {#if slot.group}
+      {#each slot.group.items as bonus, i}
+       <div
+        class="absolute inset-0 {i === slot.group.items.length - 1 && isAnimated(slot.type) ? 'card-drop' : ''}"
+        style="right: {i > 0 ? `${-i * 2}px` : '0'}; bottom: {i > 0 ? `${-i * 2}px` : '0'}; z-index: {i}; transform: rotate({bonus.rot}deg); {i === slot.group.items.length - 1 && isAnimated(slot.type) ? `animation-delay: ${gi * 0.15}s` : ''}"
+       >
+        <Card
+         type={bonus.type}
+         value={i === slot.group.items.length - 1 ? slot.group.displayValue : bonus.value}
+         highlighted={!slot.group.allDisabled && highlightTypes?.has(bonus.type)}
+         disabled={slot.group.allDisabled}
+         strokeStyle={highlightStroke}
+        />
+       </div>
+      {/each}
+     {/if}
     </div>
    {/each}
   </div>
  {/each}
 </div>
+

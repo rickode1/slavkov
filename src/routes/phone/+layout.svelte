@@ -10,7 +10,6 @@
   playerCode,
  } from '$lib/stores/gameSession.js';
  import { subscribeToSession, cleanupSession } from '$lib/sessionRealtime.js';
- import { initSoundListener, subscribeSoundChannel, cleanupSoundChannel } from '$lib/stores/sounds.js';
  import { terminalStates, gameScreens } from "$lib/constants.js";
  import { currentLocale } from "$lib/stores/locale.js";
  import LangSwitcher from "$components/LangSwitcher.svelte";
@@ -32,6 +31,13 @@
 
  onMount(() => {
   requestWakeLock();
+
+  const savedId = localStorage.getItem('sessionId');
+  const savedCode = localStorage.getItem('playerCode');
+  if (savedId && savedCode && !$sessionId && !$gameSession?.debug) {
+   playerCode.set(savedCode);
+   sessionId.set(savedId);
+  }
   const lang = page.url.searchParams.get("lang");
   if (lang && locales.includes(lang)) {
    const url = new URL(window.location.href);
@@ -46,7 +52,11 @@
    const current = $sessionId ?? "(none)";
    const input = prompt(`Session ID: ${current}\n\nEnter new ID to reconnect:`);
    if (input && input.trim() && input.trim() !== $sessionId) {
-    sessionId.set(input.trim());
+    const newId = input.trim();
+    if(!$gameSession?.debug) {
+    localStorage.setItem('sessionId', newId);
+    }
+    sessionId.set(newId);
    }
   }
   window.addEventListener("keydown", handleKeydown);
@@ -58,19 +68,18 @@
  });
 
  $effect(() => {
-  if ($playerCode) {
-   initSoundListener($playerCode === 'code_1' ? 'player_1' : 'player_2');
+  const id = $sessionId;
+  if (id) {
+   localStorage.setItem('sessionId', id);
+   subscribeToSession(id);
+  } else if (page.url.pathname !== "/phone/1-lobby") {
+   goto("/phone/1-lobby");
   }
  });
 
  $effect(() => {
-  const id = $sessionId;
-  if (id) {
-   subscribeToSession(id);
-   subscribeSoundChannel(id);
-  } else if (page.url.pathname !== "/phone/1-lobby") {
-   goto("/phone/1-lobby");
-  }
+  const code = $playerCode;
+  if (code) localStorage.setItem('playerCode', code);
  });
 
  $effect(() => {
@@ -78,6 +87,8 @@
   if (session && terminalStates.includes(session.status)) {
    cleanupSession();
    resetSession();
+   localStorage.removeItem('sessionId');
+   localStorage.removeItem('playerCode');    
    goto("/phone/1-lobby");
   }
  });
@@ -98,7 +109,6 @@
 
  onDestroy(() => {
   cleanupSession();
-  cleanupSoundChannel();
  });
 </script>
 
