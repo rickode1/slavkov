@@ -117,10 +117,10 @@
 
    if (hit && onResult && !debug && !resultFired) {
      stopTimer();
-     restartTimeout = setTimeout(() => { resultFired = true; onResult(true); }, 1500);
+     restartTimeout = setTimeout(() => { resultFired = true; onResult(true); }, 3000);
    } else if (onResult && !debug && !resultFired) {
      stopTimer();
-     restartTimeout = setTimeout(() => { resultFired = true; onResult(false); }, 1500);
+     restartTimeout = setTimeout(() => { resultFired = true; onResult(false); }, 3000);
    } else {
      restartTimeout = setTimeout(restart, 3000);
    }
@@ -219,7 +219,7 @@
     <!-- hitbox -->
     <div
       bind:this={targetEl}
-      class="absolute bg-red-500/40 rounded-full pointer-events-none z-10 flex items-center justify-center"
+      class="absolute {debug ? 'bg-red-500/40' : ''} rounded-full pointer-events-none z-10 flex items-center justify-center"
       style="top: {hbTop * 4}px; right: {hbRight * 4}px; width: {hbWidth * 4}px; height: {hbHeight * 4}px; transform: rotate({hbRotate}deg);"
     >
       {#if showCrosshair}

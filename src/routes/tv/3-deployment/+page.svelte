@@ -20,8 +20,8 @@
   }, 4000);
 
   setTimeout(() => {
-   notify(introMsg(), 15000, true);
-  }, 4500);
+   notify(introMsg(), 13000, true);
+  }, 5000);
  });
 </script>
 

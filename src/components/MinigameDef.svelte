@@ -167,7 +167,7 @@
            triggerFall();
            cancelAnimationFrame(animFrame);
            stopTimer();
-           if (onResult && !debug) { setTimeout(() => onResult(false), 2000); } else { setTimeout(resetGame, 3000); }
+           if (onResult && !debug) { setTimeout(() => onResult(false), 3000); } else { setTimeout(resetGame, 3000); }
            return;
          }
        }
