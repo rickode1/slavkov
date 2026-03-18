@@ -63,7 +63,7 @@
  }
 
  onMount(() => {
-  const savedId = localStorage.getItem('sessionId');
+  const savedId = sessionStorage.getItem('sessionId');
   if (savedId && !$sessionId) {
    sessionId.set(savedId);
   }
@@ -105,7 +105,7 @@
   if (session && terminalStates.includes(session.status)) {
    cleanupSession();
    resetSession();
-   localStorage.removeItem('sessionId');
+   sessionStorage.removeItem('sessionId');
    goto("/tv");
   }
  });
@@ -127,6 +127,7 @@
  onDestroy(() => {
   cleanupSession();
   clearAutoClose();
+  sessionStorage.removeItem('sessionId');
  });
 </script>
 

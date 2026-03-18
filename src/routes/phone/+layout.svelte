@@ -32,8 +32,8 @@
  onMount(() => {
   requestWakeLock();
 
-  const savedId = localStorage.getItem('sessionId');
-  const savedCode = localStorage.getItem('playerCode');
+  const savedId = sessionStorage.getItem('sessionId');
+  const savedCode = sessionStorage.getItem('playerCode');
   if (savedId && savedCode && !$sessionId && !$gameSession?.debug) {
    playerCode.set(savedCode);
    sessionId.set(savedId);
@@ -54,7 +54,7 @@
    if (input && input.trim() && input.trim() !== $sessionId) {
     const newId = input.trim();
     if(!$gameSession?.debug) {
-    localStorage.setItem('sessionId', newId);
+    sessionStorage.setItem('sessionId', newId);
     }
     sessionId.set(newId);
    }
@@ -70,7 +70,7 @@
  $effect(() => {
   const id = $sessionId;
   if (id) {
-   localStorage.setItem('sessionId', id);
+   sessionStorage.setItem('sessionId', id);
    subscribeToSession(id);
   } else if (page.url.pathname !== "/phone/1-lobby") {
    goto("/phone/1-lobby");
@@ -79,7 +79,7 @@
 
  $effect(() => {
   const code = $playerCode;
-  if (code) localStorage.setItem('playerCode', code);
+  if (code) sessionStorage.setItem('playerCode', code);
  });
 
  $effect(() => {
@@ -87,8 +87,8 @@
   if (session && terminalStates.includes(session.status)) {
    cleanupSession();
    resetSession();
-   localStorage.removeItem('sessionId');
-   localStorage.removeItem('playerCode');    
+   sessionStorage.removeItem('sessionId');
+   sessionStorage.removeItem('playerCode');    
    goto("/phone/1-lobby");
   }
  });
@@ -109,6 +109,8 @@
 
  onDestroy(() => {
   cleanupSession();
+  sessionStorage.removeItem('sessionId');
+  sessionStorage.removeItem('playerCode');
  });
 </script>
 

@@ -9,7 +9,7 @@
   *           false → no cards animate
   *           string[] → only cards whose type is in the array animate
   */
- let { playerCode = "code_1", animated = true, hideBonuses = false, highlightTypes = null } = $props();
+ let { playerCode = "code_1", animated = true, hideBonuses = false, highlightTypes = null, emptyOnly = false } = $props();
 
  const ALL_SLOT_TYPES = ['unit', 'loc', 'def', 'dmg', 'life', 'minigame'];
 
@@ -136,7 +136,7 @@
      </div>
      
      <!-- Card overlay -->
-     {#if slot.group}
+     {#if slot.group && !emptyOnly}
       {#each slot.group.items as bonus, i}
        <div
         class="absolute inset-0 {i === slot.group.items.length - 1 && isAnimated(slot.type) ? 'card-drop' : ''}"

@@ -13,6 +13,10 @@
  let stopped = false;
  let hit = false;
  let resultFired = false;
+ let showResult = false;
+ let showHit = false;
+ let showCrosshair = false;
+ let fired = false;
 
  // countdown
  let countdown = null;
@@ -30,17 +34,18 @@
  // DOM refs
  let targetEl;
  let crossEl;
+ let fireVideoEl;
 
  // movement config
- let RADIUS = 90;
- let SPEED  = 0.0018;
+ let RADIUS = 120;
+ let SPEED  = 0.0025;
 
  // hitbox config
- let hbTop = 28;
- let hbRight = 37;
- let hbWidth = 8;
- let hbHeight = 24;
- let hbRotate = 10;
+ const hbTop = 3;
+ const hbRight = 18;
+ const hbWidth = 26;
+ const hbHeight = 53;
+ const hbRotate = 12;
 
  // random params (re-rolled each round)
  let p = randomParams();
@@ -79,6 +84,11 @@
  function handleClick() {
    if (stopped) return;
    stopped = true;
+   fired = true;
+   if (fireVideoEl) { fireVideoEl.currentTime = 0; fireVideoEl.play(); }
+   setTimeout(() => { showCrosshair = false; }, 200);
+   setTimeout(() => { showHit = true; }, 300);
+   setTimeout(() => { showResult = true; }, 1400);
    cancelAnimationFrame(animFrame);
 
    if (targetEl && crossEl) {
@@ -119,6 +129,10 @@
  function restart() {
    stopped = false;
    hit = false;
+   showResult = false;
+   showHit = false;
+   showCrosshair = true;
+   fired = false;
    crossX = 0;
    crossY = 0;
    startTime = null;
@@ -134,6 +148,7 @@
        clearInterval(countdownInterval);
        countdownInterval = null;
        countdown = null;
+       showCrosshair = true;
        animFrame = requestAnimationFrame(moveCross);
        if (onResult && !debug) startTimer(30);
      }
@@ -161,33 +176,63 @@
  });
 </script>
 
-<div class="flex items-end justify-between w-full gap-4">
-
-  <!-- soldier -->
+<div class="relative w-full z-10 -mt-[10vh]" style="height: 85vh; overflow: clip;">
   <img
-    class="w-125 object-contain z-10 relative"
-    srcset={optimize("/img/mini_dmg_soldier.png")}
+    class="absolute inset-0 w-full h-full object-cover"
+    srcset={optimize("/img/mini_dmg_bg.png")}
+    alt=""
+  />
+  <img
+    class="absolute inset-0 w-full h-full z-20 pointer-events-none"
+    srcset={optimize("/img/map_frame.png")}
     alt=""
   />
 
-  <div class="relative">
+<div class="flex items-end justify-between w-full h-full gap-4 relative z-10">
+
+  <!-- soldier -->
+
+    <img
+      class="w-124 object-contain absolute bottom-10 left-8"
+      class:opacity-0={countdown === null}
+      src="/img/mini_dmg_soldier.png" alt=""
+    />
+
+    <video
+      bind:this={fireVideoEl}
+      class="w-340 object-contain absolute -bottom-19 -left-13"
+      class:opacity-0={!fired}
+      style="mask-image: linear-gradient(to bottom, transparent 0%, black 15%); -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%);"
+      muted playsinline preload="auto"
+    >
+      <source src="/img/mini_dmg_soldier_fire.webm" type="video/webm" />
+    </video>
+
+    <img
+      class="w-125 object-contain absolute bottom-10 left-9"
+      class:opacity-0={countdown !== null || fired}
+      src="/img/mini_dmg_soldier.webp" alt=""
+    />
+
+
+  <div class="absolute bottom-28 right-40">
     <!-- hitbox -->
     <div
       bind:this={targetEl}
       class="absolute bg-red-500/40 rounded-full pointer-events-none z-10 flex items-center justify-center"
       style="top: {hbTop * 4}px; right: {hbRight * 4}px; width: {hbWidth * 4}px; height: {hbHeight * 4}px; transform: rotate({hbRotate}deg);"
     >
-      {#if !stopped}
-       <!-- aiming cross -->
-       <div
+      {#if showCrosshair}
+       <!-- aiming crosshair -->
+       <img
          bind:this={crossEl}
-         class="absolute pointer-events-none"
-         style="transform: translate({crossX}px, {crossY}px) rotate(-{hbRotate}deg); width: 40px; height: 40px;"
-       >
-         <div class="absolute top-1/2 left-0 w-full h-0.5 bg-red-500 -translate-y-1/2"></div>
-         <div class="absolute left-1/2 top-0 h-full w-0.5 bg-red-500 -translate-x-1/2"></div>
-       </div>
-      {:else}
+         class="absolute pointer-events-none w-10 h-10 object-contain"
+         style="transform: translate({crossX}px, {crossY}px) rotate(-{hbRotate}deg);"
+         srcset={optimize("/img/mini_dmg_crosshair.png")}
+         alt=""
+       />
+      {/if}
+      {#if showHit}
       <!-- bullet hole -->
         <img
           class="absolute w-10 h-10 object-contain pointer-events-none z-20"
@@ -200,32 +245,36 @@
 
     <!-- target image -->
     <img
-      class="h-120 object-contain relative"
-      srcset={optimize("/img/mini_dmg_target.png")}
+      class="h-90 object-contain relative"
+      srcset={optimize("/img/mini_dmg_target_c.png")}
       alt=""
     />
   </div>
 </div>
+</div>
 
-<!-- shoot button / result feedback -->
-{#if !stopped}
+<!-- shoot button -->
+{#if !stopped && countdown === null}
   <button
-    class="absolute bottom-10 z-10 bg-primary text-white text-2xl font-bold h-35 w-35 rounded-full cursor-pointer"
+    class="absolute bottom-10 z-10 bg-primary text-white text-2xl font-bold h-35 w-35 rounded-full cursor-pointer result-pop"
     on:click={handleClick}
   >
     {m.shoot()}
   </button>
-{:else}
-  <div
-    class="absolute bottom-10 z-10 bg-primary text-2xl font-bold h-35 w-35 rounded-full flex items-center justify-center text-white"
-  >
-    {hit ? 'HIT!' : 'MISS!'}
-  </div>
 {/if}
 
-{#if countdown !== null}
+{#if showResult || countdown !== null}
  <div class="fixed inset-0 flex items-center justify-center z-40 bg-black/60 pointer-events-none">
-  <span class="text-[14rem] font-bold text-white drop-shadow-2xl">{countdown}</span>
+  <span
+    class="text-[10rem] font-bold text-white drop-shadow-2xl -mt-[10vh]"
+    class:result-pop={countdown === null}
+  >
+    {#if countdown !== null}
+      {countdown}
+    {:else}
+      {hit ? m.minigame_win() : m.minigame_fail()}
+    {/if}
+  </span>
  </div>
 {/if}
 
@@ -248,26 +297,6 @@
     <input type="range" min="0.0005" max="0.005" step="0.0001" bind:value={SPEED} />
   </label>
 
-  <span class="font-bold text-sm mt-2">Hitbox</span>
 
-  <label class="flex flex-col">
-    Top: {hbTop}
-    <input type="range" min="0" max="70" step="1" bind:value={hbTop} />
-  </label>
-
-  <label class="flex flex-col">
-    Right: {hbRight}
-    <input type="range" min="0" max="70" step="1" bind:value={hbRight} />
-  </label>
-
-  <label class="flex flex-col">
-    Width: {hbWidth}
-    <input type="range" min="2" max="70" step="1" bind:value={hbWidth} />
-  </label>
-
-  <label class="flex flex-col">
-    Height: {hbHeight}
-    <input type="range" min="2" max="70" step="1" bind:value={hbHeight} />
-  </label>
 </div>
 {/if}

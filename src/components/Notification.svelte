@@ -2,9 +2,11 @@
  import { onDestroy } from "svelte";
  import { optimize } from "$lib/image";
  import { notificationMessage } from "$lib/stores/notification.js";
+ import LookPhone from "$components/LookPhone.svelte";
 
  let visible = $state(false);
  let currentMessage = $state(null);
+ let showLookPhone = $state(false);
  let hideTimer = null;
  let removeTimer = null;
 
@@ -19,6 +21,7 @@
 
   clearTimers();
   currentMessage = msg.html;
+  showLookPhone = msg.showLookPhone ?? false;
   visible = false;
 
   // Paint the initial hidden state, then slide in
@@ -46,10 +49,13 @@
    <img
     srcset={optimize("/img/notification_bg.png")}
     alt=""
-    class="w-full h-120 object-cover object-bottom"
+    class="w-full h-130 object-cover object-bottom"
    />
-   <div class="absolute inset-0 w-full flex justify-center px-24 pt-8 pb-20">
+   <div class="absolute inset-0 w-full flex flex-col items-center justify-between px-24 pt-6">
     <p class="text-lg text-center">{@html currentMessage}</p>
+    {#if showLookPhone}
+     <LookPhone />
+    {/if}
    </div>
   </div>
  </div>

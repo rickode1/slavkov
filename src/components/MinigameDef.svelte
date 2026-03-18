@@ -338,15 +338,3 @@
   </label>
 </div>
 {/if}
-
-<style>
-  @keyframes pop-in {
-    0%   { transform: scale(0.2); opacity: 0; }
-    60%  { transform: scale(1.15); opacity: 1; }
-    80%  { transform: scale(0.95); }
-    100% { transform: scale(1); }
-  }
-  .result-pop {
-    animation: pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-</style>
