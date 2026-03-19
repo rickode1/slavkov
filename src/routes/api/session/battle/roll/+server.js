@@ -60,7 +60,7 @@ export async function POST({ request }) {
 	difficulty -= bonusVal;
 
 	const roll = debugRoll || Math.floor(Math.random() * 20) + 1;
-	const success = roll > difficulty;
+	const success = roll >= difficulty;
 	const hasUnitBonus = role === 'dmg' && (roundData[`bonus_unit${playerSuffix}`] || 0) > 0;
 	const unitUsed = roundData[`unit_used${playerSuffix}`] || 0;
 
