@@ -107,6 +107,7 @@
    resetSession();
    sessionStorage.removeItem('sessionId');
    goto("/tv");
+   window?.player?.playFolder(0);
   }
  });
 

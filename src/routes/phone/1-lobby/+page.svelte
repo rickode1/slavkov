@@ -113,6 +113,7 @@
    life: page.url.searchParams.get("life") ?? Math.floor(Math.random() * 2) + 1,
   };
   nick = urlParams.nick;
+  if (nick) nickConfirmed = true;
  });
 
  $effect(() => {
