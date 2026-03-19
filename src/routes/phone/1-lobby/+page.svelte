@@ -130,12 +130,8 @@
   resetTimer();
  }
 
- async function saveProfile() {
-  if (!canConfirmBust) return;
-  stopTimer();
-  savingProfile = true;
-
-  const response = await fetch("/api/session/profile", {
+ async function postProfile() {
+  return fetch("/api/session/profile", {
    method: "POST",
    headers: { "Content-Type": "application/json" },
    body: JSON.stringify({
@@ -149,7 +145,14 @@
     life: urlParams.life,
    }),
   });
+ }
 
+ async function saveProfile() {
+  if (!canConfirmBust) return;
+  stopTimer();
+  savingProfile = true;
+
+  const response = await postProfile();
   const data = await response.json();
   savingProfile = false;
 
@@ -157,6 +160,11 @@
    nickConfirmed = true;
    return;
   }
+
+  // Retry after 2s: if both players submitted simultaneously the first
+  // request may have raced and missed the opponent's profile; re-sending
+  // re-triggers the status advancement check with fresh DB state.
+  setTimeout(() => postProfile().catch(() => {}), 2000);
  }
 
  async function joinSession(code) {

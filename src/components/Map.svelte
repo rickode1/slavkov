@@ -312,7 +312,7 @@
         />
        {:else if placedUnits()[slot.id]}
         <img
-         class="w-full h-[75%] object-contain transition-[filter] duration-700 ease-in-out {placedUnits()[slot.id].rotate ? 'scale-x-[-1]' : ''}"
+         class="relative z-10 w-full h-[75%] object-contain transition-[filter] duration-700 ease-in-out {placedUnits()[slot.id].rotate ? 'scale-x-[-1]' : ''}"
          style={battlePhase ? getUnitStroke(slot.p) : ''}
          srcset={optimize(placedUnits()[slot.id].src)}
          alt=""
