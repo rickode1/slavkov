@@ -59,10 +59,19 @@
     sessionId.set(newId);
    }
   }
+
+  function handleVisibilityChange() {
+   if (document.visibilityState === 'visible' && $sessionId) {
+    subscribeToSession($sessionId);
+   }
+  }
+
   window.addEventListener("keydown", handleKeydown);
+  document.addEventListener("visibilitychange", handleVisibilityChange);
 
   return () => {
    window.removeEventListener("keydown", handleKeydown);
+   document.removeEventListener("visibilitychange", handleVisibilityChange);
    wakeLock?.release();
   };
  });
