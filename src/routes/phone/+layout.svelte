@@ -9,7 +9,7 @@
   resetSession,
   playerCode,
  } from '$lib/stores/gameSession.js';
- import { subscribeToSession, cleanupSession } from '$lib/sessionRealtime.js';
+ import { subscribeToSession, cleanupSession, refreshSession } from '$lib/sessionRealtime.js';
  import { terminalStates, gameScreens } from "$lib/constants.js";
  import { currentLocale } from "$lib/stores/locale.js";
  import LangSwitcher from "$components/LangSwitcher.svelte";
@@ -47,30 +47,15 @@
    currentLocale.set(lang);
   }
 
-  function handleKeydown(e) {
-   if (e.key !== ".") return;
-   const current = $sessionId ?? "(none)";
-   const input = prompt(`Session ID: ${current}\n\nEnter new ID to reconnect:`);
-   if (input && input.trim() && input.trim() !== $sessionId) {
-    const newId = input.trim();
-    if(!$gameSession?.debug) {
-    sessionStorage.setItem('sessionId', newId);
-    }
-    sessionId.set(newId);
-   }
-  }
-
   function handleVisibilityChange() {
    if (document.visibilityState === 'visible' && $sessionId) {
-    subscribeToSession($sessionId);
+    refreshSession();
    }
   }
 
-  window.addEventListener("keydown", handleKeydown);
   document.addEventListener("visibilitychange", handleVisibilityChange);
 
   return () => {
-   window.removeEventListener("keydown", handleKeydown);
    document.removeEventListener("visibilitychange", handleVisibilityChange);
    wakeLock?.release();
   };

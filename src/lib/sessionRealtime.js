@@ -61,6 +61,21 @@ export async function subscribeToSession(id) {
 		});
 }
 
+export async function refreshSession() {
+	if (!currentSessionId || !channel) return;
+
+	if (channel.state === 'joined') {
+		const { data, error } = await supabase
+			.from('sessions')
+			.select('*')
+			.eq('id', currentSessionId)
+			.single();
+		if (!error && data) gameSession.set(data);
+	} else {
+		subscribeToSession(currentSessionId);
+	}
+}
+
 export async function cleanupSession() {
 	currentSessionId = null;
 
