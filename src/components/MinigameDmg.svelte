@@ -219,7 +219,7 @@
     <!-- hitbox -->
     <div
       bind:this={targetEl}
-      class="absolute {debug ? 'bg-red-500/40' : ''} rounded-full pointer-events-none z-10 flex items-center justify-center"
+      class="absolute rounded-full pointer-events-none z-10 flex items-center justify-center"
       style="top: {hbTop * 4}px; right: {hbRight * 4}px; width: {hbWidth * 4}px; height: {hbHeight * 4}px; transform: rotate({hbRotate}deg);"
     >
       {#if showCrosshair}
@@ -284,8 +284,8 @@
 
 <!-- debug panel -->
 {#if debug}
-<div class="fixed top-2 left-2 z-50 text-xs p-3 flex flex-col gap-1.5 w-52">
-  <span class="font-bold text-sm">Movement</span>
+<div class="fixed top-0 left-0 z-50 text-xs p-3 flex flex-col gap-1.5 w-52 bg-white">
+  <span class="font-bold text-sm">Difficulty</span>
 
   <label class="flex flex-col">
     Radius: {RADIUS}

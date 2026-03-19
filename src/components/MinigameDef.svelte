@@ -111,7 +111,7 @@
      obstacles[i].x -= currentSpeed;
    }
    // remove off-screen obstacles
-   obstacles = obstacles.filter(o => o.x > -OBS_WIDTH);
+   // obstacles = obstacles.filter(o => o.x > -OBS_WIDTH);
 
    if (gameState === 'running') {
      // spawn obstacles (semi-random intervals) — stop when finish is approaching
