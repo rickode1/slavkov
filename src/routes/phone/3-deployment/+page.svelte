@@ -130,20 +130,24 @@
   new Audio('/sounds/piece-move.mp3').play().catch(() => {});
  }
 
+ async function postLocation() {
+  return fetch("/api/session/location", {
+   method: "POST",
+   headers: { "Content-Type": "application/json" },
+   body: JSON.stringify({
+    sessionId: $sessionId,
+    playerCode: $playerCode,
+    slotId: selectedSlot.id,
+   }),
+  });
+ }
+
  async function handleDeployLocation() {
   if (!selectedSlot || deployingLocation) return;
   stopTimer();
   deployingLocation = true;
   try {
-   const response = await fetch("/api/session/location", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-     sessionId: $sessionId,
-     playerCode: $playerCode,
-     slotId: selectedSlot.id,
-    }),
-   });
+   const response = await postLocation();
    if (!response.ok) {
     console.error("Failed to deploy location");
    }
@@ -152,6 +156,10 @@
   } finally {
    deployingLocation = false;
    locationSelected = true;
+   // Retry after 2s: if both players submitted simultaneously the first
+   // request may have raced and missed the opponent's data; re-sending
+   // re-triggers the status advancement check with fresh DB state.
+   setTimeout(() => postLocation().catch(() => {}), 2000);
   }
  }
 

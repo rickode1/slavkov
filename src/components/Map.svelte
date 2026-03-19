@@ -73,11 +73,8 @@
   }))
  );
 
- function getSlotColor(playerNum, opacity = 0.5) {
-  const bust = $gameSession?.[`player_${playerNum}`]?.bust;
-  if (!bust) return `rgba(128,128,128,${opacity})`;
-  const pct = Math.round(opacity * 100);
-  return `color-mix(in srgb, var(--color-bust-${bust}) ${pct}%, transparent)`;
+ function getBust(playerNum) {
+  return $gameSession?.[`player_${playerNum}`]?.bust;
  }
 
  function getUnitStroke(playerNum) {
@@ -296,10 +293,17 @@
        {(activeLocationId === loc.id || battleTargets[slot.id]) && zoomed && !battleDone
         ? 'opacity-100'
         : 'opacity-0 pointer-events-none'}"
-       style="left: {battleTargets[slot.id] ? battleTargets[slot.id].x : slot.x}%; top: {battleTargets[slot.id] ? battleTargets[slot.id].y : slot.y}%; background-color: {battlePhase ? 'transparent' : getSlotColor(slot.p)}; {losingSlotId === slot.id ? 'transition: filter 0.8s ease; filter: grayscale(1) brightness(0.6);' : ''}"
+       style="left: {battleTargets[slot.id] ? battleTargets[slot.id].x : slot.x}%; top: {battleTargets[slot.id] ? battleTargets[slot.id].y : slot.y}%; {losingSlotId === slot.id ? 'transition: filter 0.8s ease; filter: grayscale(1) brightness(0.6);' : ''}"
        onclick={() => onSlotSelect?.(slot)}
        aria-label="Select slot"
       >
+       {#if !battlePhase}
+        {@const bust = getBust(slot.p)}
+        <div
+         class="absolute inset-0"
+         style="{bust ? `background-color: var(--color-bust-${bust}); opacity: 0.5` : 'background-color: rgba(128,128,128,0.5)'}"
+        ></div>
+       {/if}
        {#if selectedSlotId === slot.id && unitImage}
         <img
          class="w-full h-[75%] object-contain {unitsAnimated ? 'unit-drop' : ''} {unitRotate ? 'scale-x-[-1]' : ''}"

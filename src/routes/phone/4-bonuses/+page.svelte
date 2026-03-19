@@ -111,6 +111,18 @@
   if (introDone) new Audio('/sounds/ding.mp3').play().catch(() => {});
  });
 
+ async function postBonuses(counts) {
+  return fetch("/api/session/bonuses", {
+   method: "POST",
+   headers: { "Content-Type": "application/json" },
+   body: JSON.stringify({
+    sessionId: $sessionId,
+    playerCode: $playerCode,
+    bonuses: counts,
+   }),
+  });
+ }
+
  async function submitBonuses() {
   if (submitting) return;
   stopTimer();
@@ -124,19 +136,12 @@
   }
 
   try {
-   const response = await fetch("/api/session/bonuses", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-     sessionId: $sessionId,
-     playerCode: $playerCode,
-     bonuses: counts,
-    }),
-   });
+   const response = await postBonuses(counts);
    if (!response.ok) {
     console.error("Failed to save bonuses");
    } else {
     submitted = true;
+    setTimeout(() => postBonuses(counts).catch(() => {}), 2000);
    }
   } catch (error) {
    console.error("Error saving bonuses:", error);
