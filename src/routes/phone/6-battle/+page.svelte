@@ -87,7 +87,7 @@
    if (uiTimer) clearTimeout(uiTimer);
    uiTimer = setTimeout(() => {
     showUI = false;
-   }, 4000);
+   }, 5000);
   }
  });
 

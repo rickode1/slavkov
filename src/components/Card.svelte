@@ -23,7 +23,7 @@
   if (hideValue) return null;
   const sub = m[`bonus_label_${type}`]?.();
   if (!sub) return valueLabel;
-  if (type === 'unit' || type === 'life') return `+1 ${sub}`;
+  if (type === 'unit') return `+1 ${sub}`;
   return `${valueLabel} ${sub}`;
  });
 </script>

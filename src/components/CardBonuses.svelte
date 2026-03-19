@@ -76,11 +76,6 @@
   const groups = [];
   const seen = new Map();
   for (const card of cards) {
-   // Life cards are shown individually, not stacked
-   if (card.type === 'life') {
-    groups.push({ type: card.type, items: [card] });
-    continue;
-   }
    if (!seen.has(card.type)) {
     const group = { type: card.type, items: [] };
     groups.push(group);
@@ -97,7 +92,7 @@
    const active = g.items.filter((c) => !c.disabled).length;
    return {
     ...g,
-    displayValue: g.items.length > 1 ? active : g.items[0]?.value,
+    displayValue: g.items.length > 1 ? (active || 1) : g.items[0]?.value,
     allDisabled: active === 0,
    };
   });
