@@ -188,7 +188,7 @@
 
 {#if introDone}
 {#if $gameSession}
- <div class="flex flex-col items-center pt-24">
+ <div class="flex flex-col items-center pt-16">
   {#if selected()}
    <Map
     playerFilter={myPlayerNumber}
@@ -250,7 +250,9 @@
  </div>
 {/if}
 {:else}
- <LookTV />
+ <button ondblclick={() => { introDone = true; startTimer(); }}>
+  <LookTV />
+ </button>
 {/if}
 
 

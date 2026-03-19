@@ -152,7 +152,7 @@
 
 {#if introDone}
 {#if $gameSession}
- <div class="pt-20 pb-6 w-full">
+ <div class="pt-16 pb-6 w-full">
  {#if cardGroups().length === 0}
   <p class="text-xl text-center mt-4">{m.no_bonuses()}</p>
  {:else}
@@ -193,5 +193,7 @@
 
 {/if}
 {:else}
- <LookTV />
+ <button ondblclick={() => { introDone = true; startTimer(); }}>
+  <LookTV />
+ </button>
 {/if}
