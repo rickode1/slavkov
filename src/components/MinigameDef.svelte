@@ -3,8 +3,6 @@
  import { onMount, onDestroy } from "svelte";
  import * as m from "$lib/paraglide/messages.js";
  import { gameSession } from "$lib/stores/gameSession.js";
- import { startTimer, stopTimer } from "$lib/stores/timer.js";
- import Timer from "$components/Timer.svelte";
 
  export let onResult = null;
  export let debug = false;
@@ -86,7 +84,6 @@
      gameWidth = gameAreaEl.clientWidth;
    }
 
-   if (onResult && !debug) startTimer(30);
    animFrame = requestAnimationFrame(gameLoop);
  }
 
@@ -137,7 +134,6 @@
        gameState = 'slowing';
        slowdownStart = performance.now();
        speedAtFinish = groundSpeed;
-       stopTimer();
      }
 
      if (isJumping) {
@@ -166,7 +162,6 @@
            if(isJumping) continue;
            triggerFall();
            cancelAnimationFrame(animFrame);
-           stopTimer();
            if (onResult && !debug) { setTimeout(() => onResult(false), 3000); } else { setTimeout(resetGame, 3000); }
            return;
          }
@@ -188,15 +183,6 @@
 
  function resetGame() {
    startGame();
- }
-
- function handleTimerExpiry() {
-   if (gameState === 'running') {
-     triggerFall();
-     cancelAnimationFrame(animFrame);
-     if (onResult && !debug) setTimeout(() => onResult(false), 1500);
-     else setTimeout(resetGame, 1500);
-   }
  }
 
  function startCountdown() {
@@ -222,7 +208,6 @@
  onDestroy(() => {
    cancelAnimationFrame(animFrame);
    clearInterval(countdownInterval);
-   stopTimer();
  });
 </script>
 
@@ -316,10 +301,6 @@
     {/if}
   </span>
  </div>
-{/if}
-
-{#if onResult && gameState === 'running'}
- <Timer classes="fixed right-8 top-6" onExpiry={handleTimerExpiry} />
 {/if}
 
 <!-- debug panel -->

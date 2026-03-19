@@ -22,7 +22,7 @@
  const dmgImg = `<img src="/img/bonus_minigame_dmg.png" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
  const defImg = `<img src="/img/bonus_minigame_def.png" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
 
- const NOTIF_DURATION = 9000;
+ const NOTIF_DURATION = 8000;
  const NOTIF_GAP = 600;
 
  function getAttackerCode(rd) {
@@ -114,7 +114,7 @@
   // Only animate the minigame_def card for the defender; nothing new for the attacker.
   animatedCards = { [attCode]: false, [defCode]: ['minigame_def'] };
   phase = 'idle';
-  notify(defImg + (success ? m.minigame_def_success({ name: defName }) : m.minigame_def_fail({ name: defName })), NOTIF_DURATION);
+  notify(defImg + (success ? m.minigame_def_success({ name: defName }) : m.minigame_def_fail({ name: defName })), 4000);
   const id = $sessionId;
   if (id) {
    setTimeout(async () => {
@@ -123,7 +123,7 @@
      headers: { 'Content-Type': 'application/json' },
      body: JSON.stringify({ sessionId: id, status: '6-battle' }),
     });
-   }, NOTIF_DURATION + NOTIF_GAP);
+   }, 6000);
   }
  }
 </script>

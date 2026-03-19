@@ -116,7 +116,7 @@
   setTimeout(() => {
    introDone = true;
    startTimer();
-  }, 16000);
+  }, 10000);
  });
 
  onDestroy(() => stopTimer());

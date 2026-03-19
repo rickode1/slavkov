@@ -85,8 +85,8 @@
   }
 
   const delay = bonusCount > 0
-   ? 4000 + 10000 + (bonusCount * 3000)
-   : 14000;
+   ? 4000 + 8000 + (bonusCount * 1000)
+   : 12000;
 
   setTimeout(() => {
    introDone = true;

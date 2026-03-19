@@ -52,9 +52,9 @@
 
    if (queue.length > 0) {    
     const merged = queue.map(i => i.html).join('<br><br>');
-    notify(merged + '<br><br>' + m.pick_bonuses(), (queue.length * 3000) + 10000, true);
+    notify(merged + '<br><br>' + m.pick_bonuses(), (queue.length * 1000) + 9000, true);
    } else {
-    notify(m.pick_bonuses(), 10000, true);
+    notify(m.pick_bonuses(), 9000, true);
    }
   }, 4000);
  });
