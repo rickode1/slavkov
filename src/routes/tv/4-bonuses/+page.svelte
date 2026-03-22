@@ -7,6 +7,7 @@
  import PlayerBust from "$components/PlayerBust.svelte";
  import CardBonuses from "$components/CardBonuses.svelte";
  import Map from "$components/Map.svelte";
+ import { playSound } from "$lib/audio.js";
 
  let mapRef = $state(null);
 
@@ -15,9 +16,9 @@
 
  onMount(() => {
 
-  new Audio('/sounds/piece-move.mp3').play().catch(() => {});
+  playSound('/sounds/piece-move.mp3');
 
-  setTimeout(() => { new Audio('/sounds/piece-move.mp3').play().catch(() => {}) }, 500);
+  setTimeout(() => { playSound('/sounds/piece-move.mp3') }, 500);
 
   setTimeout(() => {
    const session = $gameSession;

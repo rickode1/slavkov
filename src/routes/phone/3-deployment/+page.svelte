@@ -9,6 +9,7 @@
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
  import { startTimer, stopTimer, resetTimer } from "$lib/stores/timer.js";
+ import { playSound } from "$lib/audio.js";
 
 
  import PlayerBust from "$components/PlayerBust.svelte";
@@ -122,12 +123,12 @@
  onDestroy(() => stopTimer());
 
  $effect(() => {
-  if (introDone) new Audio('/sounds/ding.mp3').play().catch(() => {});
+  if (introDone) playSound('/sounds/ding.mp3');
  });
 
  function handleSlotSelect(slot) {
   selectedSlot = slot;
-  new Audio('/sounds/piece-move.mp3').play().catch(() => {});
+  playSound('/sounds/piece-move.mp3');
  }
 
  async function postLocation() {

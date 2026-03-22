@@ -3,6 +3,7 @@
  import { get } from 'svelte/store';
  import { timerActive, timerRemaining } from '$lib/stores/timer.js';
  import { sessionId, gameSession } from '$lib/stores/gameSession.js';
+ import { playSound } from '$lib/audio.js';
 
  let { classes = 'fixed right-4 bottom-4', onExpiry = null } = $props();
 
@@ -17,22 +18,20 @@
      if (r <= 1) {
       clearInterval(interval);
       timerActive.set(false);
-      tikTak?.pause();
+      tikTak?.stop();
       tikTak = null;
       handleExpiry();
       return 0;
      }
      if (r === 20) {
-      tikTak = new Audio('/sounds/tik-tak.mp3');
-      tikTak.loop = true;
-      tikTak.play().catch(() => {});
+      tikTak = playSound('/sounds/tik-tak.mp3', { loop: true });
      }
      return r - 1;
     });
    }, 1000);
    return () => {
     clearInterval(interval);
-    tikTak?.pause();
+    tikTak?.stop();
     tikTak = null;
    };
   }

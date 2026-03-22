@@ -6,6 +6,7 @@
  import CardBonuses from "$components/CardBonuses.svelte";
  import PlayerBust from "$components/PlayerBust.svelte";
  import Map from "$components/Map.svelte";
+ import { playSound } from "$lib/audio.js";
 
  let mapRef = $state(null);
 
@@ -13,7 +14,7 @@
   const round = $gameSession?.current_round ?? 1;
   const introMsg = [m.intro_1, m.intro_2, m.intro_3][round - 1] ?? m.intro_1;
 
-  if (round === 1) new Audio('/sounds/ding.mp3').play().catch(() => {});
+  if (round === 1) playSound('/sounds/ding.mp3');
 
   setTimeout(() => {
    mapRef?.zoomTo(parseInt(round), true);

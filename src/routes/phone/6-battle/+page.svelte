@@ -8,6 +8,7 @@
  import { optimize } from "$lib/image";
  import * as m from "$lib/paraglide/messages";
  import { startTimer, stopTimer } from "$lib/stores/timer.js";
+ import { playSound } from "$lib/audio.js";
 
  import Help from "$components/Help.svelte";
  import Button from "$components/Button.svelte";
@@ -79,7 +80,7 @@
    if (uiTimer) clearTimeout(uiTimer);
    showUI = false;
    animationDone = false;
-   new Audio('/sounds/ding.mp3').play().catch(() => {});
+   playSound('/sounds/ding.mp3');
    uiTimer = setTimeout(() => {
     showUI = true;
    }, 1000);

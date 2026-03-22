@@ -9,6 +9,7 @@
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
  import { startTimer, stopTimer } from "$lib/stores/timer.js";
+ import { playSound } from "$lib/audio.js";
 
 
  import PlayerBust from "$components/PlayerBust.svelte";
@@ -108,7 +109,7 @@
  let hasSelection = $derived(selectedCards.size > 0);
 
  $effect(() => {
-  if (introDone) new Audio('/sounds/ding.mp3').play().catch(() => {});
+  if (introDone) playSound('/sounds/ding.mp3');
  });
 
  async function postBonuses(counts) {
