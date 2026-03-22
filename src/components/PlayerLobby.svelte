@@ -1,5 +1,4 @@
 <script>
- import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
  import { onMount } from "svelte";
  import Button from "$components/Button.svelte";
@@ -23,17 +22,21 @@
  });
 </script>
 
+<svelte:head>
+  <link rel="preload" href="/img/bust.webp" as="image" />
+</svelte:head>
+
 <div class="flex flex-col items-center justify-start w-1/2">
  {#if !isPlayerReady(player)}
   <img
    class="h-50 w-auto lg:h-100 lg:mt-4"
-   srcset={optimize("/img/bust.png")}
+   src="/img/bust.webp"
    alt=""
   />
  {:else}
   <img
    class="h-50 w-auto lg:h-100"
-   srcset={optimize("/img/bust_" + player?.bust + ".png")}
+   src={"/img/bust_" + player?.bust + ".webp"}
    alt=""
   />
  {/if}

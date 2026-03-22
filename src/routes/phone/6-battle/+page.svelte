@@ -5,7 +5,6 @@
   gameSession,
   playerCode,
  } from "$lib/stores/gameSession.js";
- import { optimize } from "$lib/image";
  import * as m from "$lib/paraglide/messages";
  import { playSound } from "$lib/audio.js";
 
@@ -97,6 +96,10 @@
  }
 </script>
 
+<svelte:head>
+  <link rel="preload" href="/img/dice.webp" as="image" />
+</svelte:head>
+
 {#if $gameSession}
  <div class="flex flex-col items-center gap-6">
   {#if isActivePlayer && showUI}
@@ -104,7 +107,7 @@
     <div class="relative flex items-center justify-center">
      <img
       class="h-32 object-contain drop-shadow-lg {rolling ? 'dice-rolling' : ''}"
-      srcset={optimize("/img/dice.png")}
+      src="/img/dice.webp"
       alt="Dice"
      />
      {#if rolled && rollResult}

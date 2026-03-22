@@ -5,7 +5,6 @@
   gameSession,
   playerCode,
  } from "$lib/stores/gameSession.js";
- import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
  import { playSound } from "$lib/audio.js";
@@ -170,7 +169,7 @@
   const unit = deployedUnit();
   const bust = myPlayer()?.bust;
   if (!unit || !bust) return null;
-  return `/img/unit_${bust}_${unit}.png`;
+  return `/img/unit_${bust}_${unit}.webp`;
  });
 
  let unitRotate = $derived(() => {
@@ -180,11 +179,16 @@
  });
 </script>
 
+<svelte:head>
+  <link rel="preload" href="/img/bonus_loc.webp" as="image" />
+  <link rel="preload" href="/img/bonus_unit.webp" as="image" />
+</svelte:head>
+
 <Help player={myPlayer()} autoOpen={helpKey}>
      <p class="text-xl">{@html selectedUnit ? m.deploy_place_unit() : m.deploy_select_unit()}</p>  
      <img
       class="w-30 h-auto mx-auto"
-      srcset={optimize(selectedUnit ? "/img/bonus_loc.png" : "/img/bonus_unit.png")}
+      src={selectedUnit ? "/img/bonus_loc.webp" : "/img/bonus_unit.webp"}
       alt=""
      />
 </Help>
@@ -232,7 +236,7 @@
        ? 'scale-105'
        : ''}"
       style={selectedUnit === unit.id ? myStrokeStyle() : ""}
-      srcset={optimize(`/img/${unit.img}.png`)}
+      src={`/img/${unit.img}.webp`}
       alt={unit.title}
      />
      <p class="text-xl text-center">{unit.title}</p>

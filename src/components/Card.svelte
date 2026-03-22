@@ -1,5 +1,4 @@
 <script>
- import { optimize } from "$lib/image";
  import * as m from "$lib/paraglide/messages.js";
 
  let {
@@ -15,7 +14,7 @@
  } = $props();
 
  let title = $derived(m[`card_${type}`]?.() ?? type);
- let illustration = $derived(`/img/bonus_${type}.png`);
+ let illustration = $derived(`/img/bonus_${type}.webp`);
 
  let valueLabel = $derived(value > 0 ? `+${value}` : `${value}`);
 
@@ -28,6 +27,10 @@
  });
 </script>
 
+<svelte:head>
+  <link rel="preload" href="/img/card_bg.webp" as="image" />
+</svelte:head>
+
 {#if value !== 0}
  <button
   type="button"
@@ -39,7 +42,7 @@
   {disabled}
  >
   <img
-   srcset={optimize("/img/card_bg.png")}
+   src="/img/card_bg.webp"
    alt=""
    class="w-full h-full block"
   />
@@ -48,7 +51,7 @@
    class="absolute inset-0 flex flex-col items-center justify-between gap-2 px-2 py-4"
   >
    <img
-    srcset={optimize(illustration)}
+    src={illustration}
     alt=""
     class="{small ? 'h-10' : 'h-14'} w-auto object-contain"
    />

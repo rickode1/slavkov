@@ -1,5 +1,4 @@
 <script>
- import { optimize } from "$lib/image";
  import {m} from "$lib/paraglide/messages.js";
 
  let { base, bonus, type, active = false, iconSrc, bust = null } = $props();
@@ -14,7 +13,7 @@
 >
 
  <div class="flex flex-col items-center min-w-15">
-  <img srcset={optimize(iconSrc)} alt="" class="h-12 w-auto shrink-0 transition-[filter] duration-300 mb-1" style={active ? 'filter: brightness(0) invert(1)' : ''} />
+  <img src={iconSrc} alt="" class="h-12 w-auto shrink-0 transition-[filter] duration-300 mb-1" style={active ? 'filter: brightness(0) invert(1)' : ''} />
 
   <span>{ type == 'dmg' ? m.battle_attack() : m.battle_defense()}</span>
  </div>

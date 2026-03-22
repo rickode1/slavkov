@@ -1,6 +1,5 @@
 <script>
  import { onDestroy } from "svelte";
- import { optimize } from "$lib/image";
  import { notificationMessage } from "$lib/stores/notification.js";
  import LookPhone from "$components/LookPhone.svelte";
 
@@ -39,6 +38,10 @@
  onDestroy(clearTimers);
 </script>
 
+<svelte:head>
+  <link rel="preload" href="/img/notification_bg.webp" as="image" />
+</svelte:head>
+
 {#if currentMessage}
  <div
   class="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none
@@ -47,7 +50,7 @@
  >
   <div class="relative w-full max-w-4xl">
    <img
-    srcset={optimize("/img/notification_bg.png")}
+    src="/img/notification_bg.webp"
     alt=""
     class="w-full h-130 object-cover object-bottom"
    />

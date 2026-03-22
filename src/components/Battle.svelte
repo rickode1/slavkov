@@ -3,7 +3,6 @@
  import { m } from "$lib/paraglide/messages.js";
  import { fly } from "svelte/transition";
  import { flip } from "svelte/animate";
- import { optimize } from "$lib/image";
  import { gameSession, sessionId } from "$lib/stores/gameSession.js";
  import { strokeStyle, nickHtml } from "$lib/constants.js";
  import Card from "$components/Card.svelte";
@@ -48,7 +47,7 @@
 
  export function addMessage(text, img = '') {
   if(img) {
-   img = `<img src="/img/bonus_${img}.png"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">`;
+   img = `<img src="/img/bonus_${img}.webp"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">`;
   }
 
   const prev = untrack(() => messages);
@@ -85,7 +84,7 @@
   if (!rd || !$gameSession) return null;
   const bust = $gameSession.player_1?.bust;
   const unit = rd.unit_1;
-  return bust && unit ? `/img/unit_${bust}_${unit}.png` : null;
+  return bust && unit ? `/img/unit_${bust}_${unit}.webp` : null;
  });
 
  let player1UnitRotate = $derived(() => {
@@ -98,7 +97,7 @@
   if (!rd || !$gameSession) return null;
   const bust = $gameSession.player_2?.bust;
   const unit = rd.unit_2;
-  return bust && unit ? `/img/unit_${bust}_${unit}.png` : null;
+  return bust && unit ? `/img/unit_${bust}_${unit}.webp` : null;
  });
 
  let player2UnitRotate = $derived(() => {
@@ -145,7 +144,7 @@
   await sleep(1000);
   rollOutcome = roll >= displayedDifficulty ? 'success' : 'fail';
   const name = activePlayerNickHtml;
-  const boldRoll = `<img src="/img/dice.png"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${roll}`;
+  const boldRoll = `<img src="/img/dice.webp"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${roll}`;
   addMessage(
    rollOutcome === 'success'
     ? (role === 'dmg' ? m.battle_attack_success({ name, roll: boldRoll }) : m.battle_defense_success({ name, roll: boldRoll }))
@@ -246,16 +245,21 @@
   const name = activePlayerNickHtml;
   addMessage(
    role === 'dmg'
-    ? m.battle_attack_roll({ name, num: `<img src="/img/dice.png"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${displayedDifficulty}` })
-    : m.battle_defense_roll({ name, num: `<img src="/img/dice.png"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${displayedDifficulty}` })
+    ? m.battle_attack_roll({ name, num: `<img src="/img/dice.webp"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${displayedDifficulty}` })
+    : m.battle_defense_roll({ name, num: `<img src="/img/dice.webp"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${displayedDifficulty}` })
   );
  }
 </script>
 
+<svelte:head>
+  <link rel="preload" href="/img/map_frame.webp" as="image" />
+  <link rel="preload" href="/img/dice.webp" as="image" />
+</svelte:head>
+
 <div class="flex flex-col lg:items-center w-full h-full relative mt-12">
   <img
    class="absolute inset-0 w-full h-full z-10 pointer-events-none"
-   srcset={optimize("/img/map_frame.png")}
+   src="/img/map_frame.webp"
    alt=""
   />
 
@@ -296,7 +300,7 @@
        <img
         class="h-48 object-contain transition-[filter] duration-700 {diceRolling ? 'dice-rolling' : ''}"
         style={rollOutcome === 'success' ? 'filter: drop-shadow(0 0 18px gold) drop-shadow(0 0 36px goldenrod)' : rollOutcome === 'fail' ? 'filter: drop-shadow(0 0 18px #111) drop-shadow(0 0 36px #000)' : 'filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4))'}
-        srcset={optimize("/img/dice.png")}
+        src="/img/dice.webp"
         alt="Dice"
        />
        {#if revealedRoll}

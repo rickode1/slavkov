@@ -11,8 +11,8 @@
 
  let mapRef = $state(null);
 
- const unitImg = `<img src="/img/bonus_unit.png" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
- const locImg  = `<img src="/img/bonus_loc.png"  class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
+ const unitImg = `<img src="/img/bonus_unit.webp" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
+ const locImg  = `<img src="/img/bonus_loc.webp"  class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
 
  function setTimer(seconds) {
   fetch('/api/session/timer', {

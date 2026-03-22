@@ -1,10 +1,13 @@
 <script>
- import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
  import { gameSession } from "$lib/stores/gameSession.js";
  import Logo from "$components/svg/Logo.svelte";
  import PlayerLobby from "$components/PlayerLobby.svelte"; 
 </script>
+
+<svelte:head>
+  <link rel="preload" href="/img/wifi.webp" as="image" />
+</svelte:head>
 
  <Logo classes="max-w-60 absolute top-10 left-8" />
 
@@ -23,11 +26,11 @@
   </div>
  {/if}
 
-<div class="absolute left-5 top-54 w-40">
+<div class="absolute top-8 right-8 w-40">
  <p class="text-center text-sm mb-2">{@html m.wifi()}</p>
  <img
   class="w-30 h-auto mx-auto"
-  srcset={optimize("/img/wifi.png")}
+  src="/img/wifi.webp"
   alt=""
  />
 </div>

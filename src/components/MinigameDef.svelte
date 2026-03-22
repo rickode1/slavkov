@@ -1,5 +1,4 @@
 <script>
- import { optimize } from "$lib/image";
  import { onMount, onDestroy } from "svelte";
  import * as m from "$lib/paraglide/messages.js";
  import { gameSession } from "$lib/stores/gameSession.js";
@@ -53,10 +52,10 @@
  }
 
  const OBSTACLE_IMGS = [
-   { src: "/img/mini_def_obstacle.png",  height: 80  },
-   { src: "/img/mini_def_obstacle2.png", height: 80  },
-   { src: "/img/mini_def_obstacle3.png", height: 140 },
-   { src: "/img/mini_def_obstacle4.png", height: 140 },   
+   { src: "/img/mini_def_obstacle.webp",  height: 80  },
+   { src: "/img/mini_def_obstacle2.webp", height: 80  },
+   { src: "/img/mini_def_obstacle3.webp", height: 140 },
+   { src: "/img/mini_def_obstacle4.webp", height: 140 },   
  ];
 
  // obstacle size
@@ -211,6 +210,21 @@
  });
 </script>
 
+<svelte:head>
+  <link rel="preload" href="/img/map_frame.webp" as="image" />
+  <link rel="preload" href="/img/mini_def_ground.webp" as="image" />
+  <link rel="preload" href="/img/mini_def_soldier_start.webp" as="image" />
+  <link rel="preload" href="/img/mini_def_soldier_jump.webp" as="image" />
+  <link rel="preload" href="/img/mini_def_soldier_run.webp" as="image" type="image/webp" />
+  <link rel="preload" href="/img/mini_def_soldier_win.webp" as="image" type="image/webp" />
+  <link rel="preload" href="/img/mini_def_obstacle.webp" as="image" />
+  <link rel="preload" href="/img/mini_def_obstacle2.webp" as="image" />
+  <link rel="preload" href="/img/mini_def_obstacle3.webp" as="image" />
+  <link rel="preload" href="/img/mini_def_obstacle4.webp" as="image" />
+  <link rel="preload" href="/img/mini_def_finish.webp" as="image" />
+  <link rel="preload" href="/img/mini_def_soldier_fall.webm" as="video" type="video/webm" />
+</svelte:head>
+
 <div
   bind:this={gameAreaEl}
   class="relative w-full z-10 -mt-[10vh]"
@@ -218,26 +232,26 @@
 >
   <img
    class="absolute inset-0 w-full h-full z-10 pointer-events-none"
-   srcset={optimize("/img/map_frame.png")}
+   src="/img/map_frame.webp"
    alt=""
   />
   <img
     class="absolute bottom-0 h-20 w-full object-cover"
     style="transform: translateX(-{groundOffset}px); width: 200%;"
-    srcset={optimize("/img/mini_def_ground.png")}
+    src="/img/mini_def_ground.webp"
     alt=""
   />
   <img
     class="absolute bottom-0 h-20 w-full object-cover"
     style="transform: translateX({gameWidth - groundOffset}px); width: 200%;"
-    srcset={optimize("/img/mini_def_ground.png")}
+    src="/img/mini_def_ground.webp"
     alt=""
   />
 
   <img
     class="absolute bottom-11 z-10 w-100 object-contain"
     style="left: {SOLDIER_LEFT}px; transform: translateY({soldierY}px); display: {gameState === 'lost' || showWinPose ? 'none' : 'block'};"
-    src={gameState === 'ready' ? "/img/mini_def_soldier_start.png" : isJumping ? "/img/mini_def_soldier_jump.png" : "/img/mini_def_soldier_run.webp"}
+    src={gameState === 'ready' ? "/img/mini_def_soldier_start.webp" : isJumping ? "/img/mini_def_soldier_jump.webp" : "/img/mini_def_soldier_run.webp"}
     alt=""
   />
   <img
@@ -262,7 +276,7 @@
     <img
       class="absolute bottom-11 object-contain"
       style="left: {obs.x}px; height: {obs.height}px;"
-      srcset={optimize(obs.img)}
+      src={obs.img}
       alt=""
     />
   {/each}
@@ -272,7 +286,7 @@
     <img
       class="absolute -bottom-4 h-90 object-contain"
       style="left: {finishX}px;"
-      srcset={optimize("/img/mini_def_finish.png")}
+      src="/img/mini_def_finish.webp"
       alt="Finish"
     />
   {/if}

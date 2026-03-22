@@ -1,7 +1,6 @@
 <script>
  import { browser } from "$app/environment";
  import { onMount, tick } from "svelte";
- import { optimize } from "$lib/image";
  import { gameSession } from "$lib/stores/gameSession.js";
  import { positions } from "$lib/stores/positions.js";
  import { strokeStyle } from "$lib/constants.js";
@@ -39,10 +38,10 @@
   const p2Bust = $gameSession.player_2?.bust;
 
   if (rd.loc_1 && rd.unit_1 && p1Bust) {
-   units[rd.loc_1] = { src: `/img/unit_${p1Bust}_${rd.unit_1}.png`, rotate: rd.unit_1 === 'cavalry' };
+   units[rd.loc_1] = { src: `/img/unit_${p1Bust}_${rd.unit_1}.webp`, rotate: rd.unit_1 === 'cavalry' };
   }
   if (rd.loc_2 && rd.unit_2 && p2Bust) {
-   units[rd.loc_2] = { src: `/img/unit_${p2Bust}_${rd.unit_2}.png`, rotate: rd.unit_2 === 'cannon' };
+   units[rd.loc_2] = { src: `/img/unit_${p2Bust}_${rd.unit_2}.webp`, rotate: rd.unit_2 === 'cannon' };
   }
   return units;
  });
@@ -249,7 +248,7 @@
  >
   <img
    class="absolute inset-0 w-full h-full z-10 pointer-events-none"
-   src="/img/map_frame.png"
+   src="/img/map_frame.webp"
    alt=""
   />
 
@@ -259,7 +258,7 @@
     : ''}"
    style="transform: scale({scale}); transform-origin: {zoomOrigin}"
   >
-   <img class="w-full" src="/img/map.png" alt="" />
+   <img class="w-full" src="/img/map.webp" alt="" />
 
    {#each locations as loc (loc.id)}
     {@const winner = locationWinners()[loc.id]}
@@ -307,14 +306,14 @@
        {#if selectedSlotId === slot.id && unitImage}
         <img
          class="w-full h-[75%] object-contain {unitsAnimated ? 'unit-drop' : ''} {unitRotate ? 'scale-x-[-1]' : ''}"
-         srcset={optimize(unitImage)}
+         src={unitImage}
          alt=""
         />
        {:else if placedUnits()[slot.id]}
         <img
          class="relative z-10 w-full h-[75%] object-contain transition-[filter] duration-700 ease-in-out {placedUnits()[slot.id].rotate ? 'scale-x-[-1]' : ''}"
          style={battlePhase ? getUnitStroke(slot.p) : ''}
-         srcset={optimize(placedUnits()[slot.id].src)}
+         src={placedUnits()[slot.id].src}
          alt=""
         />
        {/if}

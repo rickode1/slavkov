@@ -1,5 +1,4 @@
 <script>
- import { optimize } from "$lib/image";
  import { gameSession } from "$lib/stores/gameSession.js";
  import Star from "$components/svg/Star.svelte";
 
@@ -26,7 +25,7 @@
  <div class="relative">
   <img
    class="{small ? 'w-18 h-auto' : 'w-20 lg:w-32 h-auto'}"
-   srcset={optimize("/img/bust_" + player?.bust + ".png")}
+   src={"/img/bust_" + player?.bust + ".webp"}
    alt=""
   />
   {#if !small && !hideStars && playerNum !== null}

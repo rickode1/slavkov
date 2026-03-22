@@ -20,8 +20,8 @@
  // Initially: the bonus cards revealed for the first time on this page.
  let animatedCards = $state({ code_1: ['def', 'dmg', 'life'], code_2: ['def', 'dmg', 'life'] });
 
- const dmgImg = `<img src="/img/bonus_minigame_dmg.png" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
- const defImg = `<img src="/img/bonus_minigame_def.png" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
+ const dmgImg = `<img src="/img/bonus_minigame_dmg.webp" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
+ const defImg = `<img src="/img/bonus_minigame_def.webp" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
 
  const NOTIF_DURATION = 8000;
  const NOTIF_GAP = 600;

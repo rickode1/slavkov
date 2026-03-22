@@ -1,5 +1,4 @@
 <script>
- import { optimize } from "$lib/image";
  import { onMount, onDestroy } from "svelte";
  import * as m from "$lib/paraglide/messages.js";
  import { gameSession, sessionId } from "$lib/stores/gameSession.js";
@@ -190,15 +189,26 @@
  });
 </script>
 
+<svelte:head>
+  <link rel="preload" href="/img/mini_dmg_bg.webp" as="image" />
+  <link rel="preload" href="/img/map_frame.webp" as="image" />
+  <link rel="preload" href="/img/mini_dmg_soldier.webp" as="image" />
+  <link rel="preload" href="/img/mini_dmg_soldier.webp" as="image" type="image/webp" />
+  <link rel="preload" href="/img/mini_dmg_crosshair.webp" as="image" />
+  <link rel="preload" href="/img/mini_dmg_shot.webp" as="image" />
+  <link rel="preload" href="/img/mini_dmg_target_c.webp" as="image" />
+  <link rel="preload" href="/img/mini_dmg_soldier_fire.webm" as="video" type="video/webm" />
+</svelte:head>
+
 <div class="relative w-full z-10 -mt-[10vh]" style="height: 85vh; overflow: clip;">
   <img
     class="absolute inset-0 w-full h-full object-cover"
-    srcset={optimize("/img/mini_dmg_bg.png")}
+    src="/img/mini_dmg_bg.webp"
     alt=""
   />
   <img
     class="absolute inset-0 w-full h-full z-20 pointer-events-none"
-    srcset={optimize("/img/map_frame.png")}
+    src="/img/map_frame.webp"
     alt=""
   />
 
@@ -209,7 +219,7 @@
     <img
       class="w-124 object-contain absolute bottom-10 left-8"
       class:opacity-0={countdown === null}
-      src="/img/mini_dmg_soldier.png" alt=""
+      src="/img/mini_dmg_soldier.webp" alt=""
     />
 
     <video
@@ -242,7 +252,7 @@
          bind:this={crossEl}
          class="absolute pointer-events-none w-10 h-10 object-contain"
          style="transform: translate({crossX}px, {crossY}px) rotate(-{hbRotate}deg);"
-         srcset={optimize("/img/mini_dmg_crosshair.png")}
+         src="/img/mini_dmg_crosshair.webp"
          alt=""
        />
       {/if}
@@ -251,7 +261,7 @@
         <img
           class="absolute w-10 h-10 object-contain pointer-events-none z-20"
           style="transform: translate({crossX}px, {crossY}px);"
-          srcset={optimize("/img/mini_dmg_shot.png")}
+          src="/img/mini_dmg_shot.webp"
           alt=""
         />
       {/if}
@@ -260,7 +270,7 @@
     <!-- target image -->
     <img
       class="h-90 object-contain relative"
-      srcset={optimize("/img/mini_dmg_target_c.png")}
+      src="/img/mini_dmg_target_c.webp"
       alt=""
     />
   </div>

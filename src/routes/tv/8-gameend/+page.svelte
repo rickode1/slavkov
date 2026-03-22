@@ -1,6 +1,5 @@
 <script>
  import { onMount } from "svelte";
- import { optimize } from "$lib/image";
  import { gameSession, sessionId } from "$lib/stores/gameSession.js";
  import { positions } from "$lib/stores/positions.js";
  import PlayerBust from "$components/PlayerBust.svelte";
@@ -74,8 +73,8 @@
     label,
     winner: rd?.winner || null,
     winnerBustColor: rd?.winner ? `var(--color-bust-${$gameSession[`player_${rd.winner}`]?.bust})` : null,
-    unit1Img: p1Bust && unit1 ? `/img/unit_${p1Bust}_${unit1}.png` : null,
-    unit2Img: p2Bust && unit2 ? `/img/unit_${p2Bust}_${unit2}.png` : null,
+    unit1Img: p1Bust && unit1 ? `/img/unit_${p1Bust}_${unit1}.webp` : null,
+    unit2Img: p2Bust && unit2 ? `/img/unit_${p2Bust}_${unit2}.webp` : null,
     unit1Rotate: unit1 === 'cavalry',
     unit2Rotate: unit2 === 'cannon',
    };
@@ -137,7 +136,7 @@
         >
          <img
           class="h-24 object-contain {rd.unit1Rotate ? 'scale-x-[-1]' : ''}"
-          srcset={optimize(rd.unit1Img)}
+          src={rd.unit1Img}
           alt=""
          />
         </div>
@@ -149,7 +148,7 @@
         >
          <img
           class="h-24 object-contain {rd.unit2Rotate ? 'scale-x-[-1]' : ''}"
-          srcset={optimize(rd.unit2Img)}
+          src={rd.unit2Img}
           alt=""
          />
         </div>

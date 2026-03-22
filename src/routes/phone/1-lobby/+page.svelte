@@ -1,6 +1,5 @@
 <script>
  import { onMount } from "svelte";
- import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
  import { page } from "$app/state";
@@ -215,6 +214,10 @@
  }
 </script>
 
+<svelte:head>
+  <link rel="preload" href="/img/bust.webp" as="image" />
+</svelte:head>
+
 <Logo classes="max-w-32 mb-8" />
 
 {#if $gameSession}
@@ -255,7 +258,7 @@
          ? 'scale-105'
          : 'opacity-30 grayscale'}"
         style={isBustAvailable ? bustStrokeStyle() : ""}
-        srcset={optimize(`/img/bust_${selectedBust}.png`)}
+        src={`/img/bust_${selectedBust}.webp`}
         alt={selectedBust}
         in:fly={{ x: 100 * slideDirection, duration: 300 }}
         out:fly={{ x: -100 * slideDirection, duration: 300 }}
@@ -282,7 +285,7 @@
  {/if}
 {:else}
  <div class="flex flex-col items-center gap-4 mt-8">
-  <img class="w-30 h-auto" srcset={optimize("/img/bust.png")} alt="" />
+  <img class="w-30 h-auto" src="/img/bust.webp" alt="" />
   <p class="text-2xl text-center">{m.lobby_phone_cta()}</p>
   {#if loading}
    <div class="flex justify-center mt-4">

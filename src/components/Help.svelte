@@ -1,6 +1,4 @@
 <script>
- import { optimize } from "$lib/image";
-
  let { player = null, children, autoOpen = false } = $props();
 
  let open = $state(false);
@@ -16,6 +14,10 @@
  });
 </script>
 
+<svelte:head>
+  <link rel="preload" href="/img/help_bg.webp" as="image" />
+</svelte:head>
+
 <div class="fixed top-0 left-0 right-0 z-50 flex flex-col items-center pointer-events-none">
  <!-- Scroll body -->
  <button
@@ -27,7 +29,7 @@
  >
   <div class="relative w-full h-135 pb-20">
    <img
-    srcset={optimize("/img/help_bg.png")}
+    src="/img/help_bg.webp"
     alt=""
     class="w-full h-130 object-cover object-bottom absolute inset-0"
    />
