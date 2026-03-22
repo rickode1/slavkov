@@ -216,6 +216,9 @@
 
 <svelte:head>
   <link rel="preload" href="/img/bust.webp" as="image" />
+  <link rel="preload" href="/img/bust_at.webp" as="image" />
+  <link rel="preload" href="/img/bust_fr.webp" as="image" />
+  <link rel="preload" href="/img/bust_ru.webp" as="image" />
 </svelte:head>
 
 <Logo classes="max-w-32 mb-8" />
