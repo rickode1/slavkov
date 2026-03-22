@@ -219,7 +219,7 @@
     <img
       class="w-124 object-contain absolute bottom-10 left-8"
       class:opacity-0={countdown === null}
-      src="/img/mini_dmg_soldier.webp" alt=""
+      src="/img/mini_dmg_soldier_start.webp" alt=""
     />
 
     <video
