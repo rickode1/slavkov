@@ -1,6 +1,6 @@
 <script>
  import { onMount } from "svelte";
- import { gameSession } from "$lib/stores/gameSession.js";
+ import { gameSession, sessionId } from "$lib/stores/gameSession.js";
  import { notify } from "$lib/stores/notification.js";
  import { m } from "$lib/paraglide/messages.js";
  import CardBonuses from "$components/CardBonuses.svelte";
@@ -9,6 +9,14 @@
  import { playSound } from "$lib/audio.js";
 
  let mapRef = $state(null);
+
+ function setTimer(seconds) {
+  fetch('/api/session/timer', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ sessionId: $sessionId, seconds }),
+  }).catch(() => {});
+ }
 
  onMount(() => {
   const round = $gameSession?.current_round ?? 1;
@@ -23,6 +31,11 @@
   setTimeout(() => {
    notify(introMsg(), 10000, true);
   }, 5000);
+
+  // Start timer after notification dismisses (~15.5s)
+  setTimeout(() => {
+   setTimer(90);
+  }, 16000);
  });
 </script>
 

@@ -6,19 +6,19 @@ import { SUPABASE_SECRET_KEY } from '$env/static/private';
 const supabaseAdmin = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SECRET_KEY);
 
 export async function POST({ request }) {
-	const { sessionId, status } = await request.json();
+	const { sessionId, seconds } = await request.json();
 
 	if (!sessionId) {
 		return json({ error: 'Session ID is required' }, { status: 400 });
 	}
 
-	if (!status) {
-		return json({ error: 'Status is required' }, { status: 400 });
-	}
+	const timer_deadline = seconds
+		? new Date(Date.now() + seconds * 1000).toISOString()
+		: null;
 
 	const { data, error } = await supabaseAdmin
 		.from('sessions')
-		.update({ status, timer_deadline: null })
+		.update({ timer_deadline })
 		.eq('id', sessionId)
 		.select()
 		.single();

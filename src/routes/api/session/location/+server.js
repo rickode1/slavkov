@@ -52,6 +52,7 @@ export async function POST({ request }) {
 	const updateData = { [roundColumn]: updatedRoundData };
 	if (bothLocSelected && bothUnitsSelected) {
 		updateData.status = '4-bonuses';
+		updateData.timer_deadline = null;
 	}
 
 	const { data, error } = await supabaseAdmin

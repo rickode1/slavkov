@@ -1,5 +1,5 @@
 <script>
- import { onDestroy, onMount } from "svelte";
+ import { onMount } from "svelte";
  import {
   sessionId,
   gameSession,
@@ -7,7 +7,6 @@
  } from "$lib/stores/gameSession.js";
  import { optimize } from "$lib/image";
  import * as m from "$lib/paraglide/messages";
- import { startTimer, stopTimer } from "$lib/stores/timer.js";
  import { playSound } from "$lib/audio.js";
 
  import Help from "$components/Help.svelte";
@@ -50,23 +49,6 @@
  let rolled = $derived(animationDone && !!sessionRoll());
  let rollResult = $derived(rolled ? sessionRoll() : null);
 
- // Timer: 30s to roll the dice each time it's the active player's turn
- let prevTimerTurn = -1;
- $effect(() => {
-  const active = isActivePlayer;
-  const turn = turnNumber();
-  const hasRolled = !!sessionRoll();
-  if (active && !hasRolled) {
-   if (turn !== prevTimerTurn) {
-    prevTimerTurn = turn;
-    startTimer();
-   }
-  } else {
-   stopTimer();
-  }
- });
- onDestroy(() => stopTimer());
-
  $effect(() => {
   const showLookTV = !(isActivePlayer && showUI);
  });
@@ -81,9 +63,7 @@
    showUI = false;
    animationDone = false;
    playSound('/sounds/ding.mp3');
-   uiTimer = setTimeout(() => {
-    showUI = true;
-   }, 1000);
+   showUI = true;
   } else if (showUI) {
    if (uiTimer) clearTimeout(uiTimer);
    uiTimer = setTimeout(() => {
@@ -94,7 +74,6 @@
 
  async function rollDice(forcedRoll = null) {
   if (rolling) return;
-  stopTimer();
   rolling = true;
 
   const body = { sessionId: $sessionId, playerCode: $playerCode };

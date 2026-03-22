@@ -47,7 +47,7 @@ export async function POST({ request }) {
 
 			const { data, error } = await supabaseAdmin
 				.from('sessions')
-				.update({ [roundColumn]: updatedRoundData })
+				.update({ [roundColumn]: updatedRoundData, timer_deadline: new Date(Date.now() + 60 * 1000).toISOString() })
 				.eq('id', sessionId)
 				.select()
 				.single();
@@ -76,7 +76,7 @@ export async function POST({ request }) {
 
 				const { data, error } = await supabaseAdmin
 					.from('sessions')
-					.update({ [roundColumn]: updatedRoundData })
+					.update({ [roundColumn]: updatedRoundData, timer_deadline: new Date(Date.now() + 60 * 1000).toISOString() })
 					.eq('id', sessionId)
 					.select()
 					.single();
@@ -94,7 +94,7 @@ export async function POST({ request }) {
 
 			const { error: updateError } = await supabaseAdmin
 				.from('sessions')
-				.update({ [roundColumn]: updatedRoundData })
+				.update({ [roundColumn]: updatedRoundData, timer_deadline: null })
 				.eq('id', sessionId);
 
 			if (updateError) {
@@ -139,7 +139,7 @@ export async function POST({ request }) {
 
 	const { data, error } = await supabaseAdmin
 		.from('sessions')
-		.update({ [roundColumn]: updatedRoundData })
+		.update({ [roundColumn]: updatedRoundData, timer_deadline: new Date(Date.now() + 60 * 1000).toISOString() })
 		.eq('id', sessionId)
 		.select()
 		.single();

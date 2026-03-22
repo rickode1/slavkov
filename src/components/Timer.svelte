@@ -1,60 +1,71 @@
 <script>
- import { onDestroy } from 'svelte';
- import { get } from 'svelte/store';
+ import { gameSession } from '$lib/stores/gameSession.js';
  import { timerActive, timerRemaining } from '$lib/stores/timer.js';
- import { sessionId, gameSession } from '$lib/stores/gameSession.js';
  import { playSound } from '$lib/audio.js';
 
- let { classes = 'fixed right-4 bottom-4', onExpiry = null } = $props();
+ let { classes = 'fixed right-4 bottom-4', onExpiry = null, sound = true } = $props();
 
  let tikTak = null;
 
- $effect(() => {
-  const active = $timerActive;
-  if (active) {
-   const interval = setInterval(() => {
-    if (get(gameSession)?.debug) return;
-    timerRemaining.update((r) => {
-     if (r <= 1) {
-      clearInterval(interval);
-      timerActive.set(false);
-      tikTak?.stop();
-      tikTak = null;
-      handleExpiry();
-      return 0;
-     }
-     if (r === 20) {
-      tikTak = playSound('/sounds/tik-tak.mp3', { loop: true });
-     }
-     return r - 1;
-    });
-   }, 1000);
-   return () => {
-    clearInterval(interval);
-    tikTak?.stop();
-    tikTak = null;
-   };
-  }
- });
+ let deadline = $derived($gameSession?.timer_deadline ?? null);
 
- async function handleExpiry() {
-  if (onExpiry) {
-   onExpiry();
+ function calcRemaining(dl) {
+  if (!dl) return 0;
+  return Math.max(0, Math.ceil((new Date(dl).getTime() - Date.now()) / 1000));
+ }
+
+ $effect(() => {
+  const dl = deadline;
+
+  // Clean up previous sounds
+  tikTak?.stop();
+  tikTak = null;
+
+  if (!dl) {
+   timerActive.set(false);
+   timerRemaining.set(0);
    return;
   }
 
-  const id = $sessionId;
-  if (!id) return;
-  try {
-   await fetch('/api/session/status', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sessionId: id, status: '0-abandoned' }),
-   });
-  } catch (e) {
-   console.error('Failed to abandon session on timer expiry', e);
+  const initial = calcRemaining(dl);
+  if (initial <= 0) {
+   timerActive.set(false);
+   timerRemaining.set(0);
+   return;
   }
- }
+
+  timerRemaining.set(initial);
+  timerActive.set(true);
+
+  if (sound && initial <= 20) {
+   tikTak = playSound('/sounds/tik-tak.mp3', { loop: true });
+  }
+
+  const interval = setInterval(() => {
+   if ($gameSession?.debug) return;
+   const r = calcRemaining(dl);
+   timerRemaining.set(r);
+
+   if (r <= 0) {
+    clearInterval(interval);
+    timerActive.set(false);
+    tikTak?.stop();
+    tikTak = null;
+    if (onExpiry) onExpiry();
+    return;
+   }
+
+   if (sound && r === 20 && !tikTak) {
+    tikTak = playSound('/sounds/tik-tak.mp3', { loop: true });
+   }
+  }, 1000);
+
+  return () => {
+   clearInterval(interval);
+   tikTak?.stop();
+   tikTak = null;
+  };
+ });
 </script>
 
 {#if $timerActive}

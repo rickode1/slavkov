@@ -38,6 +38,7 @@ export async function POST({ request }) {
 	// If other player is ready, update status and determine starting player
 	if (otherPlayerReady) {
 		updateData.status = '2-onboarding';
+		updateData.timer_deadline = null;
 
 		// Calculate stat sums (dmg + def + life) for both players
 		const currentStatSum = (dmg || 0) + (def || 0) + (life || 0);

@@ -107,7 +107,7 @@ export async function POST({ request }) {
 
 	const { data, error } = await supabaseAdmin
 		.from('sessions')
-		.update({ [roundColumn]: updatedRoundData })
+		.update({ [roundColumn]: updatedRoundData, timer_deadline: null })
 		.eq('id', sessionId)
 		.select()
 		.single();

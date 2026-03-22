@@ -27,8 +27,18 @@ export async function POST({ request }) {
 	const usedCode = String(session.code_1) === String(code) ? 'code_1' : 'code_2';
 	const otherCode = usedCode === 'code_1' ? 'code_2' : 'code_1';
 
-	// Clear the used code
+	// Clear the used code and set/extend timer for lobby
 	const updateData = { [usedCode]: null };
+
+	if (!session.timer_deadline) {
+		// First player to join: 120s
+		updateData.timer_deadline = new Date(Date.now() + 120 * 1000).toISOString();
+	} else {
+		// Second player to join: extend by 60s from now
+		const current = new Date(session.timer_deadline).getTime();
+		const extended = Math.max(current, Date.now()) + 60 * 1000;
+		updateData.timer_deadline = new Date(extended).toISOString();
+	}
 
 	const { error: updateError } = await supabaseAdmin
 		.from('sessions')

@@ -16,6 +16,7 @@
  import LangSwitcher from "$components/LangSwitcher.svelte";
  import ErrorIcon from "$components/ErrorIcon.svelte";
  import Notification from "$components/Notification.svelte";
+ import Timer from "$components/Timer.svelte";
 
  let { children } = $props();
 
@@ -37,6 +38,20 @@
   if (autoCloseTimer) {
    clearTimeout(autoCloseTimer);
    autoCloseTimer = null;
+  }
+ }
+
+ async function handleTimerExpiry() {
+  const id = $sessionId;
+  if (!id) return;
+  try {
+   await fetch('/api/session/status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId: id, status: '0-abandoned' }),
+   });
+  } catch (e) {
+   console.error('Failed to abandon session on timer expiry', e);
   }
  }
 
@@ -136,6 +151,9 @@
  class="max-w-480 relative px-10 h-screen mx-auto flex flex-col items-center"
 >
  <Notification />
+ {#if !page.url.pathname.includes('8-gameend') && !page.url.pathname.includes('5-minigames')}
+  <Timer onExpiry={handleTimerExpiry} classes="fixed left-1/2 -translate-x-1/2 bottom-6" />
+ {/if}
  
  {#key $currentLocale}
   {@render children()}

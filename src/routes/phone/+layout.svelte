@@ -115,5 +115,5 @@
   {@render children()}
  {/key}
  <LangSwitcher classes="fixed left-4 bottom-4" />
- <Timer />
+ <Timer sound={false} />
 </main>

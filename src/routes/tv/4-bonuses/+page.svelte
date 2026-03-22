@@ -3,7 +3,7 @@
  import { onMount } from "svelte";
  import { notify } from '$lib/stores/notification.js';
  import { nickHtml } from '$lib/constants.js';
- import { gameSession } from "$lib/stores/gameSession.js";
+ import { gameSession, sessionId } from "$lib/stores/gameSession.js";
  import PlayerBust from "$components/PlayerBust.svelte";
  import CardBonuses from "$components/CardBonuses.svelte";
  import Map from "$components/Map.svelte";
@@ -14,11 +14,21 @@
  const unitImg = `<img src="/img/bonus_unit.png" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
  const locImg  = `<img src="/img/bonus_loc.png"  class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
 
+ function setTimer(seconds) {
+  fetch('/api/session/timer', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ sessionId: $sessionId, seconds }),
+  }).catch(() => {});
+ }
+
  onMount(() => {
 
   playSound('/sounds/piece-move.mp3');
 
   setTimeout(() => { playSound('/sounds/piece-move.mp3') }, 500);
+
+  let notifDuration = 9000;
 
   setTimeout(() => {
    const session = $gameSession;
@@ -51,12 +61,18 @@
     }
    }
 
-   if (queue.length > 0) {    
+   if (queue.length > 0) {
+    notifDuration = (queue.length * 1000) + 9000;
     const merged = queue.map(i => i.html).join('<br><br>');
-    notify(merged + '<br><br>' + m.pick_bonuses(), (queue.length * 1000) + 9000, true);
+    notify(merged + '<br><br>' + m.pick_bonuses(), notifDuration, true);
    } else {
-    notify(m.pick_bonuses(), 9000, true);
+    notify(m.pick_bonuses(), notifDuration, true);
    }
+
+   // Start timer after notification dismisses
+   setTimeout(() => {
+    setTimer(60);
+   }, notifDuration + 500);
   }, 4000);
  });
 

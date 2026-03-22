@@ -37,7 +37,7 @@ export async function POST({ request }) {
 	if (nextRound > 3) {
 		const { data, error } = await supabaseAdmin
 			.from('sessions')
-			.update({ status: '8-gameend' })
+			.update({ status: '8-gameend', timer_deadline: null })
 			.eq('id', sessionId)
 			.select()
 			.single();
@@ -57,6 +57,7 @@ export async function POST({ request }) {
 		.update({
 			current_round: nextRound,
 			status: '3-deployment',
+			timer_deadline: null,
 			[nextRoundColumn]: {
 				...existingNextRound,
 				current_turn: {

@@ -23,7 +23,7 @@
   </div>
  {/if}
 
-<div class="absolute left-1/2 -translate-x-20 bottom-8 w-40">
+<div class="absolute left-5 top-54 w-40">
  <p class="text-center text-sm mb-2">{@html m.wifi()}</p>
  <img
   class="w-30 h-auto mx-auto"

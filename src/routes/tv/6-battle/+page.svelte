@@ -1,6 +1,6 @@
 <script>
  import { onMount } from "svelte";
- import { gameSession } from "$lib/stores/gameSession.js";
+ import { gameSession, sessionId } from "$lib/stores/gameSession.js";
  import PlayerBust from "$components/PlayerBust.svelte";
  import CardBonuses from "$components/CardBonuses.svelte";
  import Map from "$components/Map.svelte";
@@ -9,6 +9,14 @@
  let mapRef = $state(null);
  let showBattle = $state(false);
  let highlightCardTypes = $state(new Set());
+
+ function setTimer(seconds) {
+  fetch('/api/session/timer', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ sessionId: $sessionId, seconds }),
+  }).catch(() => {});
+ }
 
  let activePlayerCode = $derived(() => {
   const round = $gameSession?.current_round || 1;
@@ -48,6 +56,7 @@
 
  function handleBattleReady() {
   showBattle = true;
+  setTimer(60);
  }
 
  function handleHighlightCard(type) {

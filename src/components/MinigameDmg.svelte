@@ -2,12 +2,27 @@
  import { optimize } from "$lib/image";
  import { onMount, onDestroy } from "svelte";
  import * as m from "$lib/paraglide/messages.js";
- import { gameSession } from "$lib/stores/gameSession.js";
- import { startTimer, stopTimer } from "$lib/stores/timer.js";
+ import { gameSession, sessionId } from "$lib/stores/gameSession.js";
  import Timer from "$components/Timer.svelte";
 
  export let onResult = null;
  export let debug = false;
+
+ function setTimer(seconds) {
+  fetch('/api/session/timer', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ sessionId: $sessionId, seconds }),
+  }).catch(() => {});
+ }
+
+ function clearTimer() {
+  fetch('/api/session/timer', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ sessionId: $sessionId, seconds: null }),
+  }).catch(() => {});
+ }
 
  // --- state ---
  let stopped = false;
@@ -116,10 +131,10 @@
    }
 
    if (hit && onResult && !debug && !resultFired) {
-     stopTimer();
+     clearTimer();
      restartTimeout = setTimeout(() => { resultFired = true; onResult(true); }, 3000);
    } else if (onResult && !debug && !resultFired) {
-     stopTimer();
+     clearTimer();
      restartTimeout = setTimeout(() => { resultFired = true; onResult(false); }, 3000);
    } else {
      restartTimeout = setTimeout(restart, 3000);
@@ -150,7 +165,7 @@
        countdown = null;
        showCrosshair = true;
        animFrame = requestAnimationFrame(moveCross);
-       if (onResult && !debug) startTimer(30);
+       if (onResult && !debug) setTimer(30);
      }
    }, 1000);
  }
@@ -172,7 +187,6 @@
    cancelAnimationFrame(animFrame);
    clearTimeout(restartTimeout);
    clearInterval(countdownInterval);
-   stopTimer();
  });
 </script>
 

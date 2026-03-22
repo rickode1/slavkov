@@ -1,5 +1,5 @@
 <script>
- import { onMount, onDestroy } from "svelte";
+ import { onMount } from "svelte";
  import {
   sessionId,
   gameSession,
@@ -8,7 +8,6 @@
  import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
- import { startTimer, stopTimer, resetTimer } from "$lib/stores/timer.js";
  import { playSound } from "$lib/audio.js";
 
 
@@ -62,7 +61,6 @@
 
  async function handleDeploy() {
   if (!selectedUnit || deploying) return;
-  resetTimer();
   deploying = true;
   try {
    const response = await fetch("/api/session/deploy", {
@@ -116,11 +114,8 @@
   onMount(() => {
   setTimeout(() => {
    introDone = true;
-   startTimer();
   }, 10000);
  });
-
- onDestroy(() => stopTimer());
 
  $effect(() => {
   if (introDone) playSound('/sounds/ding.mp3');
@@ -145,7 +140,6 @@
 
  async function handleDeployLocation() {
   if (!selectedSlot || deployingLocation) return;
-  stopTimer();
   deployingLocation = true;
   try {
    const response = await postLocation();
@@ -259,7 +253,7 @@
  </div>
 {/if}
 {:else}
- <button ondblclick={() => { introDone = true; startTimer(); }}>
+ <button ondblclick={() => { introDone = true; }}>
   <LookTV />
  </button>
 {/if}

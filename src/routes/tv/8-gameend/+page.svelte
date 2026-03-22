@@ -7,8 +7,15 @@
  import Logo from "$components/svg/Logo.svelte";
  import Star from "$components/svg/Star.svelte";
  import Timer from "$components/Timer.svelte";
- import { startTimer, stopTimer } from "$lib/stores/timer.js";
  import {m} from "$lib/paraglide/messages.js";
+
+ function setTimer(seconds) {
+  fetch('/api/session/timer', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ sessionId: $sessionId, seconds }),
+  }).catch(() => {});
+ }
 
  async function finishSession() {
   const id = $sessionId;
@@ -87,7 +94,7 @@
   const afterRounds = 2 * roundDelay + loserDelay + 1200;
   setTimeout(() => { loserRevealed = true; }, afterRounds);
   setTimeout(() => { winnerCelebrate = true; }, afterRounds + 1200);
-  setTimeout(() => { showTimer = true; startTimer(30); }, afterRounds + 2400);
+  setTimeout(() => { showTimer = true; setTimer(30); }, afterRounds + 2400);
  });
 </script>
 

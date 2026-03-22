@@ -1,5 +1,5 @@
 <script>
- import { onMount, onDestroy } from "svelte";
+ import { onMount } from "svelte";
  import {
   sessionId,
   gameSession,
@@ -8,7 +8,6 @@
  import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
- import { startTimer, stopTimer } from "$lib/stores/timer.js";
  import { playSound } from "$lib/audio.js";
 
 
@@ -91,10 +90,8 @@
 
   setTimeout(() => {
    introDone = true;
-   startTimer();
   }, delay);
  });
- onDestroy(() => stopTimer());
 
  function toggleCard(id) {
   const next = new Set(selectedCards);
@@ -126,7 +123,6 @@
 
  async function submitBonuses() {
   if (submitting) return;
-  stopTimer();
   submitting = true;
 
   // Count selected cards per type
@@ -199,7 +195,7 @@
 
 {/if}
 {:else}
- <button ondblclick={() => { introDone = true; startTimer(); }}>
+ <button ondblclick={() => { introDone = true; }}>
   <LookTV />
  </button>
 {/if}
