@@ -87,7 +87,7 @@
    fill="black"
   />
  </svg>
- <span class="mt-2">
+ <span class="mt-2 font-bold">
   {$timerRemaining}s
  </span>
 </div>

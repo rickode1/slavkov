@@ -8,8 +8,8 @@
 </script>
 
 <div
- class="flex items-center justify-between gap-2.5 rounded-lg px-3 py-1.5 transition-colors duration-300"
- style={active ? `background-color: ${activeBg}; color: white` : ''}
+ class="flex items-center justify-between gap-2.5 pl-3 pr-5 py-1.5 transition-colors duration-300"
+ style="{active ? `background-color: ${activeBg}; color: white` : ''}"
 >
 
  <div class="flex flex-col items-center min-w-15">

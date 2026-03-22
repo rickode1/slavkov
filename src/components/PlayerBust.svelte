@@ -39,6 +39,6 @@
   {/if}
  </div>
  {#if !small}
- <p class="text-lg lg:text-2xl text-center">{player?.nick}</p>
+ <p class="text-lg lg:text-2xl font-bold text-center" style={`color: ${bustColor}`}>{player?.nick}</p>
  {/if}
 </div>

@@ -295,7 +295,7 @@
    
 
    <div class="absolute -translate-x-1/2 -translate-y-1/2 {!diceRolling && !diceArchClass ? 'dice-float' : ''} {diceArchClass}"
-      style={diceArchClass ? '' : `left: ${diceSide === 2 ? '80%' : '20%'}; top: 55%;`}>
+      style={diceArchClass ? '' : `left: ${diceSide === 2 ? '95%' : '15%'}; top: 55%;`}>
       <div class="relative flex items-center justify-center">
        <img
         class="h-48 object-contain transition-[filter] duration-700 {diceRolling ? 'dice-rolling' : ''}"

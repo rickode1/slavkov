@@ -15,7 +15,7 @@
  } = $props();
 </script>
 
-<div class="flex {flip ? 'flex-row-reverse' : 'flex-row'} items-start gap-6">
+<div class="flex {flip ? 'flex-row-reverse' : 'flex-row'} items-center gap-6">
  {#if unitImg}
   <img
    class="h-20 lg:h-34 w-auto object-contain transition-all duration-300
