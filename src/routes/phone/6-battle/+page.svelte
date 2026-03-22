@@ -44,6 +44,7 @@
  let rolling = $state(false);
  let animationDone = $state(false);
  let showUI = $state(false);
+ let lastDingKey = '';
 
  let rolled = $derived(animationDone && !!sessionRoll());
  let rollResult = $derived(rolled ? sessionRoll() : null);
@@ -57,11 +58,16 @@
  $effect(() => {
   const active = isActivePlayer;
   const turn = turnNumber();
+  const round = $gameSession?.current_round || 1;
   if (active && !sessionRoll()) {
    if (uiTimer) clearTimeout(uiTimer);
    showUI = false;
    animationDone = false;
-   playSound('/sounds/ding.mp3');
+   const dingKey = `${round}-${turn}`;
+   if (lastDingKey !== dingKey) {
+    lastDingKey = dingKey;
+    playSound('/sounds/ding.mp3');
+   }
    showUI = true;
   } else if (showUI) {
    if (uiTimer) clearTimeout(uiTimer);
