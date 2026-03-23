@@ -23,7 +23,7 @@
  const dmgImg = `<img src="/img/bonus_minigame_dmg.webp" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
  const defImg = `<img src="/img/bonus_minigame_def.webp" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
 
- const NOTIF_DURATION = 8000;
+ const NOTIF_DURATION = 10000;
  const NOTIF_GAP = 600;
 
  function getAttackerCode(rd) {

@@ -62,7 +62,7 @@
    }
 
    if (queue.length > 0) {
-    notifDuration = (queue.length * 1000) + 9000;
+    notifDuration = (queue.length * 2000) + 10000;
     const merged = queue.map(i => i.html).join('<br><br>');
     notify(merged + '<br><br>' + m.pick_bonuses(), notifDuration, true);
    } else {

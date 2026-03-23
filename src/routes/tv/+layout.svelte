@@ -165,6 +165,15 @@
   showAll={page.url.pathname === "/tv"}
  />
 
+ {#if page.url.pathname === "/tv" && !$sessionId}
+  <button
+   class="absolute right-8 bottom-10 cursor-pointer"
+   onclick={() => window?.player?.playFolder(0)}
+  >
+   <ErrorIcon classes="w-14 lg:w-20 h-14 lg:h-20" />
+  </button>
+ {/if}
+
  {#if $sessionId && page.url.pathname !== "/tv"}
   <div class="absolute right-8 bottom-6 flex items-start">
    {#if cancelExpanded}

@@ -109,11 +109,11 @@
 </script>
 
 <main
- class="container relative px-4 pt-4 pb-16 min-h-screen mx-auto flex flex-col items-center"
+ class="container relative px-4 pt-4 pb-16 min-h-dvh mx-auto flex flex-col items-center"
 >
  {#key $currentLocale}
   {@render children()}
  {/key}
- <LangSwitcher classes="fixed left-4 bottom-4" />
+ <LangSwitcher classes="fixed left-4 bottom-10" />
  <Timer sound={false} />
 </main>

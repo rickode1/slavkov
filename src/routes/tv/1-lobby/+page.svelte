@@ -34,3 +34,12 @@
   alt=""
  />
 </div>
+
+<div class="absolute top-58 right-8 w-40">
+ <p class="text-center text-sm mb-2">{@html m.ts()}</p>
+ <img
+  class="w-30 h-auto mx-auto"
+  src="/img/wifi.webp"
+  alt=""
+ />
+</div>

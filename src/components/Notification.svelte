@@ -55,7 +55,7 @@
     class="w-full h-130 object-cover object-bottom"
    />
    <div class="absolute inset-0 w-full flex flex-col items-center justify-center px-24 pb-38 pt-6">
-    <p class="text-lg text-center">{@html currentMessage}</p>
+    <p class="text-xl text-center">{@html currentMessage}</p>
     {#if showLookPhone}
      <LookPhone />
     {/if}

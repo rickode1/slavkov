@@ -20,7 +20,6 @@
 
  onMount(() => {
   const round = $gameSession?.current_round ?? 1;
-  const introMsg = [m.intro_1, m.intro_2, m.intro_3][round - 1] ?? m.intro_1;
 
   if (round === 1) playSound('/sounds/ding.mp3');
 
@@ -29,10 +28,10 @@
   }, 4000);
 
   setTimeout(() => {
-   notify(introMsg(), 10000, true);
+   notify(m.intro, 10000, true);
   }, 5000);
 
-  // Start timer after notification dismisses (~15.5s)
+  // Start timer after notification dismisses
   setTimeout(() => {
    setTimer(90);
   }, 16000);

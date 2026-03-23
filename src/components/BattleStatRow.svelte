@@ -34,6 +34,6 @@
 
  <div class="flex flex-col items-center leading-none ml-2">
   <span class="lining-nums font-mono text-3xl">{minimum}</span>
-  <span class="text-sm text-center leading-[1.1]">obtížnost<br>hodu</span>
+  <span class="text-sm text-center leading-[1.1]">{@html m.battle_roll_difficulty()}</span>
  </div>
 </div>
