@@ -28,13 +28,13 @@
   }, 4000);
 
   setTimeout(() => {
-   notify(m.intro, 10000, true);
+   notify(m.intro(), 8000, true);
   }, 5000);
 
   // Start timer after notification dismisses
   setTimeout(() => {
    setTimer(90);
-  }, 16000);
+  }, 15000);
  });
 </script>
 

@@ -10,8 +10,8 @@
  let countdown = null;
  let countdownInterval = null;
 
- let groundSpeed = 7;
- let obstacleInterval = 200;
+ let groundSpeed = 10;
+ let obstacleInterval = 170;
  let jumpHeight = 300;
  let jumpDuration = 1500;
 
