@@ -54,55 +54,49 @@
   messages = [{ id: _msgId++, text: img + text }, ...prev];
  }
 
- let roundData = $derived(() => {
+ let roundData = $derived.by(() => {
   if (!$gameSession) return null;
   const round = $gameSession.current_round || 1;
   return $gameSession[`round_${round}`] || null;
  });
 
- let rd = $derived(roundData());
+ let rd = $derived(roundData);
 
- let startingPlayer = $derived(roundData()?.current_turn?.player || 1);
+ let startingPlayer = $derived(roundData?.current_turn?.player || 1);
  let defenderNum = $derived(startingPlayer === 1 ? 2 : 1);
- let role = $derived(roundData()?.current_turn?.role || 'dmg');
+ let role = $derived(roundData?.current_turn?.role || 'dmg');
  let baseDifficulty = $derived(role === 'def' ? 14 : 10);
- let turnNumber = $derived(roundData()?.current_turn?.number ?? 0);
+ let turnNumber = $derived(roundData?.current_turn?.number ?? 0);
 
- let currentRoll = $derived(() => {
-  const rd = roundData();
-  const roll = rd?.turns?.[turnNumber]?.roll;
+ let currentRoll = $derived.by(() => {
+  const roll = roundData?.turns?.[turnNumber]?.roll;
   return roll ?? null;
  });
 
- let currentTurnData = $derived(() => {
-  const rd = roundData();
-  return rd?.turns?.[turnNumber] || null;
+ let currentTurnData = $derived.by(() => {
+  return roundData?.turns?.[turnNumber] || null;
  });
 
- let player1UnitImg = $derived(() => {
-  const rd = roundData();
-  if (!rd || !$gameSession) return null;
+ let player1UnitImg = $derived.by(() => {
+  if (!roundData || !$gameSession) return null;
   const bust = $gameSession.player_1?.bust;
-  const unit = rd.unit_1;
+  const unit = roundData.unit_1;
   return bust && unit ? `/img/unit_${bust}_${unit}.webp` : null;
  });
 
- let player1UnitRotate = $derived(() => {
-  const rd = roundData();
-  return rd?.unit_1 === 'cavalry';
+ let player1UnitRotate = $derived.by(() => {
+  return roundData?.unit_1 === 'cavalry';
  });
 
- let player2UnitImg = $derived(() => {
-  const rd = roundData();
-  if (!rd || !$gameSession) return null;
+ let player2UnitImg = $derived.by(() => {
+  if (!roundData || !$gameSession) return null;
   const bust = $gameSession.player_2?.bust;
-  const unit = rd.unit_2;
+  const unit = roundData.unit_2;
   return bust && unit ? `/img/unit_${bust}_${unit}.webp` : null;
  });
 
- let player2UnitRotate = $derived(() => {
-  const rd = roundData();
-  return rd?.unit_2 === 'cannon';
+ let player2UnitRotate = $derived.by(() => {
+  return roundData?.unit_2 === 'cannon';
  });
 
  let player1Stroke = $derived(
@@ -126,7 +120,7 @@
  });
 
  $effect(() => {
-  const roll = currentRoll();
+  const roll = currentRoll;
   const tn = turnNumber;
   if (roll != null && processingTurn !== tn) {
    untrack(() => {
@@ -151,12 +145,12 @@
     : (role === 'dmg' ? m.battle_attack_failure({ name, roll: boldRoll }) : m.battle_defense_failure({ name, roll: boldRoll }))
   );
 
-  const turnData = currentTurnData();
+  const turnData = currentTurnData;
   if (turnData?.unit_retry) {
    await sleep(1500);
    addMessage(m.battle_unit_retry({ name }));
    untrack(() => onHighlightCard?.('unit'));
-   activeCard = { type: 'unit', value: roundData()?.[`bonus_unit_${startingPlayer}`] || 1 };
+   activeCard = { type: 'unit', value: roundData?.[`bonus_unit_${startingPlayer}`] || 1 };
    await sleep(2000);
    activeCard = null;
    await sleep(500);
@@ -211,9 +205,9 @@
  }
 
  async function startTurnSequence() {
-  const rd = roundData();
+  const rd = roundData;
   if (!rd) return;
-  if (currentRoll()) return;
+  if (currentRoll) return;
 
   displayedDifficulty = baseDifficulty;
 
@@ -269,8 +263,8 @@
    <!-- Top row: unit + stats for each player -->
    <div class="flex justify-between items-start">
     <BattlePlayer
-     unitImg={player1UnitImg()}
-     unitRotate={player1UnitRotate()}
+     unitImg={player1UnitImg}
+     unitRotate={player1UnitRotate}
      stroke={player1Stroke}
      active={startingPlayer === 1}
      bust={$gameSession?.player_1?.bust}
@@ -280,8 +274,8 @@
      {role}
     />
     <BattlePlayer
-     unitImg={player2UnitImg()}
-     unitRotate={player2UnitRotate()}
+     unitImg={player2UnitImg}
+     unitRotate={player2UnitRotate}
      stroke={player2Stroke}
      active={startingPlayer === 2}
      bust={$gameSession?.player_2?.bust}
@@ -294,11 +288,11 @@
    </div>
    
 
-   <div class="absolute -translate-x-1/2 -translate-y-1/2 {!diceRolling && !diceArchClass ? 'dice-float' : ''} {diceArchClass}"
-      style={diceArchClass ? '' : `left: ${diceSide === 2 ? '95%' : '15%'}; top: 55%;`}>
+   <div class="h-48 w-48 absolute -translate-x-1/2 -translate-y-1/2 {!diceRolling && !diceArchClass ? 'dice-float' : ''} {diceArchClass}"
+      style={diceArchClass ? '' : `left: ${diceSide === 2 ? '85%' : '15%'}; top: 55%;`}>
       <div class="relative flex items-center justify-center">
        <img
-        class="h-48 object-contain transition-[filter] duration-700 {diceRolling ? 'dice-rolling' : ''}"
+        class="h-48 w-48 object-contain transition-[filter] duration-700 {diceRolling ? 'dice-rolling' : ''}"
         style={rollOutcome === 'success' ? 'filter: drop-shadow(0 0 18px gold) drop-shadow(0 0 36px goldenrod)' : rollOutcome === 'fail' ? 'filter: drop-shadow(0 0 18px #111) drop-shadow(0 0 36px #000)' : 'filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4))'}
         src="/img/dice.webp"
         alt="Dice"

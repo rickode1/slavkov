@@ -18,21 +18,21 @@
   }).catch(() => {});
  }
 
- let activePlayerCode = $derived(() => {
+ let activePlayerCode = $derived.by(() => {
   const round = $gameSession?.current_round || 1;
   const rd = $gameSession?.[`round_${round}`];
   const sp = rd?.current_turn?.player || 1;
   return sp === 1 ? "code_1" : "code_2";
  });
 
- let activeRole = $derived(() => {
+ let activeRole = $derived.by(() => {
   const round = $gameSession?.current_round || 1;
   const rd = $gameSession?.[`round_${round}`];
   return rd?.current_turn?.role || 'dmg';
  });
 
- let filteredHighlights = $derived(() => {
-  const role = activeRole();
+ let filteredHighlights = $derived.by(() => {
+  const role = activeRole;
   const allowed = new Set(['loc', role]);
   if (role === 'dmg') allowed.add('unit');
   if (role === 'def') allowed.add('life');
@@ -68,12 +68,12 @@
  <div class="absolute left-10 top-6 flex w-[calc(100%-5rem)] justify-between">
   <div class="flex flex-col items-center">
    <PlayerBust player={$gameSession.player_1} />
-   <CardBonuses playerCode="code_1" animated={false} highlightTypes={activePlayerCode() === "code_1" ? filteredHighlights() : null} />
+   <CardBonuses playerCode="code_1" animated={false} highlightTypes={activePlayerCode === "code_1" ? filteredHighlights : null} />
   </div>
 
   <div class="flex flex-col items-center">
    <PlayerBust player={$gameSession.player_2} />
-   <CardBonuses playerCode="code_2" animated={false} highlightTypes={activePlayerCode() === "code_2" ? filteredHighlights() : null} />
+   <CardBonuses playerCode="code_2" animated={false} highlightTypes={activePlayerCode === "code_2" ? filteredHighlights : null} />
   </div>
  </div>
 

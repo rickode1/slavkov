@@ -22,7 +22,7 @@
  let introDone = $state(false);
 
  // Get current player's data
- let myPlayer = $derived(() => {
+ let myPlayer = $derived.by(() => {
   if (!$gameSession) return null;
   return $playerCode === "code_1"
    ? $gameSession.player_1
@@ -31,9 +31,9 @@
 
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
 
- let strokeSmStyle = $derived(() => strokeStyle(myPlayer()?.bust, 3));
+ let strokeSmStyle = $derived.by(() => strokeStyle(myPlayer?.bust, 3));
 
- let usedBonuses = $derived(() => {
+ let usedBonuses = $derived.by(() => {
   if (!$gameSession) return { def: 0, dmg: 0, life: 0 };
   const suffix = $playerCode === "code_1" ? "_1" : "_2";
   const round = $gameSession.current_round || 1;
@@ -48,11 +48,11 @@
   return used;
  });
 
- let cardGroups = $derived(() => {
-  const player = myPlayer();
+ let cardGroups = $derived.by(() => {
+  const player = myPlayer;
   if (!player) return [];
   const types = ["def", "dmg", "life"];
-  const used = usedBonuses();
+  const used = usedBonuses;
   return types
    .map((type) => {
     const count = parseInt(player[type]) || 0;
@@ -85,8 +85,8 @@
   }
 
   const delay = bonusCount > 0
-   ? 4000 + 10000 + (bonusCount * 4000)
-   : 14000;
+   ? 4000 + 6000 + (bonusCount * 4000)
+   : 12000;
 
   setTimeout(() => {
    introDone = true;
@@ -148,17 +148,17 @@
  }
 </script>
 
-<Help player={myPlayer()} autoOpen={introDone}>
+<Help player={myPlayer} autoOpen={introDone}>
   <p class="text-lg">{m.pick_bonuses_mobile()}</p>
 </Help>
 
 {#if introDone}
 {#if $gameSession}
  <div class="pt-16 pb-6 w-full">
- {#if cardGroups().length === 0}
+ {#if cardGroups.length === 0}
   <p class="text-xl text-center mt-4">{m.no_bonuses()}</p>
  {:else}
-  {#each cardGroups() as group, gi}
+  {#each cardGroups as group, gi}
    <div class="flex flex-wrap items-start w-full gap-1 mt-2">
     {#each group as card}
      <Card
@@ -167,7 +167,7 @@
       small
       selected={selectedCards.has(card.id)}
       disabled={card.disabled}
-      strokeStyle={strokeSmStyle()}
+      strokeStyle={strokeSmStyle}
       onclick={() => !card.disabled && toggleCard(card.id)}
      />
     {/each}

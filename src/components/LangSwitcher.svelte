@@ -8,7 +8,7 @@
  let shouldAnimate = $state(false);
  let expanded = $derived(showAll || manuallyExpanded);
 
- let orderedLocales = $derived(() => {
+ let orderedLocales = $derived.by(() => {
   const current = $currentLocale;
   if (showAll) {
    return locales;
@@ -35,7 +35,7 @@
 </script>
 
 <div role="button" class="flex items-center {classes}" tabindex="0">
- {#each orderedLocales() as locale, i}
+ {#each orderedLocales as locale, i}
   {#if expanded || locale === $currentLocale}
    <button
     class="text-white bg-primary rounded-full uppercase text-2xl lg:text-4xl w-14 lg:w-20 h-14 lg:h-20 inline-flex items-center justify-center cursor-pointer text-center {i ===

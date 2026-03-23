@@ -53,7 +53,7 @@
  let savingProfile = $state(false);
 
  // Get opponent's player data
- let opponentPlayer = $derived(() => {
+ let opponentPlayer = $derived.by(() => {
   if (!$gameSession) return null;
   return $playerCode === "code_1"
    ? $gameSession.player_2
@@ -61,8 +61,8 @@
  });
 
  // Determine available busts based on opponent's selection
- let availableBusts = $derived(() => {
-  const opponent = opponentPlayer();
+ let availableBusts = $derived.by(() => {
+  const opponent = opponentPlayer;
   if (!opponent?.bust) {
    // Opponent hasn't picked yet - all available
    return busts;
@@ -75,12 +75,12 @@
   return ["fr"];
  });
 
- let isBustAvailable = $derived(availableBusts().includes(selectedBust));
+ let isBustAvailable = $derived(availableBusts.includes(selectedBust));
  let canConfirmNick = $derived(nick.trim().length > 0);
  let canConfirmBust = $derived(isBustAvailable);
 
  // Get current player's data
- let myPlayer = $derived(() => {
+ let myPlayer = $derived.by(() => {
   if (!$gameSession) return null;
   return $playerCode === "code_1"
    ? $gameSession.player_1
@@ -88,9 +88,9 @@
  });
 
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
- let profileSaved = $derived(myPlayer()?.bust && myPlayer()?.nick);
+ let profileSaved = $derived(myPlayer?.bust && myPlayer?.nick);
 
- let bustStrokeStyle = $derived(() => strokeStyle(selectedBust));
+ let bustStrokeStyle = $derived(strokeStyle(selectedBust));
 
  function prevBust() {
   slideDirection = -1;
@@ -115,7 +115,7 @@
  });
 
  $effect(() => {
-  const opponent = opponentPlayer();
+  const opponent = opponentPlayer;
   if (opponent?.bust === "fr" && selectedBustIndex === 0) {
    selectedBustIndex = 1;
   }
@@ -225,7 +225,7 @@
 
 {#if $gameSession}
  {#if profileSaved}
-  <PlayerLobby player={myPlayer()} playerNumber={myPlayerNumber} isPhone={true} opponent={opponentPlayer()} />
+  <PlayerLobby player={myPlayer} playerNumber={myPlayerNumber} isPhone={true} opponent={opponentPlayer} />
  {:else if !nickConfirmed}
   <!-- Step 1: Nick Input -->
   <div class="flex flex-col items-center gap-6">
@@ -260,7 +260,7 @@
         class="w-auto h-50 absolute left-1/2 -translate-x-1/2 p-1.5 transition-all {isBustAvailable
          ? 'scale-105'
          : 'opacity-30 grayscale'}"
-        style={isBustAvailable ? bustStrokeStyle() : ""}
+        style={isBustAvailable ? bustStrokeStyle : ""}
         src={`/img/bust_${selectedBust}.webp`}
         alt={selectedBust}
         in:fly={{ x: 100 * slideDirection, duration: 300 }}

@@ -42,7 +42,7 @@
  let winnerCelebrate = $state(false);
  let showTimer = $state(false);
 
- let winner = $derived(() => {
+ let winner = $derived.by(() => {
   if (!$gameSession) return null;
   let wins1 = 0;
   let wins2 = 0;
@@ -56,9 +56,9 @@
   return null;
  });
 
- let loser = $derived(winner() === 1 ? 2 : winner() === 2 ? 1 : null);
+ let loser = $derived(winner === 1 ? 2 : winner === 2 ? 1 : null);
 
- let rounds = $derived(() => {
+ let rounds = $derived.by(() => {
   if (!$gameSession) return [];
   return [1, 2, 3].map((r) => {
    const rd = $gameSession[`round_${r}`];
@@ -101,17 +101,17 @@
  <Logo classes="max-w-60 absolute top-10 left-1/2 -translate-x-1/2" />
 
  <div class="flex flex-col items-center justify-center h-full gap-6 mt-18">
-  {#if winner()}
+  {#if winner}
    <!-- Player busts -->
    <div class="flex items-end gap-20">
     <div
-     class="transition-[filter] duration-800 ease-in-out {winnerCelebrate && winner() === 1 ? 'winner-celebrate' : ''}"
+     class="transition-[filter] duration-800 ease-in-out {winnerCelebrate && winner === 1 ? 'winner-celebrate' : ''}"
      style={loserRevealed && loser === 1 ? 'filter: grayscale(1) brightness(0.6)' : ''}
     >
      <PlayerBust player={$gameSession.player_1} hideStars />
     </div>
     <div
-     class="transition-[filter] duration-800 ease-in-out {winnerCelebrate && winner() === 2 ? 'winner-celebrate' : ''}"
+     class="transition-[filter] duration-800 ease-in-out {winnerCelebrate && winner === 2 ? 'winner-celebrate' : ''}"
      style={loserRevealed && loser === 2 ? 'filter: grayscale(1) brightness(0.6)' : ''}
     >
      <PlayerBust player={$gameSession.player_2} hideStars />
@@ -120,7 +120,7 @@
 
    <!-- Rounds row -->
    <div class="flex items-start gap-16 mt-6">
-    {#each rounds() as rd}
+    {#each rounds as rd}
      <div class="flex flex-col items-center gap-4 w-44 transition-opacity duration-800 ease-in-out {revealedRound >= rd.round ? 'opacity-100' : 'opacity-0'}">
       <p class="text-2xl text-center">
        {#if rd.winner}

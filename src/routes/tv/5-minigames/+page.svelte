@@ -23,25 +23,25 @@
  const dmgImg = `<img src="/img/bonus_minigame_dmg.webp" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
  const defImg = `<img src="/img/bonus_minigame_def.webp" class="inline-block h-10 w-auto align-middle mr-2 -mt-1">`;
 
- const NOTIF_DURATION = 10000;
+ const NOTIF_DURATION = 14000;
  const NOTIF_GAP = 600;
 
  function getAttackerCode(rd) {
   return rd?.current_turn?.player === 2 ? 'code_2' : 'code_1';
  }
 
- let attackerCode = $derived(() => {
+ let attackerCode = $derived.by(() => {
   const round = $gameSession?.current_round || 1;
   return getAttackerCode($gameSession?.[`round_${round}`]);
  });
 
- let defenderCode = $derived(() => attackerCode() === 'code_1' ? 'code_2' : 'code_1');
+ let defenderCode = $derived(attackerCode === 'code_1' ? 'code_2' : 'code_1');
 
- let attacker = $derived(() =>
-  attackerCode() === 'code_1' ? $gameSession?.player_1 : $gameSession?.player_2
+ let attacker = $derived(
+  attackerCode === 'code_1' ? $gameSession?.player_1 : $gameSession?.player_2
  );
- let defender = $derived(() =>
-  defenderCode() === 'code_1' ? $gameSession?.player_1 : $gameSession?.player_2
+ let defender = $derived(
+  defenderCode === 'code_1' ? $gameSession?.player_1 : $gameSession?.player_2
  );
 
  onMount(() => {
@@ -91,14 +91,14 @@
  }
 
  async function handleDmgResult(success) {
-  const attName = nickHtml(attacker());
-  const attCode = attackerCode();
-  const defCode = defenderCode();
+  const attName = nickHtml(attacker);
+  const attCode = attackerCode;
+  const defCode = defenderCode;
   await saveBonus(attCode, 'dmg', success ? 1 : 0);
   // Only animate the minigame_dmg card for the attacker; nothing new for the defender.
   animatedCards = { [attCode]: ['minigame_dmg'], [defCode]: false };
   phase = 'idle';
-  const defName = nickHtml(defender());
+  const defName = nickHtml(defender);
   notify(
    dmgImg + (success ? m.minigame_dmg_success({ name: attName }) : m.minigame_dmg_fail({ name: attName }))
    + '<br><br>' + m.minigame_def_cta({ name: defName }),
@@ -108,9 +108,9 @@
  }
 
  async function handleDefResult(success) {
-  const defName = nickHtml(defender());
-  const attCode = attackerCode();
-  const defCode = defenderCode();
+  const defName = nickHtml(defender);
+  const attCode = attackerCode;
+  const defCode = defenderCode;
   await saveBonus(defCode, 'def', success ? 1 : 0);
   // Only animate the minigame_def card for the defender; nothing new for the attacker.
   animatedCards = { [attCode]: false, [defCode]: ['minigame_def'] };

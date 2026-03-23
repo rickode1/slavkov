@@ -19,7 +19,7 @@
  import HourglassIcon from "$components/HourglassIcon.svelte";
 
  // Get current player's data
- let myPlayer = $derived(() => {
+ let myPlayer = $derived.by(() => {
   if (!$gameSession) return null;
   return $playerCode === "code_1"
    ? $gameSession.player_1
@@ -28,15 +28,15 @@
 
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
 
- let myStrokeStyle = $derived(() => strokeStyle(myPlayer()?.bust));
+ let myStrokeStyle = $derived.by(() => strokeStyle(myPlayer?.bust));
 
  let introDone = $state(false);
- let helpKey = $derived(introDone ? (selected() ? 2 : 1) : 0);
+ let helpKey = $derived(introDone ? (selected ? 2 : 1) : 0);
 
  let selectedUnit = $state(null);
  let deploying = $state(false);
 
- let selected = $derived(() => {
+ let selected = $derived.by(() => {
   if (!$gameSession) return false;
   const unitKey = $playerCode === "code_1" ? "unit_1" : "unit_2";
   const round = $gameSession.current_round || 1;
@@ -44,7 +44,7 @@
   return !!roundData?.[unitKey];
  });
 
- let usedUnits = $derived(() => {
+ let usedUnits = $derived.by(() => {
   if (!$gameSession) return [];
   const unitKey = $playerCode === "code_1" ? "unit_1" : "unit_2";
   const round = $gameSession.current_round || 1;
@@ -81,8 +81,8 @@
   }
  }
 
- let units = $derived(() => {
-  const bust = myPlayer()?.bust;
+ let units = $derived.by(() => {
+  const bust = myPlayer?.bust;
   if (!bust) return [];
   return [
    {
@@ -157,7 +157,7 @@
   }
  }
 
- let deployedUnit = $derived(() => {
+ let deployedUnit = $derived.by(() => {
   if (!$gameSession) return null;
   const unitKey = $playerCode === "code_1" ? "unit_1" : "unit_2";
   const round = $gameSession.current_round || 1;
@@ -165,15 +165,15 @@
   return roundData?.[unitKey] || null;
  });
 
- let unitImage = $derived(() => {
-  const unit = deployedUnit();
-  const bust = myPlayer()?.bust;
+ let unitImage = $derived.by(() => {
+  const unit = deployedUnit;
+  const bust = myPlayer?.bust;
   if (!unit || !bust) return null;
   return `/img/unit_${bust}_${unit}.webp`;
  });
 
- let unitRotate = $derived(() => {
-  const unit = deployedUnit();
+ let unitRotate = $derived.by(() => {
+  const unit = deployedUnit;
   if (!unit) return false;
   return (myPlayerNumber === 1 && unit === 'cavalry') || (myPlayerNumber === 2 && unit === 'cannon');
  });
@@ -184,7 +184,7 @@
   <link rel="preload" href="/img/bonus_unit.webp" as="image" />
 </svelte:head>
 
-<Help player={myPlayer()} autoOpen={helpKey}>
+<Help player={myPlayer} autoOpen={helpKey}>
      <p class="text-lg">{@html selectedUnit ? m.deploy_place_unit() : m.deploy_select_unit()}</p>  
      <img
       class="w-40 h-auto mx-auto"
@@ -196,13 +196,13 @@
 {#if introDone}
 {#if $gameSession}
  <div class="flex flex-col items-center pt-16">
-  {#if selected()}
+  {#if selected}
    <Map
     playerFilter={myPlayerNumber}
     onSlotSelect={handleSlotSelect}
     selectedSlotId={selectedSlot?.id}
-    unitImage={unitImage()}
-    unitRotate={unitRotate()}
+    unitImage={unitImage}
+    unitRotate={unitRotate}
     classes=""
    />
 
@@ -222,8 +222,8 @@
     </div>    
    {/if}
   {:else}
-   {#each units() as unit}
-    {@const disabled = usedUnits().includes(unit.id)}
+   {#each units as unit}
+    {@const disabled = usedUnits.includes(unit.id)}
     <button
      class="flex flex-col items-center cursor-pointer px-10 py-4 {disabled
       ? 'grayscale opacity-70 pointer-events-none'
@@ -235,7 +235,7 @@
       class="{unit.size} mb-2 p-1.5 transition-all {selectedUnit === unit.id
        ? 'scale-105'
        : ''}"
-      style={selectedUnit === unit.id ? myStrokeStyle() : ""}
+      style={selectedUnit === unit.id ? myStrokeStyle : ""}
       src={`/img/${unit.img}.webp`}
       alt={unit.title}
      />

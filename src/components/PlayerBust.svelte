@@ -12,7 +12,7 @@
   $gameSession?.player_1 === player ? 1 : $gameSession?.player_2 === player ? 2 : null
  );
 
- let roundWins = $derived(() => {
+ let roundWins = $derived.by(() => {
   const wins = [];
   for (let i = 1; i <= MAX_ROUNDS; i++) {
    wins.push($gameSession?.[`round_${i}`]?.winner === playerNum);
@@ -31,7 +31,7 @@
   {#if !small && !hideStars && playerNum !== null}
    <div class="absolute top-0 {playerNum === 1 ? 'left-[calc(100%-1rem)]' : 'right-[calc(100%-1rem)]'} flex flex-row gap-2 pt-2">
     {#each { length: MAX_ROUNDS } as _, i}
-     <div class="w-5" style={roundWins()[i] ? `color: ${bustColor}` : 'color: color-mix(in srgb, #6b7280 60%, transparent)'}>
+     <div class="w-5" style={roundWins[i] ? `color: ${bustColor}` : 'color: color-mix(in srgb, #6b7280 60%, transparent)'}>
       <Star />
      </div>
     {/each}

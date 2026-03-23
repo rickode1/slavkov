@@ -25,7 +25,7 @@
   $gameSession ? parseInt($gameSession.current_round || 1) : null
  );
 
- let placedUnits = $derived(() => {
+ let placedUnits = $derived.by(() => {
   if (!$gameSession) return {};
   const round = $gameSession.current_round || 1;
   const rd = $gameSession[`round_${round}`];
@@ -53,7 +53,7 @@
  };
 
  // Map location id -> winner player object (location id corresponds to round number)
- let locationWinners = $derived(() => {
+ let locationWinners = $derived.by(() => {
   if (!$gameSession) return {};
   const result = {};
   for (let r = 1; r <= 3; r++) {
@@ -152,7 +152,7 @@
   battlePhase = '';
 
   // Find the two slots that have placed units
-  const pu = placedUnits();
+  const pu = placedUnits;
   const unitSlots = [];
   for (const loc of locations) {
    for (const slot of loc.slots) {
@@ -190,7 +190,7 @@
  export function showBattleEnd() {
   // Immediately show the final battle state: slots hidden, units near each other
   losingSlotId = null;
-  const pu = placedUnits();
+  const pu = placedUnits;
   const unitSlots = [];
   for (const loc of locations) {
    for (const slot of loc.slots) {
@@ -261,7 +261,7 @@
    <img class="w-full" src="/img/map.webp" alt="" />
 
    {#each locations as loc (loc.id)}
-    {@const winner = locationWinners()[loc.id]}
+    {@const winner = locationWinners[loc.id]}
     <div
      class="absolute flex flex-col items-center justify-center text-center rounded-full h-60 w-60
      text-white text-3xl px-6 py-3
@@ -309,11 +309,11 @@
          src={unitImage}
          alt=""
         />
-       {:else if placedUnits()[slot.id]}
+       {:else if placedUnits[slot.id]}
         <img
-         class="relative z-10 w-full h-[75%] object-contain transition-[filter] duration-700 ease-in-out {placedUnits()[slot.id].rotate ? 'scale-x-[-1]' : ''}"
+         class="relative z-10 w-full h-[75%] object-contain transition-[filter] duration-700 ease-in-out {placedUnits[slot.id].rotate ? 'scale-x-[-1]' : ''}"
          style={battlePhase ? getUnitStroke(slot.p) : ''}
-         src={placedUnits()[slot.id].src}
+         src={placedUnits[slot.id].src}
          alt=""
         />
        {/if}

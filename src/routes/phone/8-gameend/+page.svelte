@@ -13,7 +13,7 @@
   $gameSession?.[$playerCode === 'code_1' ? 'player_1' : 'player_2']
  );
 
- let winner = $derived(() => {
+ let winner = $derived.by(() => {
   if (!$gameSession) return null;
   let wins1 = 0;
   let wins2 = 0;
@@ -27,7 +27,7 @@
   return null;
  });
 
- let isWinner = $derived(winner() === myPlayerNum);
+ let isWinner = $derived(winner === myPlayerNum);
 
  onMount(() => {
   if (isWinner) {
@@ -42,7 +42,7 @@
  });
 </script>
 
-{#if $gameSession && winner()}
+{#if $gameSession && winner}
  <div class="flex flex-col items-center justify-center h-full gap-8">
   <Logo classes="max-w-32 mb-4" />
 

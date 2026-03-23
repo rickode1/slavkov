@@ -14,7 +14,7 @@
  import LookTV from "$components/LookTV.svelte";
 
  // Get current player's data
- let myPlayer = $derived(() => {
+ let myPlayer = $derived.by(() => {
   if (!$gameSession) return null;
   return $playerCode === "code_1"
    ? $gameSession.player_1
@@ -23,22 +23,22 @@
 
  let myPlayerNumber = $derived($playerCode === "code_1" ? 1 : 2);
 
- let activePlayerNumber = $derived(() => {
+ let activePlayerNumber = $derived.by(() => {
   const round = $gameSession?.current_round || 1;
   return $gameSession?.[`round_${round}`]?.current_turn?.player || 1;
  });
 
- let isActivePlayer = $derived(myPlayerNumber === activePlayerNumber());
+ let isActivePlayer = $derived(myPlayerNumber === activePlayerNumber);
 
- let turnNumber = $derived(() => {
+ let turnNumber = $derived.by(() => {
   const round = $gameSession?.current_round || 1;
   return $gameSession?.[`round_${round}`]?.current_turn?.number ?? 0;
  });
 
- let sessionRoll = $derived(() => {
+ let sessionRoll = $derived.by(() => {
   const round = $gameSession?.current_round || 1;
   const rd = $gameSession?.[`round_${round}`];
-  return rd?.turns?.[turnNumber()]?.roll ?? null;
+  return rd?.turns?.[turnNumber]?.roll ?? null;
  });
 
  let rolling = $state(false);
@@ -46,8 +46,8 @@
  let showUI = $state(false);
  let lastDingKey = '';
 
- let rolled = $derived(animationDone && !!sessionRoll());
- let rollResult = $derived(rolled ? sessionRoll() : null);
+ let rolled = $derived(animationDone && !!sessionRoll);
+ let rollResult = $derived(rolled ? sessionRoll : null);
 
  $effect(() => {
   const showLookTV = !(isActivePlayer && showUI);
@@ -57,9 +57,9 @@
 
  $effect(() => {
   const active = isActivePlayer;
-  const turn = turnNumber();
+  const turn = turnNumber;
   const round = $gameSession?.current_round || 1;
-  if (active && !sessionRoll()) {
+  if (active && !sessionRoll) {
    if (uiTimer) clearTimeout(uiTimer);
    showUI = false;
    animationDone = false;

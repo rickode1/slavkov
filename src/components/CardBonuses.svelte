@@ -29,30 +29,28 @@
 
  let suffix = $derived(playerCode === "code_1" ? "_1" : "_2");
 
- let roundData = $derived(() => {
+ let roundData = $derived.by(() => {
   if (!$gameSession) return null;
   const round = $gameSession.current_round || 1;
   return $gameSession[`round_${round}`] || null;
  });
 
- let lifeUsed = $derived(() => {
-  const rd = roundData();
-  return rd?.[`life_used${suffix}`] || 0;
+ let lifeUsed = $derived.by(() => {
+  return roundData?.[`life_used${suffix}`] || 0;
  });
 
- let unitUsed = $derived(() => {
-  const rd = roundData();
-  return rd?.[`unit_used${suffix}`] || 0;
+ let unitUsed = $derived.by(() => {
+  return roundData?.[`unit_used${suffix}`] || 0;
  });
 
- let allCards = $derived(() => {
-  const rd = roundData();
+ let allCards = $derived.by(() => {
+  const rd = roundData;
   if (!rd) return [];
   const cards = [];
   const rot = (idx) => ROTATIONS[idx % ROTATIONS.length];
   let idx = 0;
   if (rd[`bonus_unit${suffix}`] !== undefined)
-   cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`], disabled: unitUsed() > 0, rot: rot(idx++) });
+   cards.push({ type: "unit", value: rd[`bonus_unit${suffix}`], disabled: unitUsed > 0, rot: rot(idx++) });
   if (rd[`bonus_loc${suffix}`] !== undefined)
    cards.push({ type: "loc", value: rd[`bonus_loc${suffix}`], disabled: false, rot: rot(idx++) });
   if (!hideBonuses) {
@@ -61,7 +59,7 @@
    for (let i = 0; i < (rd[`bonuses_dmg${suffix}`] || 0); i++)
     cards.push({ type: "dmg", value: 1, disabled: false, rot: rot(idx++) });
    const lifeCount = rd[`bonuses_life${suffix}`] || 0;
-   const used = lifeUsed();
+   const used = lifeUsed;
    for (let i = 0; i < lifeCount; i++)
     cards.push({ type: "life", value: 1, disabled: i < used, rot: rot(idx++) });
   }
@@ -86,8 +84,8 @@
   return groups;
  }
 
- let grouped = $derived(() => {
-  const groups = groupCards(allCards());
+ let grouped = $derived.by(() => {
+  const groups = groupCards(allCards);
   return groups.map((g) => {
    const active = g.items.filter((c) => !c.disabled).length;
    return {
@@ -98,8 +96,8 @@
   });
  });
 
- let slots = $derived(() => {
-  const groupMap = new Map(grouped().map(g => [g.type, g]));
+ let slots = $derived.by(() => {
+  const groupMap = new Map(grouped.map(g => [g.type, g]));
   return ALL_SLOT_TYPES
    .map(type => {
     if (type === 'minigame') {
@@ -110,8 +108,8 @@
    });
  });
 
- let rows = $derived(() => {
-  const s = slots();
+ let rows = $derived.by(() => {
+  const s = slots;
   const result = [];
   for (let i = 0; i < s.length; i += 2) {
    result.push(s.slice(i, i + 2));
@@ -121,7 +119,7 @@
 </script>
 
 <div class="flex flex-col mt-6 gap-2">
- {#each rows() as row}
+ {#each rows as row}
   <div class="flex gap-2">
    {#each row as slot, gi}
     <div class="relative w-28 h-38">
