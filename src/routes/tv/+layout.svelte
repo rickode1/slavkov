@@ -78,15 +78,6 @@
  }
 
  onMount(() => {
-  if(typeof IDAL !== 'undefined') {
-    console.log('IDAL',IDAL);
-        IDAL.getControlInterfaces()
-            .then(function(ifaces) {
-             console.log('ifaces?.player',ifaces?.player);
-                ifaces.player.getFolderNumber();
-            });
-  }
-
   const savedId = sessionStorage.getItem('sessionId');
   if (savedId && !$sessionId) {
    sessionId.set(savedId);
