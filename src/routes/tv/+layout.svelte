@@ -78,6 +78,16 @@
  }
 
  onMount(() => {
+  if(typeof player !== 'undefined') {
+   console.log('player', player);
+   console.log('player.getFolderNumber()', player?.getFolderNumber());
+  } else {
+   console.log('player', undefined);
+  }
+
+  console.log('window.player',window?.player);
+  console.log('window.player.getFolderNumber()',window?.player?.getFolderNumber());
+
   const savedId = sessionStorage.getItem('sessionId');
   if (savedId && !$sessionId) {
    sessionId.set(savedId);
