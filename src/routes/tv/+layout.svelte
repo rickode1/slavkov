@@ -78,15 +78,14 @@
  }
 
  onMount(() => {
-  if(typeof player !== 'undefined') {
-   console.log('player', player);
-   console.log('player.getFolderNumber()', player?.getFolderNumber());
-  } else {
-   console.log('player', undefined);
+  if(typeof IDAL !== 'undefined') {
+    console.log('IDAL',IDAL);
+        IDAL.getControlInterfaces()
+            .then(function(ifaces) {
+             console.log('ifaces?.player',ifaces?.player);
+                ifaces.player.getFolderNumber();
+            });
   }
-
-  console.log('window.player',window?.player);
-  console.log('window.player.getFolderNumber()',window?.player?.getFolderNumber());
 
   const savedId = sessionStorage.getItem('sessionId');
   if (savedId && !$sessionId) {
