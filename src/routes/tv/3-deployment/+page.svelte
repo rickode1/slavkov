@@ -6,7 +6,7 @@
  import CardBonuses from "$components/CardBonuses.svelte";
  import PlayerBust from "$components/PlayerBust.svelte";
  import Map from "$components/Map.svelte";
- import { playSound } from "$lib/audio.js";
+ import { playSound, preloadSound } from "$lib/audio.js";
 
  let mapRef = $state(null);
 
@@ -19,6 +19,7 @@
  }
 
  onMount(() => {
+  preloadSound('/sounds/ding.mp3');
   const round = $gameSession?.current_round ?? 1;
 
   if (round === 1) playSound('/sounds/ding.mp3');

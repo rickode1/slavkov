@@ -1,11 +1,12 @@
 <script>
  import { browser } from "$app/environment";
- import { onMount, tick } from "svelte";
+ import { onMount, onDestroy, tick } from "svelte";
  import { gameSession } from "$lib/stores/gameSession.js";
  import { positions } from "$lib/stores/positions.js";
  import { strokeStyle } from "$lib/constants.js";
  import * as m from "$lib/paraglide/messages.js";
  import PlayerBust from "$components/PlayerBust.svelte";
+ import { playSound, preloadSound } from "$lib/audio.js";
 
  let {
   playerFilter = null,
@@ -104,6 +105,18 @@
   isMobile = window.innerWidth < 1024;
  }
 
+ let battleMusic = null;
+
+ onMount(() => {
+  preloadSound('/sounds/march.mp3');
+  preloadSound('/sounds/battle.mp3');
+ });
+
+ onDestroy(() => {
+  battleMusic?.stop();
+  battleMusic = null;
+ });
+
  // Watch for positions loading and zoom when ready
  $effect(() => {
   if (autoZoom && locations.length > 0 && initialLocation && !zoomed && !battlePhase) {
@@ -169,6 +182,8 @@
   }
 
   // Phase 1: fade out slot circles
+  battleMusic = playSound('/sounds/battle.mp3', {volume: 0.1, loop: true});
+  playSound('/sounds/march.mp3', {volume: 0.5});
   battlePhase = 'fade-slots';
 
   if (unitSlots.length === 2) {
@@ -230,6 +245,8 @@
      setTimeout(() => {
       losingSlotId = losingSlot.id;
       setTimeout(() => {        battleDone = true;       resetZoom();
+       battleMusic?.fadeOut(1500);
+       battleMusic = null;
        setTimeout(() => {
         onBattleEndComplete?.();
        }, 800);

@@ -6,6 +6,7 @@
  import Logo from "$components/svg/Logo.svelte";
  import Star from "$components/svg/Star.svelte";
  import Timer from "$components/Timer.svelte";
+ import { playSound, preloadSound } from "$lib/audio.js";
  import {m} from "$lib/paraglide/messages.js";
 
  function setTimer(seconds) {
@@ -82,17 +83,23 @@
  });
 
  onMount(() => {
+  preloadSound('/sounds/piece-move.mp3');
+  preloadSound('/sounds/trumpet.mp3');
+
   // Reveal rounds one by one: show units, then dim the loser
   const roundDelay = 2500;
   const loserDelay = 1000; // delay after reveal before dimming loser
   for (let i = 1; i <= 3; i++) {
-   setTimeout(() => { revealedRound = i; }, (i - 1) * roundDelay);
+   setTimeout(() => { 
+    revealedRound = i;
+    playSound('/sounds/piece-move.mp3');
+   }, (i - 1) * roundDelay);
    setTimeout(() => { loserRound = i; }, (i - 1) * roundDelay + loserDelay);
   }
   // After all 3 rounds revealed + their animations settle
   const afterRounds = 2 * roundDelay + loserDelay + 1200;
   setTimeout(() => { loserRevealed = true; }, afterRounds);
-  setTimeout(() => { winnerCelebrate = true; }, afterRounds + 1200);
+  setTimeout(() => { winnerCelebrate = true; playSound('/sounds/trumpet.mp3'); }, afterRounds + 1200);
   setTimeout(() => { showTimer = true; setTimer(30); }, afterRounds + 2400);
  });
 </script>

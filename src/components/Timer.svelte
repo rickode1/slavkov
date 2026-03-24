@@ -1,7 +1,8 @@
 <script>
+ import { onMount } from 'svelte';
  import { gameSession } from '$lib/stores/gameSession.js';
  import { timerActive, timerRemaining } from '$lib/stores/timer.js';
- import { playSound } from '$lib/audio.js';
+ import { playSound, preloadSound } from '$lib/audio.js';
 
  let { classes = 'fixed right-4 bottom-4', onExpiry = null, sound = true } = $props();
 
@@ -65,6 +66,10 @@
    tikTak?.stop();
    tikTak = null;
   };
+ });
+
+ onMount(() => {
+  preloadSound('/sounds/tik-tak.mp3');
  });
 </script>
 

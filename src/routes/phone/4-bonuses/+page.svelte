@@ -8,7 +8,7 @@
  import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
- import { playSound } from "$lib/audio.js";
+ import { playSound, preloadSound } from "$lib/audio.js";
 
 
  import PlayerBust from "$components/PlayerBust.svelte";
@@ -73,6 +73,7 @@
 
  // Timer: 30s to choose bonuses
  onMount(() => {
+  preloadSound('/sounds/ding.mp3');
   const session = $gameSession;
   let bonusCount = 0;
   if (session) {

@@ -3,6 +3,7 @@
  import * as m from "$lib/paraglide/messages.js";
  import { gameSession, sessionId } from "$lib/stores/gameSession.js";
  import Timer from "$components/Timer.svelte";
+ import { playSound, preloadSound } from "$lib/audio.js";
 
  export let onResult = null;
  export let debug = false;
@@ -31,6 +32,7 @@
  let showHit = false;
  let showCrosshair = false;
  let fired = false;
+ let breathingSound = null;
 
  // countdown
  let countdown = null;
@@ -96,12 +98,13 @@
  }
 
  function handleClick() {
-   if (stopped) return;
+   if (stopped) return;   
    stopped = true;
    fired = true;
+   if (breathingSound) { breathingSound.stop(); breathingSound = null; }
    if (fireVideoEl) { fireVideoEl.currentTime = 0; fireVideoEl.play(); }
    setTimeout(() => { showCrosshair = false; }, 200);
-   setTimeout(() => { showHit = true; }, 300);
+   playSound('/sounds/musket.mp3');
    setTimeout(() => { showResult = true; }, 1400);
    cancelAnimationFrame(animFrame);
 
@@ -129,14 +132,27 @@
      hit = (localX / a) ** 2 + (localY / b) ** 2 <= 1;
    }
 
+   setTimeout(() => {
+     showHit = true;
+   }, 300);
+
+   setTimeout(() => {
+     playSound('/sounds/impact.mp3', { volume: 0.3 })
+   }, 500);
+
+   setTimeout(() => {
+        if (hit) playSound('/sounds/trumpet.mp3', { volume: 1.7 });
+        else playSound('/sounds/wah-wah.mp3');
+   }, 1500);
+
    if (hit && onResult && !debug && !resultFired) {
      clearTimer();
-     restartTimeout = setTimeout(() => { resultFired = true; onResult(true); }, 3000);
+     restartTimeout = setTimeout(() => { resultFired = true; onResult(true); }, 6000);
    } else if (onResult && !debug && !resultFired) {
      clearTimer();
-     restartTimeout = setTimeout(() => { resultFired = true; onResult(false); }, 3000);
+     restartTimeout = setTimeout(() => { resultFired = true; onResult(false); }, 6000);
    } else {
-     restartTimeout = setTimeout(restart, 3000);
+     restartTimeout = setTimeout(restart, 6000);
    }
  }
 
@@ -151,6 +167,7 @@
    crossY = 0;
    startTime = null;
    p = randomParams();
+   breathingSound = playSound('/sounds/breathing.mp3', { loop: true, volume: 0.4 });
    animFrame = requestAnimationFrame(moveCross);
  }
 
@@ -164,6 +181,7 @@
        countdown = null;
        showCrosshair = true;
        animFrame = requestAnimationFrame(moveCross);
+       breathingSound = playSound('/sounds/breathing.mp3', { loop: true, volume: 0.4 });
        if (onResult && !debug) setTimer(30);
      }
    }, 1000);
@@ -174,11 +192,17 @@
      resultFired = true;
      stopped = true;
      cancelAnimationFrame(animFrame);
+     playSound('/sounds/wah-wah.mp3');
      onResult(false);
    }
  }
 
  onMount(() => {
+   preloadSound('/sounds/musket.mp3');
+   preloadSound('/sounds/breathing.mp3');
+   preloadSound('/sounds/impact.mp3');
+   preloadSound('/sounds/trumpet.mp3');
+   preloadSound('/sounds/wah-wah.mp3');
    startCountdown();
  });
 
@@ -186,6 +210,7 @@
    cancelAnimationFrame(animFrame);
    clearTimeout(restartTimeout);
    clearInterval(countdownInterval);
+   if (breathingSound) { breathingSound.stop(); breathingSound = null; }
  });
 </script>
 

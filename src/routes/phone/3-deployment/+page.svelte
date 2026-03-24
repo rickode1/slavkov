@@ -7,7 +7,7 @@
  } from "$lib/stores/gameSession.js";
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
- import { playSound } from "$lib/audio.js";
+ import { playSound, preloadSound } from "$lib/audio.js";
 
 
  import PlayerBust from "$components/PlayerBust.svelte";
@@ -111,6 +111,8 @@
  let locationSelected = $state(false);
 
   onMount(() => {
+  preloadSound('/sounds/ding.mp3');
+  preloadSound('/sounds/piece-move.mp3');
   setTimeout(() => {
    introDone = true;
   }, 10000);

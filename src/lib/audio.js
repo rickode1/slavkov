@@ -14,6 +14,15 @@ const cache = new Map();   // url → AudioBuffer
 function getContext() {
   if (!ctx) {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // On platforms that allow autoplay the context starts 'running' immediately;
+    // try resume() for browsers that create it 'suspended' but auto-allow it.
+    if (ctx.state === 'running') {
+      unlocked = true;
+    } else {
+      ctx.resume().then(() => {
+        if (ctx.state === 'running') unlocked = true;
+      }).catch(() => {});
+    }
   }
   return ctx;
 }
@@ -37,7 +46,7 @@ function unlock() {
 if (typeof window !== 'undefined') {
   const events = ['touchstart', 'touchend', 'click', 'keydown'];
   const handler = () => {
-    unlock();
+    if (!unlocked) unlock();
     events.forEach((e) => window.removeEventListener(e, handler, true));
   };
   events.forEach((e) => window.addEventListener(e, handler, { capture: true, passive: true }));
@@ -52,13 +61,11 @@ async function loadBuffer(url) {
   return audioBuf;
 }
 
-/**
- * Play a sound file. Safe to call from any context (effects, timers, etc.).
- * @param {string} url – path like '/sounds/ding.mp3'
- * @param {{ loop?: boolean }} opts
- * @returns {{ stop: () => void }} handle to stop a looping sound
- */
-export function playSound(url, { loop = false } = {}) {
+export function preloadSound(url) {
+  loadBuffer(url).catch(() => {});
+}
+
+export function playSound(url, { loop = false, rate = 1, volume = 1 } = {}) {
   const ac = getContext();
 
   // Ensure context is running
@@ -67,13 +74,18 @@ export function playSound(url, { loop = false } = {}) {
   }
 
   let sourceNode = null;
+  let gainNode = null;
 
   loadBuffer(url)
     .then((buffer) => {
+      gainNode = ac.createGain();
+      gainNode.gain.value = volume;
+      gainNode.connect(ac.destination);
       sourceNode = ac.createBufferSource();
       sourceNode.buffer = buffer;
       sourceNode.loop = loop;
-      sourceNode.connect(ac.destination);
+      sourceNode.playbackRate.value = rate;
+      sourceNode.connect(gainNode);
       sourceNode.start(0);
     })
     .catch(() => {});
@@ -81,6 +93,14 @@ export function playSound(url, { loop = false } = {}) {
   return {
     stop() {
       try { sourceNode?.stop(); } catch { /* already stopped */ }
+    },
+    fadeOut(durationMs = 1000) {
+      if (!gainNode) { this.stop(); return; }
+      const ac = getContext();
+      const now = ac.currentTime;
+      gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+      gainNode.gain.linearRampToValueAtTime(0, now + durationMs / 1000);
+      setTimeout(() => this.stop(), durationMs + 50);
     },
   };
 }

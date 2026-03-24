@@ -7,7 +7,7 @@
  import PlayerBust from "$components/PlayerBust.svelte";
  import CardBonuses from "$components/CardBonuses.svelte";
  import Map from "$components/Map.svelte";
- import { playSound } from "$lib/audio.js";
+ import { playSound, preloadSound } from "$lib/audio.js";
 
  let mapRef = $state(null);
 
@@ -23,6 +23,7 @@
  }
 
  onMount(() => {
+  preloadSound('/sounds/piece-move.mp3');
 
   playSound('/sounds/piece-move.mp3');
 

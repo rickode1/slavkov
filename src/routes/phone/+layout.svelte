@@ -109,7 +109,7 @@
 </script>
 
 <main
- class="container relative px-4 pt-4 pb-16 min-h-dvh mx-auto flex flex-col items-center"
+ class="container relative px-4 pt-4 pb-16 min-h-dvh mx-auto flex flex-col items-center max-w-md"
 >
  {#key $currentLocale}
   {@render children()}

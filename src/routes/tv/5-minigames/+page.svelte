@@ -9,7 +9,7 @@
  import Map from "$components/Map.svelte";
  import MinigameDmg from "$components/MinigameDmg.svelte";
  import MinigameDef from "$components/MinigameDef.svelte";
- import { playSound } from "$lib/audio.js";
+ import { playSound, preloadSound } from "$lib/audio.js";
 
  let mapRef = $state(null);
 
@@ -45,6 +45,7 @@
  );
 
  onMount(() => {
+  preloadSound('/sounds/ding.mp3');
   playSound('/sounds/ding.mp3');
 
   function init() {

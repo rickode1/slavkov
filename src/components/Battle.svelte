@@ -1,5 +1,5 @@
 <script>
- import { untrack } from "svelte";
+ import { untrack, onMount } from "svelte";
  import { m } from "$lib/paraglide/messages.js";
  import { fly } from "svelte/transition";
  import { flip } from "svelte/animate";
@@ -8,6 +8,7 @@
  import Card from "$components/Card.svelte";
  import BattlePlayer from "$components/BattlePlayer.svelte";
  import BattleExchangeRow from "$components/BattleExchangeRow.svelte"; 
+ import { playSound, preloadSound } from "$lib/audio.js";
 
  let { onHighlightCard = null } = $props();
 
@@ -124,6 +125,7 @@
 
  async function revealRoll(roll) {
   diceRolling = true;
+  playSound('/sounds/dice.mp3');
   await sleep(2000);
   diceRolling = false;
   revealedRoll = roll;
@@ -201,7 +203,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId: $sessionId, status: '7-roundend' }),
      }),
-     sleep(600),
+     sleep(4000),
     ]);
    }
   }
@@ -261,6 +263,10 @@
    }
   }
  }
+
+ onMount(() => {
+  preloadSound('/sounds/dice.mp3');
+ });
 </script>
 
 <svelte:head>

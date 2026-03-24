@@ -2,6 +2,7 @@
  import { onMount, onDestroy } from "svelte";
  import * as m from "$lib/paraglide/messages.js";
  import { gameSession } from "$lib/stores/gameSession.js";
+ import { playSound, preloadSound } from "$lib/audio.js";
 
  export let onResult = null;
  export let debug = false;
@@ -40,11 +41,16 @@
  let slowdownStart = 0;
  let speedAtFinish = 0;
  let showWinPose = false;
+ let runSound = null;
 
  const FALL_SRC = "/img/mini_def_soldier_fall.webm";
 
  function triggerFall() {
+   if (runSound) { runSound.stop(); runSound = null; }
    gameState = 'lost';
+   playSound('/sounds/hit.mp3');
+   playSound('/sounds/fall.mp3');
+   setTimeout(() => playSound('/sounds/wah-wah.mp3'), 500);
    if (fallVideoEl) {
      fallVideoEl.currentTime = 0;
      fallVideoEl.play();
@@ -68,6 +74,7 @@
  const SOLDIER_HB_LEFT = SOLDIER_LEFT + SOLDIER_IMG_WIDTH - SOLDIER_HB_WIDTH;
 
  function startGame() {
+   if (runSound) { runSound.stop(); runSound = null; }
    gameState = 'running';
    groundOffset = 0;
    soldierY = 0;
@@ -84,6 +91,7 @@
    }
 
    animFrame = requestAnimationFrame(gameLoop);
+   runSound = playSound('/sounds/run.mp3', { loop: true, rate: 0.7 });
  }
 
  function gameLoop(ts) {
@@ -95,8 +103,10 @@
      const elapsed = performance.now() - slowdownStart;
      if (elapsed >= 1000) {
        gameState = 'won';
+       if (runSound) { runSound.stop(); runSound = null; }
+       playSound('/sounds/trumpet.mp3');
        cancelAnimationFrame(animFrame);
-       if (onResult && !debug) { setTimeout(() => onResult(true), 3000); } else { setTimeout(resetGame, 3000); }
+       if (onResult && !debug) { setTimeout(() => onResult(true), 6000); } else { setTimeout(resetGame, 6000); }
        return;
      }
      currentSpeed = speedAtFinish * (1 - elapsed / 1500);
@@ -144,6 +154,7 @@
        } else {
          soldierY = 0;
          isJumping = false;
+         if (gameState === 'running' && !runSound) { runSound = playSound('/sounds/run.mp3', { loop: true, rate: 0.6 }); }
        }
      }
 
@@ -161,7 +172,7 @@
            if(isJumping) continue;
            triggerFall();
            cancelAnimationFrame(animFrame);
-           if (onResult && !debug) { setTimeout(() => onResult(false), 3000); } else { setTimeout(resetGame, 3000); }
+           if (onResult && !debug) { setTimeout(() => onResult(false), 6000); } else { setTimeout(resetGame, 6000); }
            return;
          }
        }
@@ -178,6 +189,8 @@
    if (gameState !== 'running' || isJumping) return;
    isJumping = true;
    jumpStart = performance.now();
+   if (runSound) { runSound.stop(); runSound = null; }
+   playSound('/sounds/jump.mp3');
  }
 
  function resetGame() {
@@ -200,6 +213,13 @@
 
  onMount(() => {
    if (gameAreaEl) gameWidth = gameAreaEl.clientWidth;
+   // prebuffer all game sounds
+   preloadSound('/sounds/run.mp3');
+   preloadSound('/sounds/jump.mp3');
+   preloadSound('/sounds/hit.mp3');
+   preloadSound('/sounds/fall.mp3');
+   preloadSound('/sounds/trumpet.mp3');
+   preloadSound('/sounds/wah-wah.mp3');
    // video is preloaded via preload="auto" attribute
    startCountdown();
  });
@@ -207,6 +227,7 @@
  onDestroy(() => {
    cancelAnimationFrame(animFrame);
    clearInterval(countdownInterval);
+   if (runSound) { runSound.stop(); runSound = null; }
  });
 </script>
 

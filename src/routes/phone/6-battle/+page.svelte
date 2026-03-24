@@ -6,7 +6,7 @@
   playerCode,
  } from "$lib/stores/gameSession.js";
  import * as m from "$lib/paraglide/messages";
- import { playSound } from "$lib/audio.js";
+ import { playSound, preloadSound } from "$lib/audio.js";
 
  import Help from "$components/Help.svelte";
  import Button from "$components/Button.svelte";
@@ -100,6 +100,10 @@
    console.error('Failed to roll dice');
   }
  }
+
+ onMount(() => {
+  preloadSound('/sounds/ding.mp3');
+ });
 </script>
 
 <svelte:head>
