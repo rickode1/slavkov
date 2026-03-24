@@ -14,6 +14,8 @@
   const unloadHandler = (e) => e.preventDefault();
   window.addEventListener("beforeunload", unloadHandler);
 
+  document.getElementById('splash')?.remove();
+
   return () => {
    window.removeEventListener("beforeunload", unloadHandler);
   };

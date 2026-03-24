@@ -8,7 +8,7 @@
 </script>
 
 <div
- class="flex items-center justify-between gap-2.5 rounded-lg pl-3 pr-5 py-1.5 transition-colors duration-300"
+ class="flex items-center justify-between gap-2.5 rounded-lg pl-3 pr-5 py-1.5 transition-colors duration-300 border border-black/10 shadow-sm bg-white/10"
  style={active ? `background-color: ${activeBg}; color: white` : ''}
 >
 

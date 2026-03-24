@@ -7,6 +7,7 @@
  import { strokeStyle, nickHtml } from "$lib/constants.js";
  import Card from "$components/Card.svelte";
  import BattlePlayer from "$components/BattlePlayer.svelte";
+ import BattleExchangeRow from "$components/BattleExchangeRow.svelte"; 
 
  let { onHighlightCard = null } = $props();
 
@@ -42,17 +43,8 @@
   }
  });
 
- let messages = $state([]);
- let _msgId = 0;
-
- export function addMessage(text, img = '') {
-  if(img) {
-   img = `<img src="/img/bonus_${img}.webp"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">`;
-  }
-
-  const prev = untrack(() => messages);
-  messages = [{ id: _msgId++, text: img + text }, ...prev];
- }
+ let exchanges = $state([]);
+ let _exchId = 0;
 
  let roundData = $derived.by(() => {
   if (!$gameSession) return null;
@@ -135,20 +127,24 @@
   await sleep(2000);
   diceRolling = false;
   revealedRoll = roll;
+  if (exchanges.length > 0) {
+   const ex = exchanges[0];
+   exchanges[0] = ex.activeRole === 'dmg' ? { ...ex, dmgRoll: roll } : { ...ex, defRoll: roll };
+  }
   await sleep(1000);
   rollOutcome = roll >= displayedDifficulty ? 'success' : 'fail';
-  const name = activePlayerNickHtml;
-  const boldRoll = `<img src="/img/dice.webp"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${roll}`;
-  addMessage(
-   rollOutcome === 'success'
-    ? (role === 'dmg' ? m.battle_attack_success({ name, roll: boldRoll }) : m.battle_defense_success({ name, roll: boldRoll }))
-    : (role === 'dmg' ? m.battle_attack_failure({ name, roll: boldRoll }) : m.battle_defense_failure({ name, roll: boldRoll }))
-  );
+  if (exchanges.length > 0) {
+   const ex = exchanges[0];
+   exchanges[0] = ex.activeRole === 'dmg'
+    ? { ...ex, dmgRoll: roll, dmgOutcome: rollOutcome }
+    : { ...ex, defRoll: roll, defOutcome: rollOutcome };
+  }
 
+  const name = activePlayerNickHtml;
   const turnData = currentTurnData;
   if (turnData?.unit_retry) {
    await sleep(1500);
-   addMessage(m.battle_unit_retry({ name }));
+   if (exchanges.length > 0) exchanges[0] = { ...exchanges[0], bonusText: m.battle_unit_retry({ name }) };
    untrack(() => onHighlightCard?.('unit'));
    activeCard = { type: 'unit', value: roundData?.[`bonus_unit_${startingPlayer}`] || 1 };
    await sleep(2000);
@@ -156,7 +152,7 @@
    await sleep(500);
   } else if (rollOutcome === 'fail' && turnData?.life_retry) {
    await sleep(1500);
-   addMessage(m.battle_life_retry({ name }));
+   if (exchanges.length > 0) exchanges[0] = { ...exchanges[0], bonusText: m.battle_life_retry({ name }) };
    untrack(() => onHighlightCard?.('life'));
    activeCard = { type: 'life', value: 1 };
    await sleep(2000);
@@ -164,6 +160,17 @@
    await sleep(500);
   } else {
    await sleep(2000);
+   // set final result text
+   if (exchanges.length > 0) {
+    const ex = exchanges[0];
+    let resultText = null;
+    if (ex.activeRole === 'def') {
+     resultText = rollOutcome === 'success' ? m.battle_exchange_repelled() : m.battle_exchange_success();
+    } else if (ex.activeRole === 'dmg' && rollOutcome === 'fail') {
+     resultText = m.battle_exchange_failed();
+    }
+    if (resultText && !ex.bonusText) exchanges[0] = { ...exchanges[0], bonusText: resultText };
+   }
   }
 
   await advanceBattle();
@@ -215,9 +222,6 @@
 
   const prevTurn = rd.turns?.[turnNumber - 1];
   if (rd.current_turn?.unit_counter) {
-   // defender succeeded and original attacker gets a counter-attack via unit bonus
-   const name = activePlayerNickHtml;
-   addMessage(m.battle_unit_retry({ name }));
    untrack(() => onHighlightCard?.('unit'));
   } else if (prevTurn?.unit_retry && prevTurn?.player === startingPlayer) {
    untrack(() => onHighlightCard?.('unit'));
@@ -236,12 +240,26 @@
 
   displayedDifficulty = baseDifficulty - locVal - bonusVal - minigameVal;
 
-  const name = activePlayerNickHtml;
-  addMessage(
-   role === 'dmg'
-    ? m.battle_attack_roll({ name, num: `<img src="/img/dice.webp"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${displayedDifficulty}` })
-    : m.battle_defense_roll({ name, num: `<img src="/img/dice.webp"  class="inline-block h-6 w-auto align-middle mr-2 -mt-1">${displayedDifficulty}` })
-  );
+  if (role === 'dmg') {
+   const prev = untrack(() => exchanges);
+   exchanges = [{
+    id: _exchId++,
+    attackerNum: startingPlayer,
+    activeRole: 'dmg',
+    dmgDifficulty: displayedDifficulty,
+    dmgRoll: null,
+    dmgOutcome: null,
+    defDifficulty: null,
+    defRoll: null,
+    defOutcome: null,
+    bonusText: null,
+   }, ...prev];
+  } else {
+   // def turn — update the current row in place (same id, no re-animate)
+   if (exchanges.length > 0) {
+    exchanges[0] = { ...exchanges[0], activeRole: 'def', defDifficulty: displayedDifficulty };
+   }
+  }
  }
 </script>
 
@@ -288,7 +306,7 @@
    </div>
    
 
-   <div class="h-48 w-48 absolute {!diceRolling && !diceArchClass ? 'dice-float' : ''} {diceArchClass}"
+   <div class="h-48 w-48 absolute z-50 {!diceRolling && !diceArchClass ? 'dice-float' : ''} {diceArchClass}"
       style={diceArchClass ? '' : `left: ${diceSide === 2 ? 'calc(100% - 240px)' : '40px'}; top: 50%;`}>
       <div class="relative flex items-center justify-center">
        <img
@@ -306,18 +324,48 @@
       </div>
    </div>
 
-   <div class="mx-auto max-w-3xl w-full text-center mt-14">
-    {#key messages[0]?.id ?? -1}
-     {#if messages[0]}
-      <p class="text-4xl" in:fly={{ y: -24, duration: 500 }} out:fly={{ y: 40, duration: 350 }}>
-       {@html messages[0].text}
-      </p>
+   <div class="mx-auto max-w-xl w-full mt-14">
+    {#key exchanges[0]?.id ?? -1}
+     {#if exchanges[0]}
+      <div in:fly={{ y: -24, duration: 500 }} out:fly={{ y: 40, duration: 350 }}>
+       <BattleExchangeRow
+        attackerNum={exchanges[0].attackerNum}
+        activeRole={exchanges[0].activeRole}
+        player1={$gameSession?.player_1}
+        player2={$gameSession?.player_2}
+        unit1Img={player1UnitImg}
+        unit2Img={player2UnitImg}
+        dmgDifficulty={exchanges[0].dmgDifficulty}
+        dmgRoll={exchanges[0].dmgRoll}
+        dmgOutcome={exchanges[0].dmgOutcome}
+        defDifficulty={exchanges[0].defDifficulty}
+        defRoll={exchanges[0].defRoll}
+        defOutcome={exchanges[0].defOutcome}
+        bonusText={exchanges[0].bonusText}
+       />
+      </div>
      {/if}
     {/key}
 
-    <div class="mt-6 pt-1 flex flex-col gap-y-3 text-xl max-h-100 overflow-hidden relative">
-     {#each messages.slice(1) as msg (msg.id)}
-      <p animate:flip={{ duration: 400 }} in:fly={{ y: -16, duration: 350 }}>{@html msg.text}</p>
+    <div class="flex flex-col gap-y-1.5 max-h-72 overflow-hidden mt-4">
+     {#each exchanges.slice(1) as ex (ex.id)}
+      <div animate:flip={{ duration: 400 }} in:fly={{ y: -16, duration: 350 }} class="scale-[0.9] origin-top opacity-90">
+       <BattleExchangeRow
+        attackerNum={ex.attackerNum}
+        activeRole={ex.activeRole}
+        player1={$gameSession?.player_1}
+        player2={$gameSession?.player_2}
+        unit1Img={player1UnitImg}
+        unit2Img={player2UnitImg}
+        dmgDifficulty={ex.dmgDifficulty}
+        dmgRoll={ex.dmgRoll}
+        dmgOutcome={ex.dmgOutcome}
+        defDifficulty={ex.defDifficulty}
+        defRoll={ex.defRoll}
+        defOutcome={ex.defOutcome}
+        bonusText={ex.bonusText}
+       />
+      </div>
      {/each}
     </div>
    </div>
