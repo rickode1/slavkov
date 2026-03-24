@@ -131,7 +131,9 @@
    resetSession();
    sessionStorage.removeItem('sessionId');
    goto("/tv");
-   window?.player?.playFolder(0);
+   if (typeof IDAL !== 'undefined') {
+    IDAL.getControlInterfaces().then(ifaces => ifaces.player.playFolder(0));
+   }
   }
  });
 
@@ -177,7 +179,7 @@
  {#if page.url.pathname === "/tv" && !$sessionId}
   <button
    class="absolute right-8 bottom-10 cursor-pointer"
-   onclick={() => window?.player?.playFolder(0)}
+   onclick={() => { if (typeof IDAL !== 'undefined') IDAL.getControlInterfaces().then(ifaces => ifaces.player.playFolder(0)); }}
   >
    <ErrorIcon classes="w-14 lg:w-20 h-14 lg:h-20" />
   </button>
