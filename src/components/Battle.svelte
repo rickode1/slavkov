@@ -289,7 +289,7 @@
    
 
    <div class="h-48 w-48 absolute {!diceRolling && !diceArchClass ? 'dice-float' : ''} {diceArchClass}"
-      style={diceArchClass ? '' : `left: ${diceSide === 2 ? 'calc(100% - 240px)' : '40px'}; top: 55%;`}>
+      style={diceArchClass ? '' : `left: ${diceSide === 2 ? 'calc(100% - 240px)' : '40px'}; top: 50%;`}>
       <div class="relative flex items-center justify-center">
        <img
         class="h-48 w-48 object-contain transition-[filter] duration-700 {diceRolling ? 'dice-rolling' : ''}"
@@ -297,13 +297,13 @@
         src="/img/dice.webp"
         alt="Dice"
        />
+       <div class="dice-shadow absolute {diceRolling ? 'hidden!' : ''}" style="left: calc(50% - 1.5rem); bottom: -1rem;"></div>
        {#if revealedRoll}
         <div class="roll-result absolute inset-0 flex items-center justify-center text-black/90">
          <span class="text-4xl mb-5.5 lining-nums">{revealedRoll}</span>
         </div>
        {/if}
       </div>
-      <div class="dice-shadow {diceRolling ? 'hidden!' : ''}"></div>
    </div>
 
    <div class="mx-auto max-w-3xl w-full text-center mt-14">

@@ -129,27 +129,31 @@
  }
 
  /* Dice rolling animation */
- .dice-rolling {
+.dice-rolling {
   animation:
-   dice-spin 2s cubic-bezier(0.2, 0, 0.2, 1) forwards,
-   dice-blur 2s ease-out forwards;
-  transform-origin: center center;
- }
+    dice-spin 2s linear forwards,
+    dice-blur 2s ease-out forwards;
 
- @keyframes dice-spin {
-  0%   { rotate: 0deg; translate: 0 0; }
-  8%   { translate: 25px -30px; }
-  16%  { translate: -20px -40px; }
-  24%  { translate: 30px -15px; }
-  32%  { translate: -25px -35px; }
-  40%  { translate: 22px -28px; }
-  48%  { translate: -18px -32px; }
-  56%  { translate: 14px -18px; }
-  64%  { translate: -10px -12px; }
-  77%  { translate: 6px -8px; }
-  90%  { translate: -3px -4px; }
-  100% { rotate: 1080deg; translate: 0 0; }
- }
+  transform-origin: center;
+  transform: translate3d(0, 0, 0) rotate(0deg);
+
+  will-change: transform;
+}
+
+@keyframes dice-spin {
+  0%   { transform: rotate(0deg) translate(0, 0); }
+  8%   { transform: rotate(86.4deg) translate(25px, -30px); }
+  16%  { transform: rotate(172.8deg) translate(-20px, -40px); }
+  24%  { transform: rotate(259.2deg) translate(30px, -15px); }
+  32%  { transform: rotate(345.6deg) translate(-25px, -35px); }
+  40%  { transform: rotate(432deg) translate(22px, -28px); }
+  48%  { transform: rotate(518.4deg) translate(-18px, -32px); }
+  56%  { transform: rotate(604.8deg) translate(14px, -18px); }
+  64%  { transform: rotate(691.2deg) translate(-10px, -12px); }
+  77%  { transform: rotate(831.6deg) translate(6px, -8px); }
+  90%  { transform: rotate(972deg) translate(-3px, -4px); }
+  100% { transform: rotate(1080deg) translate(0, 0); }
+}
 
  @keyframes dice-blur {
   0%   { filter: blur(0px) drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
@@ -192,25 +196,25 @@
  }
 
  .dice-arch-to-right {
-  animation: dice-arch-to-right 1s ease-in-out forwards;
+  animation: dice-arch-to-right 1s linear forwards;
  }
  .dice-arch-to-left {
-  animation: dice-arch-to-left 1s ease-in-out forwards;
+  animation: dice-arch-to-left 1s linear forwards;
  }
 
  @keyframes dice-arch-to-right {
-  0%   { left: 15%; top: 55%; animation-timing-function: linear; }
-  25%  { left: 35%; top: 24%; animation-timing-function: linear; }
-  50%  { left: 50%; top: 15%; animation-timing-function: linear; }
-  75%  { left: 65%; top: 24%; animation-timing-function: linear; }
-  100% { left: 85%; top: 55%; }
+  0%   { left: 40px; top: 50%; }
+  25%  { left: calc(25% - 30px); top: 24%; }
+  50%  { left: calc(50% - 100px); top: 15%; }
+  75%  { left: calc(75% - 170px); top: 24%; }
+  100% { left: calc(100% - 240px); top: 50%; }
  }
  @keyframes dice-arch-to-left {
-  0%   { left: 85%; top: 55%; animation-timing-function: linear; }
-  25%  { left: 65%; top: 24%; animation-timing-function: linear; }
-  50%  { left: 50%; top: 15%; animation-timing-function: linear; }
-  75%  { left: 35%; top: 24%; animation-timing-function: linear; }
-  100% { left: 15%; top: 55%; }
+  0%   { left: calc(100% - 240px); top: 50%; }
+  25%  { left: calc(75% - 170px); top: 24%; }
+  50%  { left: calc(50% - 100px); top: 15%; }
+  75%  { left: calc(25% - 30px); top: 24%; }
+  100% { left: 40px; top: 50%; }
  }
 
  .winner-celebrate {
