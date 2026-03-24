@@ -288,8 +288,8 @@
    </div>
    
 
-   <div class="h-48 w-48 absolute -translate-x-1/2 -translate-y-1/2 {!diceRolling && !diceArchClass ? 'dice-float' : ''} {diceArchClass}"
-      style={diceArchClass ? '' : `left: ${diceSide === 2 ? '85%' : '15%'}; top: 55%;`}>
+   <div class="h-48 w-48 absolute {!diceRolling && !diceArchClass ? 'dice-float' : ''} {diceArchClass}"
+      style={diceArchClass ? '' : `left: ${diceSide === 2 ? 'calc(100% - 240px)' : '40px'}; top: 55%;`}>
       <div class="relative flex items-center justify-center">
        <img
         class="h-48 w-48 object-contain transition-[filter] duration-700 {diceRolling ? 'dice-rolling' : ''}"

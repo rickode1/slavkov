@@ -1,6 +1,6 @@
-@import 'tailwindcss';
-@plugin '@tailwindcss/forms';
-@plugin '@tailwindcss/typography';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @font-face {
     font-family: Slabo;
@@ -8,13 +8,6 @@
     font-weight: normal;
     font-style: normal;
     font-display: swap;
-}
-
-@theme {
- --color-black: #000000;
- --color-primary: #B4332B;
- --color-secondary: #0D3870;
- --color-orange: #fd9c3b;
 }
 
 :root {
@@ -26,7 +19,10 @@
  --color-bust-at-dark: #c0a024;
 }
 
-@layer utilities {
+.-z-1 {
+ z-index: -1;
+}
+
   body {
    font-family: Slabo, sans-serif;
    font-optical-sizing: auto;
@@ -242,4 +238,4 @@
   .result-pop {
     animation: pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-}
+

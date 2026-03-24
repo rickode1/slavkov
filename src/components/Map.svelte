@@ -46,6 +46,12 @@
   return units;
  });
 
+ const bustBgColor = {
+  fr: 'rgba(87, 123, 183, 0.85)',
+  ru: 'rgba(106, 150, 86, 0.85)',
+  at: 'rgba(192, 160, 36, 0.85)',
+ };
+
  const labelMap = {
   telnitz: () => m.location_telnitz(),
   pratzen: () => m.location_pratzen(),
@@ -269,7 +275,7 @@
      transition-opacity duration-500 ease-in-out
      bg-primary/85
      {zoomed ? 'opacity-0 pointer-events-none' : 'opacity-100'}"
-     style="left: {loc.x}%; top: {loc.y}%; {winner ? `background-color: color-mix(in srgb, var(--color-bust-${winner.bust}) 85%, transparent)` : ''}"
+     style="left: {loc.x}%; top: {loc.y}%; {winner ? `background-color: ${bustBgColor[winner.bust] ?? 'rgba(180,51,43,0.85)'}` : ''}"
     >
      {#if winner}
       <div class="absolute -top-10 left-1/2">

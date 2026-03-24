@@ -31,8 +31,7 @@
   {#if !small && !hideStars && playerNum !== null}
    <div class="absolute top-0 {playerNum === 1 ? 'left-[calc(100%-1rem)]' : 'right-[calc(100%-1rem)]'} flex flex-row gap-2 pt-2">
     {#each { length: MAX_ROUNDS } as _, i}
-     <div class="w-5" style={roundWins[i] ? `color: ${bustColor}` : 'color: color-mix(in srgb, #6b7280 60%, transparent)'}>
-      <Star />
+     <div class="w-5" style={roundWins[i] ? `color: ${bustColor}` : 'color: rgba(107, 114, 128, 0.6)'}>      <Star />
      </div>
     {/each}
    </div>
