@@ -222,8 +222,6 @@
      img.src = def.src;
    })));
 
-   console.log(OBSTACLE_IMGS);
-
    // prebuffer all game sounds
    preloadSound('/sounds/run.mp3');
    preloadSound('/sounds/jump.mp3');
