@@ -230,7 +230,7 @@
   <!-- Step 1: Nick Input -->
   <div class="flex flex-col items-center gap-6">
    <div class="flex flex-col items-center gap-2">
-    <label for="nick-input" class="text-xl">{m.name_label()}</label>
+    <label for="nick-input" class="text-2xl text-center">{m.name_label()}</label>
     <input
      id="nick-input"
      type="text"
@@ -251,6 +251,7 @@
  {:else}
   <!-- Step 2: Bust Selection -->
   <div class="flex flex-col items-center gap-6">
+   <p class="text-2xl text-center">{m.choose_commander()}</p>
    <div class="flex items-center gap-10">
     <ArrowButton direction="left" onclick={prevBust} />
     <div class="overflow-hidden w-32 h-50 relative">
