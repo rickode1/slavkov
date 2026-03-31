@@ -11,10 +11,10 @@
  let countdown = null;
  let countdownInterval = null;
 
- let groundSpeed = 10;
- let obstacleInterval = 170;
- let jumpHeight = 300;
- let jumpDuration = 1500;
+ let groundSpeed = 13;
+ let obstacleInterval = 120;
+ let jumpHeight = 350;
+ let jumpDuration = 1000;
 
  const GAME_DURATION_S = 30;
  const TARGET_FPS = 60;
@@ -64,9 +64,6 @@
    { src: "/img/mini_def_obstacle4.webp", height: 140 },   
  ];
 
- // obstacle size
- const OBS_WIDTH = 130;
- const OBS_HEIGHT = 80;
 
  const SOLDIER_IMG_WIDTH = 400;
  const SOLDIER_LEFT = 60;
@@ -82,7 +79,7 @@
    showWinPose = false;
    obstacles = [];
    frameCount = 0;
-   nextObstacleAt = 60;
+   nextObstacleAt = 30;
    finishReached = false;
    finishX = groundSpeed * TARGET_FPS * GAME_DURATION_S;
 
@@ -127,7 +124,8 @@
      frameCount++;
      if (frameCount >= nextObstacleAt && !finishReached && finishX > gameWidth + 200) {
        const def = OBSTACLE_IMGS[Math.floor(Math.random() * OBSTACLE_IMGS.length)];
-       obstacles = [...obstacles, { x: gameWidth + 20, img: def.src, height: def.height }];
+       const aspectRatio = (def.naturalWidth && def.naturalHeight) ? def.naturalWidth / def.naturalHeight : 1.625;
+       obstacles = [...obstacles, { x: gameWidth + 20, img: def.src, height: def.height, width: Math.round(def.height * aspectRatio) }];
        const variance = obstacleInterval * 0.5;
        const gap = Math.max(40, obstacleInterval + Math.floor(Math.random() * variance * 2 - variance));
        nextObstacleAt = frameCount + gap;
@@ -161,20 +159,22 @@
      // collision detection
      for (const obs of obstacles) {
        const obsLeft = obs.x;
-       const obsRight = obs.x + OBS_WIDTH;
+       const obsRight = obs.x + obs.width;
        const soldierLeft = SOLDIER_HB_LEFT;
        const soldierRight = SOLDIER_HB_LEFT + SOLDIER_HB_WIDTH;
        const soldierBottom = soldierY;
 
-       // horizontal overlap
-       if (soldierRight > obsLeft && soldierLeft < obsRight) {      
-         if (soldierBottom > -obs.height) {
-           if(isJumping) continue;
+       // approach from the side (20px grace margin at entry)
+       const sideOverlap = soldierRight > obsLeft + 20 && soldierLeft < obsRight;
+       // landing on top: descending phase of jump, no grace margin
+       const isDescending = isJumping && (performance.now() - jumpStart) > jumpDuration / 2;
+       const topLanding = isDescending && soldierRight > obsLeft && soldierLeft < obsRight;
+
+       if ((sideOverlap || topLanding) && soldierBottom > -obs.height) {
            triggerFall();
            cancelAnimationFrame(animFrame);
            if (onResult && !debug) { setTimeout(() => onResult(false), 6000); } else { setTimeout(resetGame, 6000); }
            return;
-         }
        }
      }
    } else {
@@ -211,8 +211,19 @@
    }, 1000);
  }
 
- onMount(() => {
+ onMount(async () => {
    if (gameAreaEl) gameWidth = gameAreaEl.clientWidth;
+
+   // detect natural dimensions from each obstacle image for accurate hitboxes
+   await Promise.all(OBSTACLE_IMGS.map(def => new Promise(resolve => {
+     const img = new Image();
+     img.onload = () => { def.naturalWidth = img.naturalWidth; def.naturalHeight = img.naturalHeight; resolve(); };
+     img.onerror = () => resolve();
+     img.src = def.src;
+   })));
+
+   console.log(OBSTACLE_IMGS);
+
    // prebuffer all game sounds
    preloadSound('/sounds/run.mp3');
    preloadSound('/sounds/jump.mp3');
@@ -350,7 +361,7 @@
 
   <label class="flex flex-col">
     Obstacle Interval: {obstacleInterval}
-    <input type="range" min="100" max="600" step="10" bind:value={obstacleInterval} />
+    <input type="range" min="30" max="200" step="5" bind:value={obstacleInterval} />
   </label>
 </div>
 {/if}
