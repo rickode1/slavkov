@@ -20,6 +20,17 @@
 
  let { children } = $props();
 
+ let scale = $state(1);
+
+ $effect(() => {
+  function updateScale() {
+   scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  }
+  updateScale();
+  window.addEventListener('resize', updateScale);
+  return () => window.removeEventListener('resize', updateScale);
+ });
+
  let cancelExpanded = $state(false);
  let autoCloseTimer = $state(null);
 
@@ -149,8 +160,10 @@
  });
 </script>
 
+<div style="width: 100vw; height: 100vh; overflow: hidden;">
 <main
- class="max-w-480 relative px-10 h-screen mx-auto flex flex-col items-center"
+ class="relative px-10 flex flex-col items-center"
+ style="width: 1920px; height: 1080px; transform-origin: top left; transform: scale({scale});"
 >
  <Notification />
  {#if !page.url.pathname.includes('8-gameend') && !page.url.pathname.includes('5-minigames')}
@@ -205,3 +218,4 @@
   </div>
  {/if}
 </main>
+</div>

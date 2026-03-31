@@ -148,11 +148,11 @@
    classes="w-[calc(100%-35rem)] mt-10"
   />
  {:else if phase === 'dmg'}
-  <main class="max-w-440 relative w-full px-10 h-screen mx-auto flex flex-col items-center justify-center">
+  <main class="max-w-440 relative w-full px-10 h-[1080px] mx-auto flex flex-col items-center justify-center">
    <MinigameDmg onResult={handleDmgResult} />
   </main>
  {:else if phase === 'def'}
-  <main class="max-w-440 relative w-full px-10 h-screen mx-auto flex flex-col items-center justify-center">
+  <main class="max-w-440 relative w-full px-10 h-[1080px] mx-auto flex flex-col items-center justify-center">
    <MinigameDef onResult={handleDefResult} />
   </main>
  {/if}

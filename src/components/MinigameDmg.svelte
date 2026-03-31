@@ -212,6 +212,11 @@
    clearInterval(countdownInterval);
    if (breathingSound) { breathingSound.stop(); breathingSound = null; }
  });
+
+ function portal(node) {
+   document.body.appendChild(node);
+   return { destroy() { node.remove(); } };
+ }
 </script>
 
 <svelte:head>
@@ -225,7 +230,7 @@
   <link rel="preload" href="/img/mini_dmg_soldier_fire.webm" as="video" type="video/webm" />
 </svelte:head>
 
-<div class="relative w-full z-10 -mt-[10vh]" style="height: 85vh; overflow: clip;">
+<div class="relative w-full z-10 -mt-[108px]" style="height: 918px; overflow: clip;">
   <img
     class="absolute inset-0 w-full h-full object-cover"
     src="/img/mini_dmg_bg.webp"
@@ -313,9 +318,9 @@
 {/if}
 
 {#if showResult || countdown !== null}
- <div class="fixed inset-0 flex items-center justify-center z-40 bg-black/60 pointer-events-none">
+ <div use:portal class="fixed inset-0 flex items-center justify-center z-40 bg-black/60 pointer-events-none">
   <span
-    class="text-[10rem] font-bold text-white drop-shadow-2xl -mt-[10vh]"
+    class="text-[10rem] font-bold text-white drop-shadow-2xl -mt-[108px]"
     class:result-pop={countdown === null}
   >
     {#if countdown !== null}
