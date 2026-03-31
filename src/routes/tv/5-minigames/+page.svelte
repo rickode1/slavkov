@@ -70,12 +70,10 @@
 
    if (hasInitiative) {
     const initiativeMsg = round === 1 ? m.minigame_initiative({ name: attName }) : m.minigame_initiative2({ name: attName });
-    setTimeout(() => notify(initiativeMsg, NOTIF_DURATION), delay);
+    setTimeout(() => notify(initiativeMsg, NOTIF_DURATION, false, () => { phase = 'dmg'; }), delay);
+   } else {
+    setTimeout(() => { phase = 'dmg'; }, delay);
    }
-
-   delay += NOTIF_DURATION + NOTIF_GAP;
-
-   setTimeout(() => { phase = 'dmg'; }, delay);
   }
 
   init();
@@ -103,9 +101,10 @@
   notify(
    dmgImg + (success ? m.minigame_dmg_success({ name: attName }) : m.minigame_dmg_fail({ name: attName }))
    + '<br><br>' + m.minigame_def_cta({ name: defName }),
-   NOTIF_DURATION
+   NOTIF_DURATION,
+   false,
+   () => { phase = 'def'; }
   );
-  setTimeout(() => { phase = 'def'; }, NOTIF_DURATION + NOTIF_GAP);
  }
 
  async function handleDefResult(success) {
@@ -116,17 +115,21 @@
   // Only animate the minigame_def card for the defender; nothing new for the attacker.
   animatedCards = { [attCode]: false, [defCode]: ['minigame_def'] };
   phase = 'idle';
-  notify(defImg + (success ? m.minigame_def_success({ name: defName }) : m.minigame_def_fail({ name: defName })), 4000);
   const id = $sessionId;
-  if (id) {
-   setTimeout(async () => {
-    await fetch('/api/session/status', {
-     method: 'POST',
-     headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify({ sessionId: id, status: '6-battle' }),
-    });
-   }, 6000);
-  }
+  notify(
+   defImg + (success ? m.minigame_def_success({ name: defName }) : m.minigame_def_fail({ name: defName })),
+   4000,
+   false,
+   () => {
+    if (id) {
+     fetch('/api/session/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: id, status: '6-battle' }),
+     });
+    }
+   }
+  );
  }
 </script>
 

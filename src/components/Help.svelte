@@ -3,7 +3,6 @@
 
  let open = $state(false);
  let scrollEl = $state(null);
- let closeTimer = null;
 
  function toggle() {
   open = !open;

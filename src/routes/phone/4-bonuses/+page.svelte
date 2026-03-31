@@ -5,21 +5,17 @@
   gameSession,
   playerCode,
  } from "$lib/stores/gameSession.js";
- import { optimize } from "$lib/image";
  import { m } from "$lib/paraglide/messages.js";
  import { strokeStyle } from "$lib/constants.js";
  import { playSound, preloadSound } from "$lib/audio.js";
 
 
- import PlayerBust from "$components/PlayerBust.svelte";
  import Card from "$components/Card.svelte";
  import Button from "$components/Button.svelte";
  import Loader from "$components/Loader.svelte";
  import Help from "$components/Help.svelte";
  import LookTV from "$components/LookTV.svelte";
  import HourglassIcon from "$components/HourglassIcon.svelte";
-
- let introDone = $state(false);
 
  // Get current player's data
  let myPlayer = $derived.by(() => {
@@ -71,27 +67,25 @@
  let submitting = $state(false);
  let submitted = $state(false);
 
+ // introDone becomes true once TV notification is dismissed (help_open true → false)
+ let helpOpenSeen = $state(false);
+ let introDone = $derived(helpOpenSeen && !$gameSession?.help_open);
+ let dingPlayed = false;
+
  // Timer: 30s to choose bonuses
  onMount(() => {
   preloadSound('/sounds/ding.mp3');
-  const session = $gameSession;
-  let bonusCount = 0;
-  if (session) {
-   const round = session.current_round || 1;
-   const rd = session[`round_${round}`] || {};
-   for (const suffix of ['_1', '_2']) {
-    if (rd[`bonus_unit${suffix}`] > 0) bonusCount++;
-    if (rd[`bonus_loc${suffix}`] !== 0 && rd[`bonus_loc${suffix}`] !== undefined) bonusCount++;
-   }
+ });
+
+ $effect(() => {
+  if ($gameSession?.help_open) helpOpenSeen = true;
+ });
+
+ $effect(() => {
+  if (introDone && !dingPlayed) {
+   dingPlayed = true;
+   playSound('/sounds/ding.mp3');
   }
-
-  const delay = bonusCount > 0
-   ? 4000 + 6000 + (bonusCount * 4000)
-   : 12000;
-
-  setTimeout(() => {
-   introDone = true;
-  }, delay);
  });
 
  function toggleCard(id) {
@@ -105,10 +99,6 @@
  }
 
  let hasSelection = $derived(selectedCards.size > 0);
-
- $effect(() => {
-  if (introDone) playSound('/sounds/ding.mp3');
- });
 
  async function postBonuses(counts) {
   return fetch("/api/session/bonuses", {
@@ -196,7 +186,5 @@
 
 {/if}
 {:else}
- <button ondblclick={() => { introDone = true; }}>
-  <LookTV />
- </button>
+ <LookTV />
 {/if}

@@ -1,17 +1,42 @@
 <script>
  import { onDestroy } from "svelte";
  import { notificationMessage } from "$lib/stores/notification.js";
+ import { sessionId } from "$lib/stores/gameSession.js";
  import LookPhone from "$components/LookPhone.svelte";
 
  let visible = $state(false);
  let currentMessage = $state(null);
  let showLookPhone = $state(false);
+ let currentOnClose = null;
  let hideTimer = null;
  let removeTimer = null;
+
+ function setHelpOpen(open) {
+  const id = $sessionId;
+  if (!id) return;
+  fetch('/api/session/notification', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ sessionId: id, open }),
+  }).catch(() => {});
+ }
 
  function clearTimers() {
   if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
   if (removeTimer) { clearTimeout(removeTimer); removeTimer = null; }
+ }
+
+ function close() {
+  clearTimers();
+  const onClose = currentOnClose;
+  currentOnClose = null;
+  visible = false;
+  setHelpOpen(false);
+  removeTimer = setTimeout(() => {
+   currentMessage = null;
+   notificationMessage.set(null);
+   if (onClose) onClose();
+  }, 500);
  }
 
  $effect(() => {
@@ -21,18 +46,18 @@
   clearTimers();
   currentMessage = msg.html;
   showLookPhone = msg.showLookPhone ?? false;
+  currentOnClose = msg.onClose ?? null;
   visible = false;
 
   // Paint the initial hidden state, then slide in
-  requestAnimationFrame(() => { requestAnimationFrame(() => { visible = true; }); });
+  requestAnimationFrame(() => { requestAnimationFrame(() => {
+   visible = true;
+   if (msg.showLookPhone) setHelpOpen(true);
+  }); });
 
-  hideTimer = setTimeout(() => {
-   visible = false;
-   removeTimer = setTimeout(() => {
-    currentMessage = null;
-    notificationMessage.set(null);
-   }, 500);
-  }, msg.duration);
+  if (msg.duration) {
+   hideTimer = setTimeout(close, msg.duration);
+  }
  });
 
  onDestroy(clearTimers);
@@ -60,6 +85,12 @@
      <LookPhone />
     {/if}
    </div>
+   <button
+    class="pointer-events-auto absolute left-1/2 -translate-x-1/2 bottom-2 z-10 w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white cursor-pointer"
+    onclick={close}
+   >
+    <span class="text-2xl uppercase">ok</span>
+   </button>
   </div>
  </div>
 {/if}

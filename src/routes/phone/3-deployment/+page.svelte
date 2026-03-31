@@ -30,11 +30,8 @@
 
  let myStrokeStyle = $derived.by(() => strokeStyle(myPlayer?.bust));
 
- let introDone = $state(false);
- let helpKey = $derived(introDone ? (selected ? 2 : 1) : 0);
-
- let selectedUnit = $state(null);
  let deploying = $state(false);
+ let selectedUnit = $state(null);
 
  let selected = $derived.by(() => {
   if (!$gameSession) return false;
@@ -110,16 +107,25 @@
  let deployingLocation = $state(false);
  let locationSelected = $state(false);
 
+ // introDone becomes true once TV notification is dismissed (help_open true → false)
+ let helpOpenSeen = $state(false);
+ let introDone = $derived(helpOpenSeen && !$gameSession?.help_open);
+ let dingPlayed = false;
+
   onMount(() => {
   preloadSound('/sounds/ding.mp3');
   preloadSound('/sounds/piece-move.mp3');
-  setTimeout(() => {
-   introDone = true;
-  }, 10000);
  });
 
  $effect(() => {
-  if (introDone) playSound('/sounds/ding.mp3');
+  if ($gameSession?.help_open) helpOpenSeen = true;
+ });
+
+ $effect(() => {
+  if (introDone && !dingPlayed) {
+   dingPlayed = true;
+   playSound('/sounds/ding.mp3');
+  }
  });
 
  function handleSlotSelect(slot) {
@@ -186,7 +192,7 @@
   <link rel="preload" href="/img/bonus_unit.webp" as="image" />
 </svelte:head>
 
-<Help player={myPlayer} autoOpen={helpKey}>
+<Help player={myPlayer} autoOpen={introDone}>
      <p class="text-lg">{@html selectedUnit ? m.deploy_place_unit() : m.deploy_select_unit()}</p>  
      <img
       class="w-40 h-auto mx-auto"
@@ -259,9 +265,7 @@
  </div>
 {/if}
 {:else}
- <button ondblclick={() => { introDone = true; }}>
-  <LookTV />
- </button>
+ <LookTV />
 {/if}
 
 
