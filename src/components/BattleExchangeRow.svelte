@@ -70,8 +70,9 @@
  <div class="flex rounded-lg duration-300 border border-black/10 shadow-sm bg-white/10 overflow-hidden">
 
   <!-- Player 1 (left) -->
-  <div class="text-white py-2 pl-3 pr-5 flex items-center shrink-0 self-stretch"
-   style="background-color: {bust1Color}; -webkit-clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%); clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%); transform: translateZ(0); will-change: transform;">
+  <div class="relative text-white py-2 pl-3 pr-3 flex items-center shrink-0 self-stretch"
+   style="background-color: {bust1Color}">
+   <svg class="absolute top-0 h-full w-5" style="left: calc(100% - 1px)" viewBox="0 0 20 100" preserveAspectRatio="none"><polygon points="0,0 20,50 0,100" fill="{bust1Color}" /></svg>
    <div class="flex flex-col justify-center gap-1">
     {#if unit1Img}
      <img class="h-14 w-auto object-contain transition-all" src={unit1Img} alt="" />
@@ -111,8 +112,9 @@
   {/if}
 
   <!-- Player 2 (right) -->
-  <div class="text-white py-2 pr-3 pl-5 flex items-center shrink-0 self-stretch"
-   style="background-color: {bust2Color}; -webkit-clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 10% 100%, 0% 50%); clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 10% 100%, 0% 50%); transform: translateZ(0); will-change: transform;">
+  <div class="relative text-white py-2 pr-3 pl-3 flex items-center shrink-0 self-stretch"
+   style="background-color: {bust2Color}">
+   <svg class="absolute top-0 h-full w-5" style="right: calc(100% - 1px)" viewBox="0 0 20 100" preserveAspectRatio="none"><polygon points="20,0 0,50 20,100" fill="{bust2Color}" /></svg>
    <div class="overflow-hidden transition-[max-width] duration-400 {p2ShowAction ? 'max-w-20' : 'max-w-0'}">
     <div class="flex flex-col items-center mr-4 w-14 shrink-0">
      <img alt="" class="h-8 w-auto shrink-0 mb-1" src="/img/{p2ActionIcon}" style="filter: brightness(0) invert(1)">
