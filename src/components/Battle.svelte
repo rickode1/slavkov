@@ -317,7 +317,7 @@
       <div class="relative flex items-center justify-center">
        <img
         class="h-48 w-48 object-contain transition-[filter] duration-700 {diceRolling ? 'dice-rolling' : ''}"
-        style={rollOutcome === 'success' ? 'filter: drop-shadow(0 0 18px gold) drop-shadow(0 0 36px goldenrod)' : rollOutcome === 'fail' ? 'filter: drop-shadow(0 0 18px #111) drop-shadow(0 0 36px #000)' : 'filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4))'}
+        style="{rollOutcome === 'success' ? 'filter: drop-shadow(0 0 18px gold) drop-shadow(0 0 36px goldenrod)' : rollOutcome === 'fail' ? 'filter: drop-shadow(0 0 18px #111) drop-shadow(0 0 36px #000)' : 'filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4))'}; will-change: filter, transform;"
         src="/img/dice.webp"
         alt="Dice"
        />

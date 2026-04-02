@@ -70,8 +70,8 @@
  <div class="flex rounded-lg duration-300 border border-black/10 shadow-sm bg-white/10 overflow-hidden">
 
   <!-- Player 1 (left) -->
-  <div class="text-white py-2 pl-3 pr-5 flex items-center shrink-0 self-stretch transition-[clip-path] duration-400"
-   style="background-color: {bust1Color}; clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%)">
+  <div class="text-white py-2 pl-3 pr-5 flex items-center shrink-0 self-stretch"
+   style="background-color: {bust1Color}; -webkit-clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%); clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%); transform: translateZ(0); will-change: transform;">
    <div class="flex flex-col justify-center gap-1">
     {#if unit1Img}
      <img class="h-14 w-auto object-contain transition-all" src={unit1Img} alt="" />
@@ -91,7 +91,7 @@
    <div class="flex flex-col items-center text-center leading-[1] w-30 shrink-0 py-2">
     <span class="text-sm h-4 flex items-center mb-1">{p1ResultLabel}</span>
     <div class="relative flex items-center justify-center">
-     <img alt="" class="h-14 w-auto shrink-0" src="/img/dice.webp" style={p1DiceStyle}>
+     <img alt="" class="h-14 w-auto shrink-0" src="/img/dice.webp" style="{p1DiceStyle}; transform: translateZ(0)">
      <span class="text-sm font-bold absolute bottom-[1.45rem] lining-nums font-mono text-black/90">{p1Roll ?? p1Difficulty}</span>
     </div>
    </div>
@@ -104,15 +104,15 @@
    <div class="flex flex-col items-center text-center leading-[1] w-30 shrink-0 py-2">
     <span class="text-sm h-4 flex items-center mb-1">{p2ResultLabel}</span>
     <div class="relative flex items-center justify-center">
-     <img alt="" class="h-14 w-auto shrink-0" src="/img/dice.webp" style={p2DiceStyle}>
+     <img alt="" class="h-14 w-auto shrink-0" src="/img/dice.webp" style="{p2DiceStyle}; transform: translateZ(0)">
      <span class="text-sm font-bold absolute bottom-[1.45rem] lining-nums font-mono text-black/90">{p2Roll ?? p2Difficulty}</span>
     </div>
    </div>
   {/if}
 
   <!-- Player 2 (right) -->
-  <div class="text-white py-2 pr-3 pl-5 flex items-center shrink-0 self-stretch transition-[clip-path] duration-400"
-   style="background-color: {bust2Color}; clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 10% 100%, 0% 50%)">
+  <div class="text-white py-2 pr-3 pl-5 flex items-center shrink-0 self-stretch"
+   style="background-color: {bust2Color}; -webkit-clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 10% 100%, 0% 50%); clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 10% 100%, 0% 50%); transform: translateZ(0); will-change: transform;">
    <div class="overflow-hidden transition-[max-width] duration-400 {p2ShowAction ? 'max-w-20' : 'max-w-0'}">
     <div class="flex flex-col items-center mr-4 w-14 shrink-0">
      <img alt="" class="h-8 w-auto shrink-0 mb-1" src="/img/{p2ActionIcon}" style="filter: brightness(0) invert(1)">
