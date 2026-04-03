@@ -167,7 +167,14 @@
     const ex = exchanges[0];
     let resultText = null;
     if (ex.activeRole === 'def') {
-     resultText = rollOutcome === 'success' ? m.battle_exchange_repelled() : m.battle_exchange_success();
+     if (rollOutcome === 'success') {
+      const hasUnitCounter = (roundData?.[`bonus_unit_${defenderNum}`] || 0) > 0
+       && (roundData?.[`unit_used_${defenderNum}`] || 0) === 0;
+      const attackerNickHtml = nickHtml($gameSession?.[`player_${defenderNum}`]);
+      resultText = hasUnitCounter ? m.battle_unit_retry({ name: attackerNickHtml }) : m.battle_exchange_repelled();
+     } else {
+      resultText = m.battle_exchange_success();
+     }
     } else if (ex.activeRole === 'dmg' && rollOutcome === 'fail') {
      resultText = m.battle_exchange_failed();
     }
@@ -341,6 +348,8 @@
         player2={$gameSession?.player_2}
         unit1Img={player1UnitImg}
         unit2Img={player2UnitImg}
+        unit1Rotate={player1UnitRotate}
+        unit2Rotate={player2UnitRotate}
         dmgDifficulty={exchanges[0].dmgDifficulty}
         dmgRoll={exchanges[0].dmgRoll}
         dmgOutcome={exchanges[0].dmgOutcome}
@@ -363,6 +372,8 @@
         player2={$gameSession?.player_2}
         unit1Img={player1UnitImg}
         unit2Img={player2UnitImg}
+        unit1Rotate={player1UnitRotate}
+        unit2Rotate={player2UnitRotate}
         dmgDifficulty={ex.dmgDifficulty}
         dmgRoll={ex.dmgRoll}
         dmgOutcome={ex.dmgOutcome}

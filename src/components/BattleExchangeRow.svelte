@@ -9,6 +9,8 @@
   player2 = null,
   unit1Img = null,
   unit2Img = null,
+  unit1Rotate = false,
+  unit2Rotate = false,
   dmgDifficulty = 10,
   dmgRoll = null,
   dmgOutcome = null,
@@ -28,7 +30,7 @@
  let p1ShowAction = $derived(p1IsActive || p1Roll != null);
  let p1ClipActive = $derived(p1IsActive && p1Roll == null);
  let p1ActionIcon = $derived(p1Role === 'dmg' ? 'bonus_dmg.webp' : 'bonus_def.webp');
- let p1ActionText = $derived(p1Role === 'dmg' ? 'Útočí!' : 'Brání se!');
+ let p1ActionText = $derived(p1Role === 'dmg' ? m.battle_attack() : m.battle_defense());
  let p1DiceStyle = $derived(
   p1Outcome === 'success'
    ? 'filter: drop-shadow(0 0 3px gold) drop-shadow(0 0 6px goldenrod)'
@@ -50,7 +52,7 @@
  let p2ShowAction = $derived(p2IsActive || p2Roll != null);
  let p2ClipActive = $derived(p2IsActive && p2Roll == null);
  let p2ActionIcon = $derived(p2Role === 'dmg' ? 'bonus_dmg.webp' : 'bonus_def.webp');
- let p2ActionText = $derived(p2Role === 'dmg' ? 'Útočí!' : 'Brání se!');
+ let p2ActionText = $derived(p2Role === 'dmg' ? m.battle_attack() : m.battle_defense());
  let p2DiceStyle = $derived(
   p2Outcome === 'success'
    ? 'filter: drop-shadow(0 0 3px gold) drop-shadow(0 0 6px goldenrod)'
@@ -75,7 +77,7 @@
    <svg class="absolute top-0 h-full w-5" style="left: calc(100% - 1px)" viewBox="0 0 20 100" preserveAspectRatio="none"><polygon points="0,0 20,50 0,100" fill="{bust1Color}" /></svg>
    <div class="flex flex-col justify-center gap-1">
     {#if unit1Img}
-     <img class="h-14 w-auto object-contain transition-all" src={unit1Img} alt="" />
+     <img class="h-14 w-auto object-contain transition-all {unit1Rotate ? 'scale-x-[-1]' : ''}" src={unit1Img} alt="" />
     {/if}
     <div class="font-bold text-sm text-center">{player1?.nick || ''}</div>
    </div>
@@ -93,7 +95,7 @@
     <span class="text-sm h-4 flex items-center mb-1">{p1ResultLabel}</span>
     <div class="relative flex items-center justify-center">
      <img alt="" class="h-14 w-auto shrink-0" src="/img/dice.webp" style="{p1DiceStyle}; transform: translateZ(0)">
-     <span class="text-sm font-bold absolute bottom-[1.45rem] lining-nums font-mono text-black/90">{p1Roll ?? p1Difficulty}</span>
+     <span class="text-sm font-bold absolute bottom-[1.45rem] lining-nums font-mono text-black/90">{p1Outcome != null ? p1Roll : p1Difficulty}</span>
     </div>
    </div>
   {/if}
@@ -106,7 +108,7 @@
     <span class="text-sm h-4 flex items-center mb-1">{p2ResultLabel}</span>
     <div class="relative flex items-center justify-center">
      <img alt="" class="h-14 w-auto shrink-0" src="/img/dice.webp" style="{p2DiceStyle}; transform: translateZ(0)">
-     <span class="text-sm font-bold absolute bottom-[1.45rem] lining-nums font-mono text-black/90">{p2Roll ?? p2Difficulty}</span>
+     <span class="text-sm font-bold absolute bottom-[1.45rem] lining-nums font-mono text-black/90">{p2Outcome != null ? p2Roll : p2Difficulty}</span>
     </div>
    </div>
   {/if}
@@ -123,7 +125,7 @@
    </div>
    <div class="flex flex-col justify-center gap-1">
     {#if unit2Img}
-     <img class="h-14 w-auto object-contain transition-all" src={unit2Img} alt="" />
+     <img class="h-14 w-auto object-contain transition-all {unit2Rotate ? 'scale-x-[-1]' : ''}" src={unit2Img} alt="" />
     {/if}
     <div class="font-bold text-sm text-center">{player2?.nick || ''}</div>
    </div>

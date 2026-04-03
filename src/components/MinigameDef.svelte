@@ -330,7 +330,7 @@
 <!-- button / result -->
 {#if gameState === 'running'}
   <button
-    class="absolute bottom-4 z-10 bg-primary text-white text-2xl font-bold h-35 w-35 rounded-full cursor-pointer result-pop"
+    class="absolute bottom-4 z-10 bg-primary text-white text-2xl font-bold h-35 w-35 rounded-full cursor-pointer btn-pulse"
     on:click={handleJump}
   >
     {m.jump()}

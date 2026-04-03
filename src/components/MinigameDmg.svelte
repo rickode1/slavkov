@@ -273,7 +273,7 @@
     <!-- hitbox -->
     <div
       bind:this={targetEl}
-      class="absolute rounded-full pointer-events-none z-10 flex items-center justify-center"
+      class="absolute rounded-full pointer-events-none z-10 flex items-center justify-center {debug ? 'bg-primary/20' : ''}"
       style="top: {hbTop * 4}px; right: {hbRight * 4}px; width: {hbWidth * 4}px; height: {hbHeight * 4}px; transform: rotate({hbRotate}deg);"
     >
       {#if showCrosshair}
@@ -310,7 +310,7 @@
 <!-- shoot button -->
 {#if !stopped && countdown === null}
   <button
-    class="absolute bottom-10 z-10 bg-primary text-white text-2xl font-bold h-35 w-35 rounded-full cursor-pointer result-pop"
+    class="absolute bottom-10 z-10 bg-primary text-white text-2xl font-bold h-35 w-35 rounded-full cursor-pointer btn-pulse"
     on:click={handleClick}
   >
     {m.shoot()}
