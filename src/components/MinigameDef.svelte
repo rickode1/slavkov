@@ -16,7 +16,7 @@
  let jumpHeight = 380;
  let jumpDuration = 1500;
 
- const GAME_DURATION_S = 30;
+ const GAME_DURATION_S = 20;
  const TARGET_FPS = 60;
 
  let gameState = 'ready';    // ready | running | won | lost

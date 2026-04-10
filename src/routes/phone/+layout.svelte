@@ -14,10 +14,13 @@
  import { currentLocale } from "$lib/stores/locale.js";
  import LangSwitcher from "$components/LangSwitcher.svelte";
  import Timer from "$components/Timer.svelte";
+ import Onboarding from "$components/Onboarding.svelte";
 
  let { children } = $props();
 
  let wakeLock = null;
+ let helpOpen = $state(false);
+ let onGameRoute = $derived(/\/[3-7]-/.test(page.url.pathname));
 
  async function requestWakeLock() {
   try {
@@ -115,5 +118,21 @@
   {@render children()}
  {/key}
  <LangSwitcher classes="fixed left-4 bottom-10" />
- <Timer sound={false} />
+ <Timer sound={false} classes="fixed right-4 bottom-10" />
+
+ {#if onGameRoute}
+  <button
+   onclick={() => helpOpen = true}
+   class="fixed left-20 bottom-10 w-14 h-14 rounded-full bg-primary text-white text-2xl font-bold flex items-center justify-center cursor-pointer z-40"
+   aria-label="Help"
+  >?</button>
+ {/if}
+
+ {#if helpOpen}
+  <div class="fixed inset-0 z-50 bg-cover bg-center flex items-center justify-center bg-[#e6cfbf]" style="background-image: url('/img/base_bg.webp')">
+   <div class="w-full max-w-md">
+    <Onboarding autoslide={false} onclose={() => helpOpen = false} />
+   </div>
+  </div>
+ {/if}
 </main>

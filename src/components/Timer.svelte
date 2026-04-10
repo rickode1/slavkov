@@ -4,7 +4,7 @@
  import { timerActive, timerRemaining } from '$lib/stores/timer.js';
  import { playSound, preloadSound } from '$lib/audio.js';
 
- let { classes = 'fixed right-4 bottom-4', onExpiry = null, sound = true } = $props();
+ let { classes = '', onExpiry = null, sound = true } = $props();
 
  let tikTak = null;
 

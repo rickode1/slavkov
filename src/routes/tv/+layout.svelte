@@ -17,10 +17,13 @@
  import ErrorIcon from "$components/ErrorIcon.svelte";
  import Notification from "$components/Notification.svelte";
  import Timer from "$components/Timer.svelte";
+ import Onboarding from "$components/Onboarding.svelte";
 
  let { children } = $props();
 
  let scale = $state(1);
+ let helpOpen = $state(false);
+ let onGameRoute = $derived(/\/[3-7]-/.test(page.url.pathname));
 
  $effect(() => {
   function updateScale() {
@@ -180,6 +183,15 @@
   showAll={page.url.pathname === "/tv"}
  />
 
+ {#if onGameRoute}
+  <button
+   onclick={() => helpOpen = true}
+   class="absolute left-34 bottom-6 w-14 h-14 lg:w-20 lg:h-20 rounded-full bg-primary text-white text-2xl lg:text-4xl font-bold flex items-center justify-center cursor-pointer"
+   aria-label="Help"
+  >?</button>
+ {/if}
+
+
  {#if page.url.pathname === "/tv" && !$sessionId}
   <button
    class="absolute right-8 bottom-10 cursor-pointer"
@@ -219,3 +231,9 @@
  {/if}
 </main>
 </div>
+
+{#if helpOpen}
+ <div class="fixed inset-0 z-50 bg-cover bg-center flex items-center justify-center bg-[#e6cfbf]" style="background-image: url('/img/base_bg.webp')">
+  <Onboarding autoslide={false} onclose={() => helpOpen = false} />
+ </div>
+{/if}

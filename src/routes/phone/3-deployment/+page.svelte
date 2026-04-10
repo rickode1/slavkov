@@ -203,7 +203,7 @@
 
 {#if introDone}
 {#if $gameSession}
- <div class="flex flex-col items-center pt-16">
+ <div class="flex flex-col items-center pt-10">
   {#if selected}
    <Map
     playerFilter={myPlayerNumber}

@@ -4,8 +4,7 @@
 
 <button class="cursor-pointer {classes}" {onclick}>
  <svg
-  width="50"
-  height="50"
+  class="w-full h-full"
   viewBox="0 0 85 85"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"

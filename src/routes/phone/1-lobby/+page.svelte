@@ -253,7 +253,7 @@
   <div class="flex flex-col items-center gap-6">
    <p class="text-2xl text-center">{m.choose_commander()}</p>
    <div class="flex items-center gap-10">
-    <ArrowButton direction="left" onclick={prevBust} />
+    <ArrowButton direction="left" onclick={prevBust} classes="w-12 h-12" />
     <div class="overflow-hidden w-32 h-50 relative">
      {#key selectedBustIndex}
       <div class="relative w-full h-full">
@@ -270,7 +270,7 @@
       </div>
      {/key}
     </div>
-    <ArrowButton direction="right" onclick={nextBust} />
+    <ArrowButton direction="right" onclick={nextBust} classes="w-12 h-12" />
    </div>
 
    <p class="text-4xl text-center mt-4">{nick.trim()}</p>
