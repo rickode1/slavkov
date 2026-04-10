@@ -192,9 +192,11 @@
   <link rel="preload" href="/img/bonus_unit.webp" as="image" />
 </svelte:head>
 
+{#key selectedUnit}
 <Help player={myPlayer} autoOpen={introDone}>
      {@html selectedUnit ? m.deploy_place_unit() : m.deploy_select_unit()}
 </Help>
+{/key}
 
 {#if introDone}
 {#if $gameSession}
