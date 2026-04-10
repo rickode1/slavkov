@@ -1,7 +1,7 @@
 <script>
  import { onDestroy } from "svelte";
 
- let { player = null, children, autoOpen = false, duration = 8000 } = $props();
+ let { player = null, children, autoOpen = false, duration = 4000 } = $props();
 
  let visible = $state(false);
  let dismissed = $state(false);

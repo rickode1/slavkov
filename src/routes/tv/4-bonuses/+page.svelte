@@ -29,7 +29,7 @@
 
   setTimeout(() => { playSound('/sounds/piece-move.mp3') }, 500);
 
-  let notifDuration = 9000;
+  let notifDuration = 4000;
 
   setTimeout(() => {
    const session = $gameSession;
@@ -63,7 +63,7 @@
    }
 
    if (queue.length > 0) {
-    notifDuration = (queue.length * 4000) + 10000;
+    notifDuration = (queue.length * 4000) + 4000;
     const merged = queue.map(i => i.html).join('<br><br>');
     notify(merged + '<br><br>' + m.pick_bonuses(), notifDuration, true);
    } else {

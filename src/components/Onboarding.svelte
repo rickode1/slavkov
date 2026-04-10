@@ -7,12 +7,12 @@
 
  // Static slide definitions — text via reactive derived, image & duration static
  const SLIDES = [
-  { image: "/img/map.webp", duration: 6000 },
-  { image: "/img/bonus_unit.webp", duration: 6000 },
-  { image: "/img/onboarding_loc.webp", duration: 6000 },
-  { image: "/img/onboarding_bonuses.webp", duration: 6000 },
-  { image: "/img/onboarding_minigames.webp", duration: 6000 },
-  { image: "/img/onboarding_battle.webp", duration: 6000 },
+  { image: "/img/map.webp", duration: 8000 },
+  { image: "/img/bonus_unit.webp", duration: 12000 },
+  { image: "/img/onboarding_loc.webp", duration: 8000 },
+  { image: "/img/onboarding_bonuses.webp", duration: 8000 },
+  { image: "/img/onboarding_minigames.webp", duration: 8000 },
+  { image: "/img/onboarding_battle.webp", duration: 10000 },
  ];
 
  let slideTexts = $derived([
