@@ -193,7 +193,7 @@
 </svelte:head>
 
 <Help player={myPlayer} autoOpen={introDone}>
-     <p class="text-lg text-center">{@html selectedUnit ? m.deploy_place_unit() : m.deploy_select_unit()}</p>
+     {@html selectedUnit ? m.deploy_place_unit() : m.deploy_select_unit()}
 </Help>
 
 {#if introDone}

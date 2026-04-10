@@ -45,7 +45,7 @@
     class="w-full h-130 object-cover object-bottom absolute inset-0"
    />
    <div class="relative px-13 max-h-110 overflow-y-auto flex items-center h-full">
-    <div class="text-center space-y-4">
+    <div class="text-center space-y-4 mx-auto text-lg">
      {@render children()}
     </div>
    </div>

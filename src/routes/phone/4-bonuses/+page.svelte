@@ -140,7 +140,7 @@
 </script>
 
 <Help player={myPlayer} autoOpen={introDone}>
-  <p class="text-lg text-center">{m.pick_bonuses_mobile()}</p>
+  {m.pick_bonuses_mobile()}
 </Help>
 
 {#if introDone}
