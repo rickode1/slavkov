@@ -9,9 +9,9 @@
  const SLIDES = [
   { image: "/img/map.webp", duration: 14000 },
   { image: "/img/bonus_unit.webp", duration: 20000 },
-  { image: "/img/onboarding_loc.webp", duration: 8000 },
-  { image: "/img/onboarding_bonuses.webp", duration: 8000 },
-  { image: "/img/onboarding_minigames.webp", duration: 8000 },
+  { image: "/img/onboarding_loc.webp", duration: 9000 },
+  { image: "/img/onboarding_bonuses.webp", duration: 9000 },
+  { image: "/img/onboarding_minigames.webp", duration: 9000 },
   { image: "/img/onboarding_battle.webp", duration: 15000 },
  ];
 
@@ -81,7 +81,7 @@
  let dashOffset = $derived(CIRCUMFERENCE * (1 - progress));
 </script>
 
-<div class="flex flex-col items-center w-full pt-24 pb-4 gap-4 lg:gap-6 relative" style="height: 100vh;">
+<div class="flex flex-col items-center w-full pt-16 lg:pt-24 pb-4 gap-4 lg:gap-6 relative" style="height: 100vh;">
 
  {#if onclose}
   <button
