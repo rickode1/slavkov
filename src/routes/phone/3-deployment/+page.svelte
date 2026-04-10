@@ -193,12 +193,7 @@
 </svelte:head>
 
 <Help player={myPlayer} autoOpen={introDone}>
-     <p class="text-lg">{@html selectedUnit ? m.deploy_place_unit() : m.deploy_select_unit()}</p>  
-     <img
-      class="w-40 h-auto mx-auto"
-      src={selectedUnit ? "/img/bonus_loc.webp" : "/img/bonus_unit.webp"}
-      alt=""
-     />
+     <p class="text-lg text-center">{@html selectedUnit ? m.deploy_place_unit() : m.deploy_select_unit()}</p>
 </Help>
 
 {#if introDone}
