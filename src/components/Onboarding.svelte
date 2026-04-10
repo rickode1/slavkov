@@ -110,7 +110,7 @@
 
   {#if autoslide}
    <!-- Hourglass with circular progress ring -->
-   <div class="relative flex items-center justify-center w-20 h-20 lg:w-24 lg:h-24">
+   <div class="relative flex items-center justify-center w-20 h-20 lg:w-24 lg:h-24 cursor-pointer" onclick={next}>
     <svg
      class="absolute inset-0 w-full h-full -rotate-90"
      viewBox="0 0 80 80"
