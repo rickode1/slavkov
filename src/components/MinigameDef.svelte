@@ -11,10 +11,10 @@
  let countdown = null;
  let countdownInterval = null;
 
- let groundSpeed = 13;
- let obstacleInterval = 120;
- let jumpHeight = 350;
- let jumpDuration = 1000;
+ let groundSpeed = 9;
+ let obstacleInterval = 200;
+ let jumpHeight = 380;
+ let jumpDuration = 1500;
 
  const GAME_DURATION_S = 30;
  const TARGET_FPS = 60;
@@ -79,7 +79,7 @@
    showWinPose = false;
    obstacles = [];
    frameCount = 0;
-   nextObstacleAt = 30;
+   nextObstacleAt = 60;
    finishReached = false;
    finishX = groundSpeed * TARGET_FPS * GAME_DURATION_S;
 
@@ -127,7 +127,7 @@
        const aspectRatio = (def.naturalWidth && def.naturalHeight) ? def.naturalWidth / def.naturalHeight : 1.625;
        obstacles = [...obstacles, { x: gameWidth + 20, img: def.src, height: def.height, width: Math.round(def.height * aspectRatio) }];
        const variance = obstacleInterval * 0.5;
-       const gap = Math.max(40, obstacleInterval + Math.floor(Math.random() * variance * 2 - variance));
+       const gap = Math.max(60, obstacleInterval + Math.floor(Math.random() * variance * 2 - variance));
        nextObstacleAt = frameCount + gap;
      }
 
@@ -164,8 +164,8 @@
        const soldierRight = SOLDIER_HB_LEFT + SOLDIER_HB_WIDTH;
        const soldierBottom = soldierY;
 
-       // approach from the side (20px grace margin at entry)
-       const sideOverlap = soldierRight > obsLeft + 20 && soldierLeft < obsRight;
+       // approach from the side (30px grace margin at entry)
+       const sideOverlap = soldierRight > obsLeft + 30 && soldierLeft < obsRight;
        // landing on top: descending phase of jump, no grace margin
        const isDescending = isJumping && (performance.now() - jumpStart) > jumpDuration / 2;
        const topLanding = isDescending && soldierRight > obsLeft && soldierLeft < obsRight;

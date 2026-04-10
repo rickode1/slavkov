@@ -49,7 +49,7 @@
      delay: shouldAnimate ? i * 50 : 0,
     }}
    >
-    {locale}
+    {locale === "cs" ? "cz" : locale}
    </button>
   {/if}
  {/each}

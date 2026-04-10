@@ -27,7 +27,7 @@
  "unit_cannon": "Artillerie",
  "deploy_select_unit": "Wähle eine Einheit für dieses Gefecht; jede Einheit kann nur einmal verwendet werden.<br><br>Wenn der Kraftkreis gilt, erhält die bevorzugte Einheit einen einmaligen Bonus: sie greift zweimal an, wenn der erste Angriff erfolglos war.",
  "deploy_place_unit": "Platziere deine Einheit auf einer der Positionen auf dem Schlachtfeld. Durch die Wahl des Geländes kannst du 1 Punkt Angriff und Verteidigung gewinnen — oder verlieren.",
- "card_def": "Rüstung",
+ "card_def": "Kürass",
  "card_dmg": "Waffen",
  "card_life": "Verbände",
  "card_loc": "Gelände",

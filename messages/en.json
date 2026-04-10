@@ -27,7 +27,7 @@
  "unit_cannon": "Artillery",
  "deploy_select_unit": "Select a unit for this engagement; each unit can only be used once.<br><br>If the Circle of Strength applies, the favored unit gains a one-time bonus: it attacks twice if the first attack was unsuccessful.",
  "deploy_place_unit": "Place your unit on one of the positions on the battlefield. By choosing terrain, you can gain — or lose — 1 point of attack and defense.",
- "card_def": "Armor",
+ "card_def": "Cuirass",
  "card_dmg": "Weapons",
  "card_life": "Bandages",
  "card_loc": "Terrain",

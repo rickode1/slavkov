@@ -54,7 +54,7 @@
 
  // movement config
  let RADIUS = 120;
- let SPEED  = 0.0025;
+ let SPEED  = 0.0015;
 
  // hitbox config
  const hbTop = 3;

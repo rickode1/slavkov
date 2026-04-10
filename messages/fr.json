@@ -27,7 +27,7 @@
  "unit_cannon": "Artillerie",
  "deploy_select_unit": "Choisissez une unité pour cet engagement ; chaque unité ne peut être utilisée qu'une seule fois.<br><br>Si le Cercle de Force s'applique, l'unité favorisée reçoit un bonus unique : elle attaque deux fois si la première attaque a échoué.",
  "deploy_place_unit": "Placez votre unité sur l'une des positions sur le champ de bataille. En choisissant le terrain, vous pouvez gagner — ou perdre — 1 point d'attaque et de défense.",
- "card_def": "Armure",
+ "card_def": "Cuirasse",
  "card_dmg": "Armes",
  "card_life": "Bandages",
  "card_loc": "Terrain",
